@@ -1,18 +1,23 @@
 package worker
 
 import (
+	"archive/tar"
 	"bufio"
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/gorilla/websocket"
+	"github.com/jhoonb/archivex"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
@@ -67,14 +72,95 @@ func dispatchFuncion(data []byte, dir string) {
 	log.Println("func recved: %s", n)
 }
 
+func checkerror(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func tarDir(srcDir string, desFileName string) {
+	dir, err := os.Open(srcDir)
+	if err != nil {
+		panic(err)
+	}
+	defer dir.Close()
+
+	files, err := dir.Readdir(0)
+	if err != nil {
+		panic(err)
+	}
+
+	// create tar file
+	tarfile, err := os.Create(desFileName)
+	if err != nil {
+		panic(err)
+	}
+	defer tarfile.Close()
+
+	var fileWriter io.WriteCloser = tarfile
+
+	tarfileWriter := tar.NewWriter(fileWriter)
+	defer tarfileWriter.Close()
+
+	for _, fileInfo := range files {
+		if fileInfo.IsDir() {
+			continue
+		}
+
+		file, err := os.Open(dir.Name() + string(filepath.Separator) + fileInfo.Name())
+		checkerror(err)
+		defer file.Close()
+
+		// prepare the tar header
+		header := new(tar.Header)
+		header.Name = file.Name()
+		header.Size = fileInfo.Size()
+		header.Mode = int64(fileInfo.Mode())
+		header.ModTime = fileInfo.ModTime()
+
+		err = tarfileWriter.WriteHeader(header)
+		checkerror(err)
+
+		_, err = io.Copy(tarfileWriter, file)
+		checkerror(err)
+	}
+}
+
 func buildService(name string, dir string) {
-	cmd := "./bin/build_service.sh"
-	args := []string{dir, name}
-	runCmd(cmd, args)
-	fmt.Println("service built")
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	tar := new(archivex.TarFile)
+	tar.Create(dir)
+	tar.AddAll(dir, false)
+	tar.Close()
+	dockerBuildContext, buildContextErr := os.Open(dir + ".tar")
+	if buildContextErr != nil {
+		panic(buildContextErr)
+	}
+	defer dockerBuildContext.Close()
+
+	buildOptions := types.ImageBuildOptions{
+		Dockerfile: "Dockerfile", // optional, is the default
+		Tags:       []string{name},
+	}
+	buildResponse, buildErr := cli.ImageBuild(context.Background(), dockerBuildContext, buildOptions)
+	if buildErr != nil {
+		panic(buildErr)
+	}
+	log.Println("build ", buildResponse, buildErr)
+
+	response, err := ioutil.ReadAll(buildResponse.Body)
+	if err != nil {
+		fmt.Printf("%s", err.Error())
+	}
+	fmt.Println(string(response))
 }
 
 func deployService(name string, dir string, port string) {
+	fmt.Println("try to deploy service")
 	cmd := "./bin/start_service.sh"
 	args := []string{dir, name, port}
 	runCmd(cmd, args)
