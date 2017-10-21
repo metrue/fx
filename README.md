@@ -3,10 +3,12 @@ fx
 
 Poor man's function as a service.
 
-### architecture
+### Architecture
+
 ![architecture](https://raw.githubusercontent.com/metrue/fx/master/draft.jpg?token=AA9HHj5_UZJuyKNtJ0TFDlqCUWKCb8Yxks5Z9Cu3wA%3D%3D)
 
-### Contribu
+### Contributors
+
 <table>
   <tbody>
     <tr>
@@ -29,4 +31,3 @@ Poor man's function as a service.
      </tr>
   </tbody>
 </table>
-
