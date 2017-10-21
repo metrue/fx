@@ -15,6 +15,7 @@ var langs = map[string]string{
 	".js": "node",
 	".go": "go",
 	".rb": "ruby",
+	".py": "python",
 }
 
 func Up(functions []string, address string) {
