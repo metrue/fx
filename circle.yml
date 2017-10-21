@@ -1,0 +1,16 @@
+version: 2
+jobs:
+    build:
+    docker:
+        - image: circleci/golang:1.8
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+        - checkout
+        - run: go get "github.com/gorilla/websocket"
+        - run: go get "github.com/docker/docker/api/types"
+        - run: go get "github.com/docker/docker/client"
+        - run: go get "github.com/gorilla/websocket"
+        - run: go get "github.com/phayes/freeport"
+        - run: go get "github.com/rs/xid"
+        - run: cd client && make clean && make build
+        - run: cd server && make clean && make build
