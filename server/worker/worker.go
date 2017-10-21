@@ -28,6 +28,7 @@ import (
 var funcNames = map[string]string{
 	"go": "/fx.go",
 	"node": "/function/index.js",
+	"ruby": "/fx.rb",
 }
 // CopyFile copies the contents of the file named src to the file named
 // by dst. The file will be created if it does not already exist. If the
