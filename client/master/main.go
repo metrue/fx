@@ -86,6 +86,6 @@ func List(functions []string, address string) {
 			}
 			continue
 		}
-		fmt.Println(msg)
+		fmt.Println(string(msg))
 	}
 }
