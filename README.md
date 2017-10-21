@@ -3,6 +3,10 @@ fx
 
 Poor man's function as a service.
 
+### Status
+
+[![CircleCI](https://circleci.com/gh/metrue/fx.svg?style=svg)](https://circleci.com/gh/metrue/fx)
+
 ### Architecture
 
 ![architecture](https://raw.githubusercontent.com/metrue/fx/master/draft.jpg?token=AA9HHj5_UZJuyKNtJ0TFDlqCUWKCb8Yxks5Z9Cu3wA%3D%3D)
