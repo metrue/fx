@@ -15,7 +15,9 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"github.com/docker/go-connections/nat"
 	"github.com/gorilla/websocket"
 	"github.com/jhoonb/archivex"
 	"github.com/phayes/freeport"
@@ -160,11 +162,38 @@ func buildService(name string, dir string) {
 }
 
 func deployService(name string, dir string, port string) {
-	fmt.Println("try to deploy service")
-	cmd := "./bin/start_service.sh"
-	args := []string{dir, name, port}
-	runCmd(cmd, args)
-	fmt.Println("service deployed")
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	imageName := name
+	containerConfig := &container.Config{
+		Image: imageName,
+		ExposedPorts: nat.PortSet{
+			"3000/tcp": struct{}{},
+		},
+	}
+	hostConfig := &container.HostConfig{
+		PortBindings: nat.PortMap{
+			"3000/tcp": []nat.PortBinding{
+				{
+					HostIP:   "0.0.0.0",
+					HostPort: port,
+				},
+			},
+		},
+	}
+
+	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "")
+	if err != nil {
+		panic(err)
+	}
+	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		panic(err)
+	}
+	fmt.Println(resp.ID)
 }
 
 func notify(connection *websocket.Conn, messageType int, message string) {
