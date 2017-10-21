@@ -5,7 +5,9 @@ Poor man's function as a service.
 
 ### Status
 
-![CircleCI](https://circleci.com/gh/metrue/fx.svg?style=svg)
+<p align="center">
+  <img src="https://circleci.com/gh/metrue/fx.svg?style=svg"/>
+</p>
 
 ### Architecture
 
