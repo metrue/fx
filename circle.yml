@@ -4,6 +4,7 @@ jobs:
         docker:
             - image: circleci/golang:1.8
         working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+
     steps:
         - run:
             name: Install dependencies
@@ -14,10 +15,12 @@ jobs:
                 go get "github.com/gorilla/websocket"
                 go get "github.com/phayes/freeport"
                 go get "github.com/rs/xid"
+
         - run:
             name: Build client
             command:
                 cd client && make clean && make build
+
         - run:
             name: Build server
             command:
