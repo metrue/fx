@@ -32,14 +32,27 @@ func up(w http.ResponseWriter, r *http.Request) {
 	log.Println("to up")
 	defer c.Close()
 
+	_, lang, err := c.ReadMessage()
+	if err != nil {
+		log.Println("read:", err)
+		return
+	}
+
+	mt, body, err := c.ReadMessage()
+	if err != nil {
+		log.Println("read:", err)
+		return
+	}
+
+	worker.Work(lang, body, c, mt)
+
 	for {
-		mt, message, err := c.ReadMessage()
+		_, msg, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
-			break
+			return
 		}
-
-		worker.Work(message, c, mt)
+		log.Println("read:", msg)
 	}
 }
 

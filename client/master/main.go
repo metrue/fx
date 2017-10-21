@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"path/filepath"
 
 	"../worker/uper"
 
 	"github.com/gorilla/websocket"
 )
+
+var langs = map[string]string{
+	".js": "node",
+	".go": "go",
+}
 
 func Up(functions []string, address string) {
 	fmt.Println("Deploy starting...")
@@ -27,7 +33,8 @@ func Up(functions []string, address string) {
 			numFail++
 			continue
 		}
-		worker := uper.New(function, conn, channel)
+		lang := langs[filepath.Ext(function)]
+		worker := uper.New(function, lang, conn, channel)
 		go worker.Work()
 	}
 

@@ -1,8 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+	"encoding/json"
+)
+
+func handler(res http.ResponseWriter, req *http.Request) {
+	decoder := json.NewDecoder(req.Body)
+
+	var input Input
+	err := decoder.Decode(&input)
+	if err != nil {
+		panic(err)
+	}
+
+	output := Fx(&input)
+
+	encoder := json.NewEncoder(res)
+	err = encoder.Encode(output)
+	if err != nil {
+		panic(err)
+	}
+}
+
 
 func main() {
-	ret := Fx(Input{"abc"})
-	fmt.Println(ret)
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":3000", nil)
 }

@@ -1,7 +1,7 @@
 OUTPUT_DIR=./build
 
 test:
-	@${OUTPUT_DIR}/fx up index.js
+	${OUTPUT_DIR}/fx up index.js func.go
 	@docker ps
 build:
 	go build -o ${OUTPUT_DIR}/fx .

@@ -25,6 +25,10 @@ import (
 	"github.com/rs/xid"
 )
 
+var funcNames = map[string]string{
+	"go": "/fx.go",
+	"node": "/function/index.js",
+}
 // CopyFile copies the contents of the file named src to the file named
 // by dst. The file will be created if it does not already exist. If the
 // destination file exists, all it's contents will be replaced by the contents
@@ -155,7 +159,7 @@ func runCmd(cmdName string, cmdArgs []string) {
 	}
 }
 
-func initWorkDirectory(dir string) {
+func initWorkDirectory(lang string, dir string) {
 	// err := os.MkdirAll(dir, os.ModePerm)
 	// if err != nil {
 	// 	panic(err)
@@ -166,14 +170,15 @@ func initWorkDirectory(dir string) {
 		log.Fatal(err)
 	}
 
-	err = CopyDir(path.Join(scriptPath, "..", "images", "node"), dir)
+	err = CopyDir(path.Join(scriptPath, "..", "images", lang), dir)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func dispatchFuncion(data []byte, dir string) {
-	f, err := os.Create(dir + "/function/index.js")
+func dispatchFuncion(lang string, data []byte, dir string) {
+	fileName := funcNames[lang]
+	f, err := os.Create(dir + fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -320,8 +325,13 @@ func closeConnection(connection *websocket.Conn) {
 	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"))
 }
 
-func Work(msg []byte, connection *websocket.Conn, messageType int) {
-	go func() {
+func Work(
+	lang []byte,
+	body []byte,
+	connection *websocket.Conn,
+	messageType int,
+) {
+	// go func() {
 		var guid = xid.New().String()
 		var dir = guid
 		var name = guid
@@ -331,9 +341,9 @@ func Work(msg []byte, connection *websocket.Conn, messageType int) {
 			panic(err)
 		}
 
-		initWorkDirectory(dir)
+		initWorkDirectory(string(lang), dir)
 		notify(connection, messageType, "work dir initialized")
-		dispatchFuncion(msg, dir)
+		dispatchFuncion(string(lang), body, dir)
 		notify(connection, messageType, "function dispatched")
 		buildService(name, dir)
 		notify(connection, messageType, "function built")
@@ -341,7 +351,7 @@ func Work(msg []byte, connection *websocket.Conn, messageType int) {
 		notify(connection, messageType, "function deployed: http://localhost:"+strconv.Itoa(port))
 
 		closeConnection(connection)
-	}()
+	// }()
 }
 
 func List(connection *websocket.Conn, messageType int) {

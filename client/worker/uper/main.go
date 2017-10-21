@@ -15,18 +15,21 @@ type Uper struct {
 	conn *websocket.Conn
 	ch chan<- bool
 	src string
+	lang string
 	logger *logger.Logger
 	dead bool
 }
 
 func New(
 	src string,
+	lang string,
 	conn *websocket.Conn,
 	ch chan<- bool,
 ) *Uper {
 	uper := &Uper{
 		dead: false,
 		src: src,
+		lang: lang,
 		conn: conn,
 		ch: ch,
 		logger: logger.New("[" + src + "]"),
@@ -71,6 +74,14 @@ func (uper *Uper) Work() {
 	file, err := os.Open(uper.src)
 	if uper.checkErr(err) { return }
 	defer file.Close()
+
+	// Send source language type
+	if uper.dead { return }
+	err = conn.WriteMessage(
+		websocket.TextMessage,
+		[]byte(uper.lang),
+	)
+	if uper.checkErr(err) { return }
 
 	// Get websocket connection writer
 	if uper.dead { return }
