@@ -134,23 +134,38 @@ func List(connection *websocket.Conn, messageType int) {
 	closeConnection(connection)
 }
 
-func Stop(connection *websocket.Conn, containID string) {
-	notify(connection, websocket.TextMessage, "to stop"+containID)
+func Stop(
+	connection *websocket.Conn,
+	containID string,
+	msgChan chan<- string,
+	done chan<- bool,
+) {
+	// notify(connection, websocket.TextMessage, "to stop"+containID)
+	msgChan <- "to stop"+containID
+
+	checkErr := func(err error) bool {
+		if err != nil {
+			log.Println(err)
+			done <- false
+			return true
+			// panic(err)
+		}
+		return false
+	}
 
 	cli, err := client.NewEnvClient()
-	if err != nil {
-		panic(err)
-	}
+	if checkErr(err) { return }
 
 	timeout := time.Duration(1) * time.Second
-	notify(connection, websocket.TextMessage, "to stop"+containID)
+	// notify(connection, websocket.TextMessage, "to stop"+containID)
 	err = cli.ContainerStop(context.Background(), containID, &timeout)
-	if err != nil {
-		panic(err)
-	}
+	if checkErr(err) { return }
 
-	notify(connection, websocket.TextMessage, "to stop"+containID)
-	msg := containID + " Stopped"
-	notify(connection, websocket.TextMessage, msg)
-	closeConnection(connection)
+	// notify(connection, websocket.TextMessage, "to stop"+containID)
+	// msg := containID + " Stopped"
+	msgChan <- containID + " Stopped"
+	// notify(connection, websocket.TextMessage, msg)
+	// closeConnection(connection)
+
+	done <- true
 }

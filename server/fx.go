@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strings"
 	"net/http"
 
 	"./worker"
@@ -66,14 +67,45 @@ func down(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	for {
-		_, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read: ", err)
-			break
-		}
-		worker.Stop(c, string(message))
+	mt, message, err := c.ReadMessage()
+	if err != nil {
+		log.Println("read: ", err)
 	}
+	ids := strings.Split(string(message), " ")
+
+	doneCh := make(chan bool)
+	msgCh := make(chan string)
+	for _, id := range ids {
+		go worker.Stop(c, id, msgCh, doneCh)
+	}
+
+	numSuccess := 0
+	numFail := 0
+	for {
+		select {
+			case newDone := <-doneCh:
+				if newDone {
+					numSuccess++
+				} else {
+					numFail++
+				}
+				if numSuccess + numFail == len(ids) {
+					res := fmt.Sprintf("Succed: %d", numSuccess)
+					c.WriteMessage(mt, []byte(res))
+					res = fmt.Sprintf("Failed: %d", numFail)
+					c.WriteMessage(mt, []byte(res))
+					closeConn(c, "0")
+					return
+				}
+			case newMsg := <-msgCh:
+				c.WriteMessage(mt, []byte(newMsg))
+		}
+	}
+}
+
+func closeConn(c *websocket.Conn, msg string) {
+	byteMsg := websocket.FormatCloseMessage(1000, msg)
+	c.WriteMessage(websocket.CloseMessage, byteMsg)
 }
 
 func main() {

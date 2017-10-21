@@ -57,7 +57,7 @@ func main() {
 			downArgs,
 			downFlagSet,
 		)
-		master.Up(functions, address)
+		master.Down(functions, address)
 	case "list":
 		functions, address := parseListArgs(
 			os.Args[2:],
