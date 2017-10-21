@@ -6,7 +6,7 @@ Poor man's function as a service.
 ### Status
 
 <p align="center">
-  <img src="https://circleci.com/gh/metrue/fx.svg?style=svg"/>
+  <img src="https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7"/>
 </p>
 
 ### Architecture
