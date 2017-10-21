@@ -354,8 +354,10 @@ func List(connection *websocket.Conn, messageType int) {
 		panic(err)
 	}
 
+	msg := "Function ID" + "\t" + "Service URL"
+	notify(connection, websocket.TextMessage, msg)
 	for _, container := range containers {
-		msg := container.ID[:10] + " " + container.Ports[0].IP + strconv.Itoa(int(container.Ports[0].PublicPort))
+		msg := container.ID[:10] + "\t" + container.Ports[0].IP + ":" + strconv.Itoa(int(container.Ports[0].PublicPort))
 		notify(connection, messageType, msg)
 	}
 
