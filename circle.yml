@@ -5,12 +5,20 @@ jobs:
             - image: circleci/golang:1.8
         working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
     steps:
-        - checkout
-        - run: go get "github.com/gorilla/websocket"
-        - run: go get "github.com/docker/docker/api/types"
-        - run: go get "github.com/docker/docker/client"
-        - run: go get "github.com/gorilla/websocket"
-        - run: go get "github.com/phayes/freeport"
-        - run: go get "github.com/rs/xid"
-        - run: cd client && make clean && make build
-        - run: cd server && make clean && make build
+        - run:
+            name: Install dependencies
+            command:
+                go get "github.com/gorilla/websocket"
+                go get "github.com/docker/docker/api/types"
+                go get "github.com/docker/docker/client"
+                go get "github.com/gorilla/websocket"
+                go get "github.com/phayes/freeport"
+                go get "github.com/rs/xid"
+        - run:
+            name: Build client
+            command:
+                cd client && make clean && make build
+        - run:
+            name: Build server
+            command:
+                cd server && make clean && make build
