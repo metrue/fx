@@ -1,9 +1,11 @@
 const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
 const func = require('./function');
 
 const app = new Koa();
+app.use(bodyParser());
 app.use(ctx => {
-    const msg = func(ctx.req);
+    const msg = func(ctx.request.body);
     ctx.body = msg;
 });
 
