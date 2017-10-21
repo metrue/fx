@@ -60,7 +60,20 @@ func list(w http.ResponseWriter, r *http.Request) {
 }
 
 func down(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "not ready yet", r.URL.Path[1:])
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("upgrade: ", err)
+	}
+	defer c.Close()
+
+	for {
+		_, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read: ", err)
+			break
+		}
+		worker.Stop(c, string(message))
+	}
 }
 
 func main() {
