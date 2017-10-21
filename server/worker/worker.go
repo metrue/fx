@@ -88,7 +88,7 @@ func notify(connection *websocket.Conn, messageType int, message string) {
 }
 
 func closeConnection(connection *websocket.Conn) {
-	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Close"))
+	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"))
 }
 
 func Work(msg []byte, connection *websocket.Conn, messageType int) {
