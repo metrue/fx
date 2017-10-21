@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -130,5 +131,26 @@ func List(connection *websocket.Conn, messageType int) {
 		notify(connection, messageType, msg)
 	}
 
+	closeConnection(connection)
+}
+
+func Stop(connection *websocket.Conn, containID string) {
+	notify(connection, websocket.TextMessage, "to stop"+containID)
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	timeout := time.Duration(1) * time.Second
+	notify(connection, websocket.TextMessage, "to stop"+containID)
+	err = cli.ContainerStop(context.Background(), containID, &timeout)
+	if err != nil {
+		panic(err)
+	}
+
+	notify(connection, websocket.TextMessage, "to stop"+containID)
+	msg := containID + " Stopped"
+	notify(connection, websocket.TextMessage, msg)
 	closeConnection(connection)
 }
