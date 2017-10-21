@@ -1,27 +1,31 @@
 version: 2
 jobs:
-    build:
-        docker:
-            - image: circleci/golang:1.8
-        working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+  build:
+    docker:
+      - image: circleci/golang:1.8
+
+    working_directory: /go/src/github.com/CircleCI-Public/circleci-demo-go
 
     steps:
-        - run:
-            name: Install dependencies
-            command:
-                go get "github.com/gorilla/websocket"
-                go get "github.com/docker/docker/api/types"
-                go get "github.com/docker/docker/client"
-                go get "github.com/gorilla/websocket"
-                go get "github.com/phayes/freeport"
-                go get "github.com/rs/xid"
+      - checkout
 
-        - run:
-            name: Build client
-            command:
-                cd client && make clean && make build
+      - run:
+          name: Install dependencies
+          command: |
+            go get "github.com/gorilla/websocket"
+            go get "github.com/docker/docker/api/types"
+             go get "github.com/docker/docker/client"
+            go get "github.com/gorilla/websocket"
+            go get "github.com/phayes/freeport"
+            go get "github.com/rs/xid"
 
-        - run:
-            name: Build server
-            command:
-                cd server && make clean && make build
+      - run:
+          name: Build client
+          command: |
+            cd client && make clean && make build
+
+      - run:
+          name: Build server
+          command: |
+            cd server && make clean && make build
+
