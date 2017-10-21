@@ -3,6 +3,7 @@ package master
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"../worker/uper"
 
@@ -53,4 +54,38 @@ func Up(functions []string, address string) {
 
 func Down(functions []string, address string) {
 	log.Print("Down functions: ", functions, " at address: ", address)
+}
+
+func List(functions []string, address string) {
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(address, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer conn.Close()
+
+	err = conn.WriteMessage(
+		websocket.TextMessage,
+		[]byte(strings.Join(functions, " ")),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			if websocket.IsCloseError(err, 1000) {
+				return
+			}
+			fmt.Println(err)
+			if websocket.IsUnexpectedCloseError(err, 1000) {
+				return
+			}
+			continue
+		}
+		fmt.Println(msg)
+	}
 }

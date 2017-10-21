@@ -35,6 +35,7 @@ func main() {
 
 	upArgs, upFlagSet := setupUpFlags()
 	downArgs, downFlagSet := setupDownFlags()
+	listArgs, listFlagSet := setupListFlags()
 
 	switch os.Args[1] {
 	case "up":
@@ -57,6 +58,13 @@ func main() {
 			downFlagSet,
 		)
 		master.Up(functions, address)
+	case "list":
+		functions, address := parseListArgs(
+			os.Args[2:],
+			listArgs,
+			listFlagSet,
+		)
+		master.List(functions, address)
 	default:
 		fmt.Print(usage)
 		os.Exit(1)

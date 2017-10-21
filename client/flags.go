@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/url"
 	"os"
+	"net/url"
 )
 
 type upArgPtrs struct {
@@ -12,7 +12,13 @@ type upArgPtrs struct {
 	help *bool
 }
 
+
 type downArgPtrs struct {
+	addr *string
+	help *bool
+}
+
+type listArgPtrs struct {
 	addr *string
 	help *bool
 }
@@ -20,7 +26,7 @@ type downArgPtrs struct {
 func setupUpFlags() (
 	args *upArgPtrs,
 	flagSet *flag.FlagSet,
-) {
+){
 	flagSet = flag.NewFlagSet("up", flag.ExitOnError)
 	args = &upArgPtrs{
 		addr: flagSet.String(
@@ -40,9 +46,29 @@ func setupUpFlags() (
 func setupDownFlags() (
 	args *downArgPtrs,
 	flagSet *flag.FlagSet,
-) {
+){
 	flagSet = flag.NewFlagSet("down", flag.ExitOnError)
 	args = &downArgPtrs{
+		addr: flagSet.String(
+			"addr",
+			"localhost:8080",
+			"Server address.",
+		),
+		help: flagSet.Bool(
+			"help",
+			false,
+			"Help information.",
+		),
+	}
+	return
+}
+
+func setupListFlags() (
+	args *listArgPtrs,
+	flagSet *flag.FlagSet,
+){
+	flagSet = flag.NewFlagSet("list", flag.ExitOnError)
+	args = &listArgPtrs{
 		addr: flagSet.String(
 			"addr",
 			"localhost:8080",
@@ -96,6 +122,31 @@ func parseDownArgs(
 		Scheme: "ws",
 		Host:   *(ptrs.addr),
 		Path:   "/down",
+	}
+	addr = u.String()
+
+	if fs.NFlag() == 0 {
+		funcs = s
+	} else {
+		funcs = fs.Args()
+	}
+	return
+}
+
+func parseListArgs(
+	s []string,
+	ptrs *listArgPtrs,
+	fs *flag.FlagSet,
+) (funcs []string, addr string) {
+	fs.Parse(s)
+	if *(ptrs.help) {
+		flagsAndExit(fs)
+	}
+
+	u := url.URL{
+		Scheme: "ws",
+		Host:   *(ptrs.addr),
+		Path:   "/list",
 	}
 	addr = u.String()
 
