@@ -26,11 +26,12 @@ import (
 )
 
 var funcNames = map[string]string{
-	"go": "/fx.go",
-	"node": "/function/index.js",
-	"ruby": "/fx.rb",
+	"go":     "/fx.go",
+	"node":   "/fx.js",
+	"ruby":   "/fx.rb",
 	"python": "/fx.py",
 }
+
 // CopyFile copies the contents of the file named src to the file named
 // by dst. The file will be created if it does not already exist. If the
 // destination file exists, all it's contents will be replaced by the contents
@@ -334,25 +335,25 @@ func Work(
 	messageType int,
 ) {
 	// go func() {
-		var guid = xid.New().String()
-		var dir = guid
-		var name = guid
+	var guid = xid.New().String()
+	var dir = guid
+	var name = guid
 
-		port, err := freeport.GetFreePort()
-		if err != nil {
-			panic(err)
-		}
+	port, err := freeport.GetFreePort()
+	if err != nil {
+		panic(err)
+	}
 
-		initWorkDirectory(string(lang), dir)
-		notify(connection, messageType, "work dir initialized")
-		dispatchFuncion(string(lang), body, dir)
-		notify(connection, messageType, "function dispatched")
-		buildService(name, dir)
-		notify(connection, messageType, "function built")
-		deployService(name, dir, strconv.Itoa(port))
-		notify(connection, messageType, "function deployed: http://localhost:"+strconv.Itoa(port))
+	initWorkDirectory(string(lang), dir)
+	notify(connection, messageType, "work dir initialized")
+	dispatchFuncion(string(lang), body, dir)
+	notify(connection, messageType, "function dispatched")
+	buildService(name, dir)
+	notify(connection, messageType, "function built")
+	deployService(name, dir, strconv.Itoa(port))
+	notify(connection, messageType, "function deployed: http://localhost:"+strconv.Itoa(port))
 
-		closeConnection(connection)
+	closeConnection(connection)
 	// }()
 }
 

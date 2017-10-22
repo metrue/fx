@@ -1,6 +1,6 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
-const func = require('./function');
+const func = require('./fx');
 
 const app = new Koa();
 app.use(bodyParser());
