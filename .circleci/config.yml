@@ -15,6 +15,14 @@ jobs:
       - checkout
 
       - run:
+          name: Install tools
+          command: |
+              wget "https://github.com/Masterminds/glide/releases/download/0.10.2/glide-0.10.2-linux-amd64.tar.gz"
+              mkdir -p $HOME/bin
+              tar -vxz -C $HOME/bin --strip=1 -f glide-0.10.2-linux-amd64.tar.gz
+              export PATH="$HOME/bin:$PATH"
+
+      - run:
           name: Build client
           command: |
               cd client && make install-deps && make clean && make build
