@@ -1,7 +1,7 @@
 #!/bin/bash
 
 funcs=" "
-for i in $(seq 100)
+for i in $(seq 128)
 do
     funcs=${funcs}"client/functions/func.go "
 done
