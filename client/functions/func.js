@@ -1,3 +1,3 @@
 module.exports = (input) => {
-    return input.a + input.b
+    return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
