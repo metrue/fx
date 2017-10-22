@@ -1,3 +1,3 @@
-module.exports = () => {
-    return 'hello world';
+module.exports = (input) => {
+    return input.a + input.b
 }

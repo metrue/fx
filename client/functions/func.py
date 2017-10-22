@@ -1,2 +1,2 @@
-def fx(j):
-    return j['a'] + j['b']
+def fx(input):
+    return input['a'] + input['b']

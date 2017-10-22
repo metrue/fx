@@ -1,3 +1,3 @@
-def fx(obj)
-  obj['name']
+def fx(input)
+    return input[:a] + input[:b]
 end
