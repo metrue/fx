@@ -384,8 +384,6 @@ func Stop(
 	done chan<- bool,
 ) {
 	// notify(connection, websocket.TextMessage, "to stop"+containID)
-	msgChan <- "to stop" + containID
-
 	checkErr := func(err error) bool {
 		if err != nil {
 			log.Println(err)
