@@ -1,10 +1,16 @@
 OUTPUT_DIR=./build
+GOPATH=$(shell pwd)/vendor
 
+install-deps:
+	@mkdir -p ./vendor/src
+	@glide install #--strip-vendor
+	@mkdir -p ./vendor/src
+	@mv ./vendor/* ./vendor/src > /dev/null 2>&1
 test:
 	${OUTPUT_DIR}/fx up index.js func.go
 	@docker ps
 build:
-	go build -o ${OUTPUT_DIR}/fx .
+	GOPATH=${GOPATH} go build -o ${OUTPUT_DIR}/fx .
 start:
 	${OUTPUT_DIR}/fx
 list:
