@@ -3,15 +3,29 @@ fx
 
 Poor man's function as a service.
 
-### Status
+### CI/CD Status
 
-<p align="center">
+<p>
   <img src="https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7"/>
 </p>
 
 ### Architecture
 
 ![architecture](https://raw.githubusercontent.com/metrue/fx/master/draft.jpg?token=AA9HHj5_UZJuyKNtJ0TFDlqCUWKCb8Yxks5Z9Cu3wA%3D%3D)
+
+### Features
+
+* no API Gateway
+* no Function Watchdog
+* no Docker Swarm
+* no Kubernets
+* no fancy web dashboard
+
+but f(x)
+
+* **makes a function to be a service in seconds**.
+* **supports all major programming languages (Node, Golang, Ruby, Python) functions to services**.
+
 
 ### Contributors
 
