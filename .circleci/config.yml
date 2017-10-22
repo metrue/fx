@@ -25,10 +25,12 @@ jobs:
       - run:
           name: Build client
           command: |
+              export PATH="$HOME/bin:$PATH"
               cd client && make install-deps && make clean && make build
 
       - run:
           name: Build server
           command: |
+              export PATH="$HOME/bin:$PATH"
               cd server && make install-deps && make clean && make build
 
