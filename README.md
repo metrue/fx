@@ -2,12 +2,41 @@ fx
 ------
 
 Poor man's function as a service.
-
-### CI/CD Status
-
 <p>
   <img src="https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7"/>
 </p>
+
+### Usage
+
+* clone and build
+
+```
+$ git clone https://github.com/metrue/fx
+$ cd fx/server && make install-deps && make build   # build server
+$ cd fx/client && make install-deps && make build   # build client
+```
+
+* start server
+
+```
+fx/server/build/fx
+```
+
+now you can make a function to service in a second.
+
+```
+fx/client/build/fx up fx/client/functions/func.js
+```
+
+of course you can do more.
+
+```
+Usage:
+$ fx up   func1 func2 ...       deploy a function or a group of functions
+$ fx down func1 func2 ...       destroy a function or a group of functions
+$ fx list                       list deployed services
+$ fx --version                  show current version of f(x)
+```
 
 ### Architecture
 
