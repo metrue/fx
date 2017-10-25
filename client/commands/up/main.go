@@ -17,8 +17,6 @@ var langs = map[string]string{
 }
 
 func Up() {
-	fmt.Println("Deploy starting...")
-
 	nArgs := len(os.Args)
 	args, flagSet := setupFlags()
 	if nArgs == 2 {
@@ -30,6 +28,7 @@ func Up() {
 		flagSet,
 	)
 
+	fmt.Println("Deploy starting...")
 	dialer := websocket.Dialer{}
 
 	channel := make(chan bool)
