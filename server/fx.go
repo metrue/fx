@@ -44,7 +44,7 @@ func up(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	worker.Work(lang, body, c, mt)
+	worker.Up(lang, body, c, mt)
 
 	for {
 		_, msg, err := c.ReadMessage()
