@@ -32,11 +32,6 @@ var funcNames = map[string]string{
 	"python": "/fx.py",
 }
 
-// CopyFile copies the contents of the file named src to the file named
-// by dst. The file will be created if it does not already exist. If the
-// destination file exists, all it's contents will be replaced by the contents
-// of the source file. The file mode will be copied from the source and
-// the copied data is synced/flushed to stable storage.
 func CopyFile(src, dst string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
@@ -328,7 +323,7 @@ func closeConnection(connection *websocket.Conn) {
 	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"))
 }
 
-func Work(
+func Up(
 	lang []byte,
 	body []byte,
 	connection *websocket.Conn,
@@ -357,39 +352,30 @@ func Work(
 	// }()
 }
 
-func List(connection *websocket.Conn, messageType int) {
+func List() []types.Container {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
+
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	msg := "Function ID" + "\t" + "Service URL"
-	notify(connection, websocket.TextMessage, msg)
-	for _, container := range containers {
-		msg := container.ID[:10] + "\t" + container.Ports[0].IP + ":" + strconv.Itoa(int(container.Ports[0].PublicPort))
-		notify(connection, messageType, msg)
-	}
-
-	closeConnection(connection)
+	return containers
 }
 
 func Stop(
-	connection *websocket.Conn,
 	containID string,
 	msgChan chan<- string,
-	done chan<- bool,
+	doneChan chan<- bool,
 ) {
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
 	checkErr := func(err error) bool {
 		if err != nil {
 			log.Println(err)
-			done <- false
+			doneChan <- false
 			return true
-			// panic(err)
 		}
 		return false
 	}
@@ -400,17 +386,12 @@ func Stop(
 	}
 
 	timeout := time.Duration(1) * time.Second
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
 	err = cli.ContainerStop(context.Background(), containID, &timeout)
 	if checkErr(err) {
 		return
 	}
 
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
-	// msg := containID + " Stopped"
+	fmt.Println("I am closed " + containID)
 	msgChan <- containID + " Stopped"
-	// notify(connection, websocket.TextMessage, msg)
-	// closeConnection(connection)
-
-	done <- true
+	doneChan <- true
 }
