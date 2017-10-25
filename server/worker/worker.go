@@ -352,60 +352,30 @@ func Up(
 	// }()
 }
 
-func List(connection *websocket.Conn, messageType int) {
+func List() []types.Container {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
+
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	msg := "Function ID" + "\t" + "Service URL"
-	notify(connection, websocket.TextMessage, msg)
-	for _, container := range containers {
-		msg := container.ID[:10] + "\t" + container.Ports[0].IP + ":" + strconv.Itoa(int(container.Ports[0].PublicPort))
-		notify(connection, messageType, msg)
-	}
-
-	closeConnection(connection)
-}
-
-func StopAll(
-	connection *websocket.Conn,
-	msgChan chan<- string,
-	done chan<- bool,
-) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		panic(err)
-	}
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, container := range containers {
-		fmt.Println("end" + container.ID[:10])
-		go Stop(connection, container.ID[:10], msgChan, done, false)
-	}
-	done <- true
+	return containers
 }
 
 func Stop(
-	connection *websocket.Conn,
 	containID string,
 	msgChan chan<- string,
-	done chan<- bool,
-	sendDone bool,
+	doneChan chan<- bool,
 ) {
 	checkErr := func(err error) bool {
 		if err != nil {
 			log.Println(err)
-			done <- false
+			doneChan <- false
 			return true
-			// panic(err)
 		}
 		return false
 	}
@@ -423,9 +393,5 @@ func Stop(
 
 	fmt.Println("I am closed " + containID)
 	msgChan <- containID + " Stopped"
-	if sendDone {
-		done <- true
-	} else {
-		done <- false
-	}
+	doneChan <- true
 }

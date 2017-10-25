@@ -63,14 +63,29 @@ func list(w http.ResponseWriter, r *http.Request) {
     }
     defer c.Close()
 
-    for {
-        mt, _, err := c.ReadMessage()
-        if err != nil {
-            log.Println("read: ", err)
-            break
-        }
-        worker.List(c, mt)
-    }
+		mt, _, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read: ", err)
+			return
+		}
+
+		containers := worker.List()
+
+		msg := "Function ID" + "\t" + "Service URL"
+		err = c.WriteMessage(mt, []byte(msg))
+		if err != nil {
+			log.Println("write: ", err)
+		}
+
+		for _, container := range containers {
+			msg = fmt.Sprintf("%s\t%s:%d", container.ID[:10], container.Ports[0].IP, container.Ports[0].PublicPort)
+			err = c.WriteMessage(mt, []byte(msg))
+			if err != nil {
+				log.Println("write: ", err)
+			}
+		}
+
+		closeConn(c, "0")
 }
 
 func down(w http.ResponseWriter, r *http.Request) {
@@ -80,32 +95,31 @@ func down(w http.ResponseWriter, r *http.Request) {
     }
     defer c.Close()
 
-    mt, message, err := c.ReadMessage()
-    if err != nil {
-        log.Println("read: ", err)
-    }
-    ids := strings.Split(string(message), " ")
 
     doneCh := make(chan bool)
     msgCh := make(chan string)
 
-    if ids[0] == "*" {
-        fmt.Println("end all")
-        go worker.StopAll(c, msgCh, doneCh)
-        done := <-doneCh
-        if done {
-            c.WriteMessage(mt, []byte("All down"))
-            closeConn(c, "0")
-        } else {
-            c.WriteMessage(mt, []byte("Could not down all"))
-            closeConn(c, "0")
-        }
-    } else {
-        fmt.Println("end list")
-        for _, id := range ids {
-            go worker.Stop(c, id, msgCh, doneCh, true)
-        }
+    mt, message, err := c.ReadMessage()
+    if err != nil {
+        log.Println("read: ", err)
     }
+
+		var ids []string
+    if string(message) == "*" {
+			fmt.Println("end all")
+			containers := worker.List()
+			ids = make([]string, len(containers))
+			for i, container := range containers {
+				ids[i] = container.ID[:10]
+			}
+    } else {
+			fmt.Println("end list")
+			ids = strings.Split(string(message), " ")
+    }
+
+		for _, id := range ids {
+			go worker.Stop(id, msgCh, doneCh)
+		}
 
     numSuccess := 0
     numFail := 0
