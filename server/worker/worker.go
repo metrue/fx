@@ -323,7 +323,7 @@ func closeConnection(connection *websocket.Conn) {
 	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"))
 }
 
-func Work(
+func Up(
 	lang []byte,
 	body []byte,
 	connection *websocket.Conn,
@@ -388,9 +388,7 @@ func StopAll(
 
 	for _, container := range containers {
 		fmt.Println("end" + container.ID[:10])
-		go func() {
-			Stop(connection, container.ID[:10], msgChan, done, false)
-		}()
+		go Stop(connection, container.ID[:10], msgChan, done, false)
 	}
 	done <- true
 }
@@ -423,8 +421,11 @@ func Stop(
 		return
 	}
 
+	fmt.Println("I am closed " + containID)
 	msgChan <- containID + " Stopped"
 	if sendDone {
 		done <- true
+	} else {
+		done <- false
 	}
 }
