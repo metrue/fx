@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-	// "os/signal"
+	"flag"
 
-	"./master"
+	"./commands/up"
+	"./commands/down"
+	"./commands/list"
 )
 
 const version string = "0.0.2"
@@ -27,45 +29,41 @@ func helpAndExit() {
 	os.Exit(0)
 }
 
+func checkFlag() {
+	helpPtr := flag.Bool(
+		"help",
+		false,
+		"Help information.",
+	)
+	versionPtr := flag.Bool(
+		"version",
+		false,
+		"Version information.",
+	)
+
+	flag.Parse()
+	if *helpPtr {
+		helpAndExit()
+	}
+	if *versionPtr {
+		versionAndExit()
+	}
+}
+
 func main() {
 	nArgs := len(os.Args)
 	if nArgs < 2 {
 		helpAndExit()
 	}
-	checkMainFlag()
-
-	upArgs, upFlagSet := setupUpFlags()
-	downArgs, downFlagSet := setupDownFlags()
-	listArgs, listFlagSet := setupListFlags()
+	checkFlag()
 
 	switch os.Args[1] {
 	case "up":
-		if nArgs == 2 {
-			flagsAndExit(upFlagSet)
-		}
-		functions, address := parseUpArgs(
-			os.Args[2:],
-			upArgs,
-			upFlagSet,
-		)
-		master.Up(functions, address)
+		up.Up()
 	case "down":
-		if nArgs == 2 {
-			flagsAndExit(downFlagSet)
-		}
-		functions, address := parseDownArgs(
-			os.Args[2:],
-			downArgs,
-			downFlagSet,
-		)
-		master.Down(functions, address)
+		down.Down()
 	case "list":
-		functions, address := parseListArgs(
-			os.Args[2:],
-			listArgs,
-			listFlagSet,
-		)
-		master.List(functions, address)
+		list.List()
 	default:
 		fmt.Print(usage)
 		os.Exit(1)
