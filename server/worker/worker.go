@@ -32,11 +32,6 @@ var funcNames = map[string]string{
 	"python": "/fx.py",
 }
 
-// CopyFile copies the contents of the file named src to the file named
-// by dst. The file will be created if it does not already exist. If the
-// destination file exists, all it's contents will be replaced by the contents
-// of the source file. The file mode will be copied from the source and
-// the copied data is synced/flushed to stable storage.
 func CopyFile(src, dst string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
@@ -377,13 +372,36 @@ func List(connection *websocket.Conn, messageType int) {
 	closeConnection(connection)
 }
 
+func StopAll(
+	connection *websocket.Conn,
+	msgChan chan<- string,
+	done chan<- bool,
+) {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, container := range containers {
+		fmt.Println("end" + container.ID[:10])
+		go func() {
+			Stop(connection, container.ID[:10], msgChan, done, false)
+		}()
+	}
+	done <- true
+}
+
 func Stop(
 	connection *websocket.Conn,
 	containID string,
 	msgChan chan<- string,
 	done chan<- bool,
+	sendDone bool,
 ) {
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
 	checkErr := func(err error) bool {
 		if err != nil {
 			log.Println(err)
@@ -400,17 +418,13 @@ func Stop(
 	}
 
 	timeout := time.Duration(1) * time.Second
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
 	err = cli.ContainerStop(context.Background(), containID, &timeout)
 	if checkErr(err) {
 		return
 	}
 
-	// notify(connection, websocket.TextMessage, "to stop"+containID)
-	// msg := containID + " Stopped"
 	msgChan <- containID + " Stopped"
-	// notify(connection, websocket.TextMessage, msg)
-	// closeConnection(connection)
-
-	done <- true
+	if sendDone {
+		done <- true
+	}
 }

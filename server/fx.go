@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
 	"net/http"
+	"strings"
 
 	"./worker"
 
@@ -88,30 +88,46 @@ func down(w http.ResponseWriter, r *http.Request) {
 
 	doneCh := make(chan bool)
 	msgCh := make(chan string)
-	for _, id := range ids {
-		go worker.Stop(c, id, msgCh, doneCh)
+
+	if ids[0] == "*" {
+		fmt.Println("end all")
+		go worker.StopAll(c, msgCh, doneCh)
+		done := <-doneCh
+		if done {
+			c.WriteMessage(mt, []byte("All down"))
+			closeConn(c, "0")
+		} else {
+			c.WriteMessage(mt, []byte("Could not down all"))
+			closeConn(c, "0")
+		}
+	} else {
+		fmt.Println("end list")
+		for _, id := range ids {
+			go worker.Stop(c, id, msgCh, doneCh, true)
+		}
 	}
 
 	numSuccess := 0
 	numFail := 0
 	for {
 		select {
-			case newDone := <-doneCh:
-				if newDone {
-					numSuccess++
-				} else {
-					numFail++
-				}
-				if numSuccess + numFail == len(ids) {
-					res := fmt.Sprintf("Succed: %d", numSuccess)
-					c.WriteMessage(mt, []byte(res))
-					res = fmt.Sprintf("Failed: %d", numFail)
-					c.WriteMessage(mt, []byte(res))
-					closeConn(c, "0")
-					return
-				}
-			case newMsg := <-msgCh:
-				c.WriteMessage(mt, []byte(newMsg))
+		case newDone := <-doneCh:
+			if newDone {
+				numSuccess++
+			} else {
+				numFail++
+			}
+
+			if numSuccess+numFail == len(ids) {
+				res := fmt.Sprintf("Succed: %d", numSuccess)
+				c.WriteMessage(mt, []byte(res))
+				res = fmt.Sprintf("Failed: %d", numFail)
+				c.WriteMessage(mt, []byte(res))
+				closeConn(c, "0")
+				return
+			}
+		case newMsg := <-msgCh:
+			c.WriteMessage(mt, []byte(newMsg))
 		}
 	}
 }
