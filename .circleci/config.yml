@@ -5,32 +5,36 @@ dependencies:
         - sudo apt-get update
         - sudo apt-get install glide -y
 jobs:
-  build:
-    docker:
-      - image: circleci/golang:1.8
+    build:
+        docker:
+        - image: circleci/golang:1.8
 
     working_directory: /go/src/github.com/metrue/fx
 
     steps:
-      - checkout
+        - checkout
 
-      - run:
-          name: Install tools
-          command: |
-              wget "https://github.com/Masterminds/glide/releases/download/0.10.2/glide-0.10.2-linux-amd64.tar.gz"
-              mkdir -p $HOME/bin
-              tar -vxz -C $HOME/bin --strip=1 -f glide-0.10.2-linux-amd64.tar.gz
-              export PATH="$HOME/bin:$PATH"
+        - run:
+            name: Install tools
+            command: |
+                wget "https://github.com/Masterminds/glide/releases/download/0.10.2/glide-0.10.2-linux-amd64.tar.gz"
+                mkdir -p $HOME/bin
+                tar -vxz -C $HOME/bin --strip=1 -f glide-0.10.2-linux-amd64.tar.gz
+                export PATH="$HOME/bin:$PATH"
 
-      - run:
-          name: Build client
-          command: |
-              export PATH="$HOME/bin:$PATH"
-              cd client && make install-deps && make clean && make build
+        - run:
+            name: Build client
+            command: |
+                export PATH="$HOME/bin:$PATH"
+                cd client && make install-deps && make clean && make build
 
-      - run:
-          name: Build server
-          command: |
-              export PATH="$HOME/bin:$PATH"
-              cd server && make install-deps && make clean && make build
-
+        - run:
+            name: Build server
+            command: |
+                export PATH="$HOME/bin:$PATH"
+                cd server && make install-deps && make clean && make build
+deployment:
+    production:
+    branch: master
+    commands:
+        - echo "Not Ready Yet"
