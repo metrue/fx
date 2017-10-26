@@ -10,7 +10,7 @@ test:
 	${OUTPUT_DIR}/fx up functions/func.go
 	@docker ps
 build:
-	GOPATH=${GOPATH} go build -o ${OUTPUT_DIR}/fx .
+	GOPATH=${GOPATH} go build -o ${OUTPUT_DIR}/fx fx.go
 start:
 	${OUTPUT_DIR}/fx
 list:
