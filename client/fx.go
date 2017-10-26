@@ -8,6 +8,7 @@ import (
     "./commands/up"
     "./commands/down"
     "./commands/list"
+    "./commands/config"
 )
 
 const version string = "0.0.2"
@@ -64,6 +65,8 @@ func main() {
         down.Down()
     case "list":
         list.List()
+		case "config":
+			config.Config()
     default:
         fmt.Print(usage)
         os.Exit(1)
