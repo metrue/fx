@@ -13,7 +13,6 @@ jobs:
 
     steps:
         - checkout
-
         - run:
             name: Install tools
             command: |
@@ -21,13 +20,11 @@ jobs:
                 mkdir -p $HOME/bin
                 tar -vxz -C $HOME/bin --strip=1 -f glide-0.10.2-linux-amd64.tar.gz
                 export PATH="$HOME/bin:$PATH"
-
         - run:
             name: Build client
             command: |
                 export PATH="$HOME/bin:$PATH"
                 cd client && make install-deps && make clean && make build
-
         - run:
             name: Build server
             command: |
