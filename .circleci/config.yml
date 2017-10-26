@@ -33,4 +33,8 @@ jobs:
           command: |
               export PATH="$HOME/bin:$PATH"
               cd server && make install-deps && make clean && make build
-
+deployment:
+    production:
+    branch: master
+    commands:
+        - echo "Not Ready Yet"
