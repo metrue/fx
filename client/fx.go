@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"flag"
+    "fmt"
+    "os"
+    "flag"
 
-	"./commands/up"
-	"./commands/down"
-	"./commands/list"
+    "./commands/up"
+    "./commands/down"
+    "./commands/list"
 )
 
 const version string = "0.0.2"
@@ -20,52 +20,52 @@ const usage = `Usage:
 `
 
 func versionAndExit() {
-	fmt.Println(version)
-	os.Exit(0)
+    fmt.Println(version)
+    os.Exit(0)
 }
 
 func helpAndExit() {
-	fmt.Print(usage)
-	os.Exit(0)
+    fmt.Print(usage)
+    os.Exit(0)
 }
 
 func checkFlag() {
-	helpPtr := flag.Bool(
-		"help",
-		false,
-		"Help information.",
-	)
-	versionPtr := flag.Bool(
-		"version",
-		false,
-		"Version information.",
-	)
+    helpPtr := flag.Bool(
+        "help",
+        false,
+        "Help information.",
+    )
+    versionPtr := flag.Bool(
+        "version",
+        false,
+        "Version information.",
+    )
 
-	flag.Parse()
-	if *helpPtr {
-		helpAndExit()
-	}
-	if *versionPtr {
-		versionAndExit()
-	}
+    flag.Parse()
+    if *helpPtr {
+        helpAndExit()
+    }
+    if *versionPtr {
+        versionAndExit()
+    }
 }
 
 func main() {
-	nArgs := len(os.Args)
-	if nArgs < 2 {
-		helpAndExit()
-	}
-	checkFlag()
+    nArgs := len(os.Args)
+    if nArgs < 2 {
+        helpAndExit()
+    }
+    checkFlag()
 
-	switch os.Args[1] {
-	case "up":
-		up.Up()
-	case "down":
-		down.Down()
-	case "list":
-		list.List()
-	default:
-		fmt.Print(usage)
-		os.Exit(1)
-	}
+    switch os.Args[1] {
+    case "up":
+        up.Up()
+    case "down":
+        down.Down()
+    case "list":
+        list.List()
+    default:
+        fmt.Print(usage)
+        os.Exit(1)
+    }
 }
