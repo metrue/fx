@@ -1,0 +1,14 @@
+package: .
+import:
+- package: github.com/docker/docker
+  subpackages:
+  - api/types
+  - api/types/container
+  - client
+- package: github.com/docker/go-connections
+  subpackages:
+  - nat
+- package: github.com/gorilla/websocket
+- package: github.com/jhoonb/archivex
+- package: github.com/phayes/freeport
+- package: github.com/rs/xid
