@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"flag"
+	"path"
+	"io/ioutil"
 	"net/url"
 )
 
@@ -37,7 +39,15 @@ func parseArgs(
 	ptrs *argPtrs,
 	fs *flag.FlagSet,
 ) (funcs []string, addr string) {
+	home := os.Getenv("HOME")
+	configFile := path.Join(home, ".fx")
+	buf, _ := ioutil.ReadFile(configFile)
+	if len(buf) > 0 {
+		fs.Set("addr", string(buf))
+	}
+
 	fs.Parse(s)
+
 	if *(ptrs.help) {
 		flagsAndExit(fs)
 	}
