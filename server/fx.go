@@ -4,11 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"net/http"
 	"strings"
 
 	"./worker"
 
+	"github.com/takama/daemon"
 	"github.com/gorilla/websocket"
 )
 
@@ -150,7 +152,7 @@ func closeConn(c *websocket.Conn, msg string) {
 	c.WriteMessage(websocket.CloseMessage, byteMsg)
 }
 
-func Start() {
+func start() {
 	flag.Parse()
 	log.SetFlags(0)
 
@@ -159,7 +161,59 @@ func Start() {
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
+	log.Printf("addr: %p", *addr)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 
 	log.Printf("addr: %p", *addr)
+}
+
+
+type service struct {
+	daemon.Daemon
+}
+
+func (serv *service) manage() (string, error) {
+	usage := `Usage:
+  $ fx server [install | remove | start | stop | status]
+Note: 'fx server install' before 'fx server start'.`
+
+	if len(os.Args) > 2 {
+		command := os.Args[2]
+		switch command {
+		case "install":
+			return serv.Install("server", "run")
+		case "remove":
+			return serv.Remove()
+		case "start":
+			return serv.Start()
+		case "stop":
+			return serv.Stop()
+		case "status":
+			return serv.Status()
+		case "run":
+			start()
+		default:
+			return usage, nil
+		}
+	}
+
+	return usage, nil
+}
+
+func Run() {
+	d, err := daemon.New("fx server", "fx server")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
+
+	serv := &service{d}
+
+	status, err := serv.manage()
+	if err != nil {
+		fmt.Println(status, "\nError: ", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(status)
 }
