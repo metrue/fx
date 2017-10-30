@@ -12,20 +12,19 @@ Poor man's function as a service.
 
 ```
 $ git clone https://github.com/metrue/fx
-$ cd fx/server && make install-deps && make build   # build server
-$ cd fx/client && make install-deps && make build   # build client
+$ make install-deps && make build
 ```
 
 * start server
 
 ```
-fx/server/build/fx
+sudo ./build/fx server start            # since fx server is running as system service, so sudo needed
 ```
 
 now you can make a function to service in a second.
 
 ```
-fx/client/build/fx up fx/client/functions/func.js
+./build/fx up fx/client/functions/func.js
 ```
 
 of course you can do more.
@@ -35,12 +34,15 @@ Usage:
 $ fx up   func1 func2 ...       deploy a function or a group of functions
 $ fx down func1 func2 ...       destroy a function or a group of functions
 $ fx list                       list deployed services
+$ fx server start               start fx server
+$ fx server stop                stop fx server
+$ fx server status              show status of fx server
 $ fx --version                  show current version of f(x)
 ```
 
 ### Architecture
 
-![architecture](https://raw.githubusercontent.com/metrue/fx/master/draft.jpg?token=AA9HHj5_UZJuyKNtJ0TFDlqCUWKCb8Yxks5Z9Cu3wA%3D%3D)
+TODO
 
 ### Features
 

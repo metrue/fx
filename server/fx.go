@@ -174,8 +174,10 @@ type service struct {
 
 func (serv *service) manage() (string, error) {
 	usage := `Usage:
-  $ fx server [install | remove | start | stop | status]
-Note: 'fx server install' before 'fx server start'.`
+  $ fx server start    start fx server
+  $ fx server stop     stop fx server
+  $ fx server status   show fx server status
+`
 
 	if len(os.Args) > 2 {
 		command := os.Args[2]
@@ -185,9 +187,11 @@ Note: 'fx server install' before 'fx server start'.`
 		case "remove":
 			return serv.Remove()
 		case "start":
+			serv.Install("server", "run")
 			return serv.Start()
 		case "stop":
-			return serv.Stop()
+			serv.Stop()
+			return serv.Remove()
 		case "status":
 			return serv.Status()
 		case "run":

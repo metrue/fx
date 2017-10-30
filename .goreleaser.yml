@@ -1,9 +1,6 @@
-# .goreleaser.yml
-# Build customization
-
 builds:
-  - main: main.go
-    binary: drum-roll
+  - main: fx.go
+    binary: fx
     goos:
       - windows
       - darwin
@@ -18,4 +15,4 @@ archive:
     darwin: macOS
     linux: Tux
   files:
-    - drum-roll.licence.txt
+    - README.md
