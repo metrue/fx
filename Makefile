@@ -11,6 +11,8 @@ build:
 	GOPATH=${GOPATH} go build -o ${OUTPUT_DIR}/fx fx.go
 cross:
 	GOPATH=${GOPATH} goreleaser --snapshot --skip-publish --skip-validate
+release:
+	GOPATH=${GOPATH} goreleaser --skip-validate
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
