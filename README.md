@@ -24,7 +24,7 @@ sudo ./build/fx server start            # since fx server is running as system s
 now you can make a function to service in a second.
 
 ```
-./build/fx up fx/client/functions/func.js
+./build/fx up fx/example/functions/func.js
 ```
 
 of course you can do more.
