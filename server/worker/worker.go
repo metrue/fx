@@ -1,10 +1,8 @@
 package worker
 
 import (
-	"archive/tar"
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"../utils"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -30,103 +30,6 @@ var funcNames = map[string]string{
 	"python": "/fx.py",
 }
 
-func CopyFile(src, dst string) (err error) {
-	in, err := os.Open(src)
-	if err != nil {
-		return
-	}
-	defer in.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return
-	}
-	defer func() {
-		if e := out.Close(); e != nil {
-			err = e
-		}
-	}()
-
-	_, err = io.Copy(out, in)
-	if err != nil {
-		return
-	}
-
-	err = out.Sync()
-	if err != nil {
-		return
-	}
-
-	si, err := os.Stat(src)
-	if err != nil {
-		return
-	}
-	err = os.Chmod(dst, si.Mode())
-	if err != nil {
-		return
-	}
-
-	return
-}
-
-// CopyDir recursively copies a directory tree, attempting to preserve permissions.
-// Source directory must exist, destination directory must *not* exist.
-// Symlinks are ignored and skipped.
-func CopyDir(src string, dst string) (err error) {
-	src = filepath.Clean(src)
-	dst = filepath.Clean(dst)
-
-	si, err := os.Stat(src)
-	if err != nil {
-		return err
-	}
-	if !si.IsDir() {
-		return fmt.Errorf("source is not a directory")
-	}
-
-	_, err = os.Stat(dst)
-	if err != nil && !os.IsNotExist(err) {
-		return
-	}
-	if err == nil {
-		return fmt.Errorf("destination already exists")
-	}
-
-	err = os.MkdirAll(dst, si.Mode())
-	if err != nil {
-		return
-	}
-
-	entries, err := ioutil.ReadDir(src)
-	if err != nil {
-		return
-	}
-
-	for _, entry := range entries {
-		srcPath := filepath.Join(src, entry.Name())
-		dstPath := filepath.Join(dst, entry.Name())
-
-		if entry.IsDir() {
-			err = CopyDir(srcPath, dstPath)
-			if err != nil {
-				return
-			}
-		} else {
-			// Skip symlinks.
-			if entry.Mode()&os.ModeSymlink != 0 {
-				continue
-			}
-
-			err = CopyFile(srcPath, dstPath)
-			if err != nil {
-				return
-			}
-		}
-	}
-
-	return
-}
-
 func initWorkDirectory(lang string, dir string) {
 	// err := os.MkdirAll(dir, os.ModePerm)
 	// if err != nil {
@@ -138,7 +41,7 @@ func initWorkDirectory(lang string, dir string) {
 		log.Fatal(err)
 	}
 
-	err = CopyDir(path.Join(scriptPath, "..", "images", lang), dir)
+	err = utils.CopyDir(path.Join(scriptPath, "..", "images", lang), dir)
 	if err != nil {
 		panic(err)
 	}
@@ -163,54 +66,6 @@ func dispatchFuncion(lang string, data []byte, dir string) {
 func checkerror(err error) {
 	if err != nil {
 		panic(err)
-	}
-}
-
-func tarDir(srcDir string, desFileName string) {
-	dir, err := os.Open(srcDir)
-	if err != nil {
-		panic(err)
-	}
-	defer dir.Close()
-
-	files, err := dir.Readdir(0)
-	if err != nil {
-		panic(err)
-	}
-
-	// create tar file
-	tarfile, err := os.Create(desFileName)
-	if err != nil {
-		panic(err)
-	}
-	defer tarfile.Close()
-
-	var fileWriter io.WriteCloser = tarfile
-
-	tarfileWriter := tar.NewWriter(fileWriter)
-	defer tarfileWriter.Close()
-
-	for _, fileInfo := range files {
-		if fileInfo.IsDir() {
-			continue
-		}
-
-		file, err := os.Open(dir.Name() + string(filepath.Separator) + fileInfo.Name())
-		checkerror(err)
-		defer file.Close()
-
-		// prepare the tar header
-		header := new(tar.Header)
-		header.Name = file.Name()
-		header.Size = fileInfo.Size()
-		header.Mode = int64(fileInfo.Mode())
-		header.ModTime = fileInfo.ModTime()
-
-		err = tarfileWriter.WriteHeader(header)
-		checkerror(err)
-
-		_, err = io.Copy(tarfileWriter, file)
-		checkerror(err)
 	}
 }
 
