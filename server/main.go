@@ -9,30 +9,27 @@ import (
 	"path"
 	"strings"
 
-	"./utils"
+	"../utils"
 	"./worker"
+	Config "../config"
 
 	"github.com/gorilla/websocket"
 	"github.com/takama/daemon"
 )
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
 
-var CacheDir = path.Join(os.Getenv("HOME"), ".fx/")
-var RemoteImagesUrl = "https://raw.githubusercontent.com/metrue/fx/fix/images-management/images.zip"
-
 func setupEnv() {
-	exist, err := utils.IsPathExists(path.Join(CacheDir, "images"))
+	exist, err := utils.IsPathExists(path.Join(Config.CacheDir, "images"))
 	if err != nil {
 		panic(err)
 	}
 	if !exist {
 		fmt.Println("Downloading Resources ...")
-		if err := utils.Download("./images.zip", RemoteImagesUrl); err != nil {
+		if err := utils.Download("./images.zip", Config.RemoteImagesUrl); err != nil {
 			panic(err)
 		}
-		if err := utils.Unzip("./Images.zip", CacheDir); err != nil {
+		if err := utils.Unzip("./Images.zip", Config.CacheDir); err != nil {
 			panic(err)
 		}
 	}
@@ -177,19 +174,17 @@ func Start() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	fmt.Println("init env")
 	setupEnv()
-	fmt.Println("init env done")
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("addr: %p", *addr)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Printf("addr: %p", *Config.ServerAddr)
+	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
 
-	log.Printf("addr: %p", *addr)
+	log.Printf("addr: %p", *Config.ServerAddr)
 }
 
 type service struct {
