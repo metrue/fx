@@ -61,7 +61,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "server":
-		server.Run()
+		server.Start()
 	case "up":
 		up.Up()
 	case "down":

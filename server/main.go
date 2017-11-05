@@ -4,18 +4,36 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 
+	"../utils"
 	"./worker"
+	Config "../config"
 
-	"github.com/takama/daemon"
 	"github.com/gorilla/websocket"
+	"github.com/takama/daemon"
 )
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
+
+func setupEnv() {
+	exist, err := utils.IsPathExists(path.Join(Config.CacheDir, "images"))
+	if err != nil {
+		panic(err)
+	}
+	if !exist {
+		fmt.Println("Downloading Resources ...")
+		if err := utils.Download("./images.zip", Config.RemoteImagesUrl); err != nil {
+			panic(err)
+		}
+		if err := utils.Unzip("./Images.zip", Config.CacheDir); err != nil {
+			panic(err)
+		}
+	}
+}
 
 func deploy() {
 	log.Print("deployed")
@@ -152,21 +170,22 @@ func closeConn(c *websocket.Conn, msg string) {
 	c.WriteMessage(websocket.CloseMessage, byteMsg)
 }
 
-func start() {
+func Start() {
 	flag.Parse()
 	log.SetFlags(0)
+
+	setupEnv()
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("addr: %p", *addr)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Printf("addr: %p", *Config.ServerAddr)
+	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
 
-	log.Printf("addr: %p", *addr)
+	log.Printf("addr: %p", *Config.ServerAddr)
 }
-
 
 type service struct {
 	daemon.Daemon
@@ -194,8 +213,8 @@ func (serv *service) manage() (string, error) {
 			return serv.Remove()
 		case "status":
 			return serv.Status()
-		case "run":
-			start()
+		// case "run":
+		// 	start()
 		default:
 			return usage, nil
 		}
