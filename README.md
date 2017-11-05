@@ -18,7 +18,7 @@ $ make install-deps && make build
 * start server
 
 ```
-sudo ./build/fx server start            # since fx server is running as system service, so sudo needed
+./build/fx server start
 ```
 
 now you can make a function to service in a second.
