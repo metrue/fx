@@ -4,18 +4,39 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 
+	"./utils"
 	"./worker"
 
-	"github.com/takama/daemon"
 	"github.com/gorilla/websocket"
+	"github.com/takama/daemon"
 )
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
+
+var CacheDir = path.Join(os.Getenv("HOME"), ".fx/")
+var RemoteImagesUrl = "https://raw.githubusercontent.com/metrue/fx/fix/images-management/images.zip"
+
+func setupEnv() {
+	exist, err := utils.IsPathExists(path.Join(CacheDir, "images"))
+	if err != nil {
+		panic(err)
+	}
+	if !exist {
+		fmt.Println("Downloading Resources ...")
+		if err := utils.Download("./images.zip", RemoteImagesUrl); err != nil {
+			panic(err)
+		}
+		if err := utils.Unzip("./Images.zip", CacheDir); err != nil {
+			panic(err)
+		}
+	}
+}
 
 func deploy() {
 	log.Print("deployed")
@@ -152,9 +173,13 @@ func closeConn(c *websocket.Conn, msg string) {
 	c.WriteMessage(websocket.CloseMessage, byteMsg)
 }
 
-func start() {
+func Start() {
 	flag.Parse()
 	log.SetFlags(0)
+
+	fmt.Println("init env")
+	setupEnv()
+	fmt.Println("init env done")
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
@@ -166,7 +191,6 @@ func start() {
 
 	log.Printf("addr: %p", *addr)
 }
-
 
 type service struct {
 	daemon.Daemon
@@ -194,8 +218,8 @@ func (serv *service) manage() (string, error) {
 			return serv.Remove()
 		case "status":
 			return serv.Status()
-		case "run":
-			start()
+		// case "run":
+		// 	start()
 		default:
 			return usage, nil
 		}

@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"strconv"
 	"time"
 
@@ -31,17 +30,7 @@ var funcNames = map[string]string{
 }
 
 func initWorkDirectory(lang string, dir string) {
-	// err := os.MkdirAll(dir, os.ModePerm)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	scriptPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = utils.CopyDir(path.Join(scriptPath, "..", "images", lang), dir)
+	err := utils.CopyDir(path.Join(os.Getenv("HOME"), ".fx/images", lang), dir)
 	if err != nil {
 		panic(err)
 	}
