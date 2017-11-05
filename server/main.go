@@ -12,6 +12,7 @@ import (
 	"../utils"
 	"./worker"
 	Config "../config"
+	"./handlers"
 
 	"github.com/gorilla/websocket"
 	"github.com/takama/daemon"
@@ -64,7 +65,7 @@ func up(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	worker.Up(lang, body, c, mt)
+	handlers.Up(lang, body, c, mt)
 
 	for {
 		_, msg, err := c.ReadMessage()
@@ -89,7 +90,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	containers := worker.List()
+	containers := handlers.List()
 
 	msg := "Function ID" + "\t" + "Service URL"
 	err = c.WriteMessage(mt, []byte(msg))
@@ -137,7 +138,7 @@ func down(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, id := range ids {
-		go worker.Stop(id, msgCh, doneCh)
+		go handlers.Down(id, msgCh, doneCh)
 	}
 
 	numSuccess := 0
