@@ -9,9 +9,8 @@ import (
 	"path"
 	"strings"
 
-	"../utils"
-	"./worker"
 	Config "../config"
+	"../utils"
 	"./handlers"
 
 	"github.com/gorilla/websocket"
@@ -127,7 +126,7 @@ func down(w http.ResponseWriter, r *http.Request) {
 	var ids []string
 	if string(message) == "*" {
 		fmt.Println("end all")
-		containers := worker.List()
+		containers := handlers.List()
 		ids = make([]string, len(containers))
 		for i, container := range containers {
 			ids[i] = container.ID[:10]

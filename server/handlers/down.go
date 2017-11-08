@@ -1,8 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
-	"time"
+
 	api "../docker-api"
 )
 
@@ -20,7 +21,7 @@ func Down(
 		return false
 	}
 
-	err = api.Stop(containID)
+	err := api.Stop(containID)
 	if checkErr(err) {
 		return
 	}
