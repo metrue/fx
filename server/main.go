@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	Config "../config"
@@ -13,7 +12,6 @@ import (
 	"./env"
 
 	"github.com/gorilla/websocket"
-	"github.com/takama/daemon"
 )
 
 var upgrader = websocket.Upgrader{} // use default options
@@ -164,58 +162,4 @@ func Start() {
 	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
 
 	log.Printf("addr: %p", *Config.ServerAddr)
-}
-
-type service struct {
-	daemon.Daemon
-}
-
-func (serv *service) manage() (string, error) {
-	usage := `Usage:
-  $ fx server start    start fx server
-  $ fx server stop     stop fx server
-  $ fx server status   show fx server status
-`
-
-	if len(os.Args) > 2 {
-		command := os.Args[2]
-		switch command {
-		case "install":
-			return serv.Install("server", "run")
-		case "remove":
-			return serv.Remove()
-		case "start":
-			serv.Install("server", "run")
-			return serv.Start()
-		case "stop":
-			serv.Stop()
-			return serv.Remove()
-		case "status":
-			return serv.Status()
-		// case "run":
-		// 	start()
-		default:
-			return usage, nil
-		}
-	}
-
-	return usage, nil
-}
-
-func Run() {
-	d, err := daemon.New("fx server", "fx server")
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
-	}
-
-	serv := &service{d}
-
-	status, err := serv.manage()
-	if err != nil {
-		fmt.Println(status, "\nError: ", err)
-		os.Exit(1)
-	}
-
-	fmt.Println(status)
 }

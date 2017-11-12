@@ -60,16 +60,16 @@ func main() {
 	checkFlag()
 
 	switch os.Args[1] {
-	case "server":
-		server.Start()
-	case "up":
-		up.Up()
-	case "down":
-		down.Down()
-	case "list":
-		list.List()
-	default:
-		fmt.Print(usage)
-		os.Exit(1)
+		case "serve":
+			server.Start()
+		case "up":
+			up.Up()
+		case "down":
+			down.Down()
+		case "list":
+			list.List()
+		default:
+			fmt.Print(usage)
+			os.Exit(1)
 	}
 }
