@@ -6,38 +6,17 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"strings"
 
 	Config "../config"
-	"../utils"
 	"./handlers"
+	"./env"
 
 	"github.com/gorilla/websocket"
 	"github.com/takama/daemon"
 )
 
 var upgrader = websocket.Upgrader{} // use default options
-
-func setupEnv() {
-	exist, err := utils.IsPathExists(path.Join(Config.CacheDir, "images"))
-	if err != nil {
-		panic(err)
-	}
-	if !exist {
-		fmt.Println("Downloading Resources ...")
-		if err := utils.Download("./images.zip", Config.RemoteImagesUrl); err != nil {
-			panic(err)
-		}
-		if err := utils.Unzip("./Images.zip", Config.CacheDir); err != nil {
-			panic(err)
-		}
-	}
-}
-
-func deploy() {
-	log.Print("deployed")
-}
 
 func health(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "I am OK, %s!", r.URL.Path[1:])
@@ -174,7 +153,7 @@ func Start() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	setupEnv()
+	env.Init();
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
