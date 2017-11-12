@@ -158,7 +158,7 @@ func Start() {
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("addr: %p", *Config.ServerAddr)
+	log.Printf("fx serves on %s", *Config.ServerAddr)
 	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
 
 	log.Printf("addr: %p", *Config.ServerAddr)
