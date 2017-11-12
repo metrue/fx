@@ -18,7 +18,7 @@ $ make install-deps && make build
 * start server
 
 ```
-./build/fx server start
+./build/fx serve
 ```
 
 now you can make a function to service in a second.
@@ -31,13 +31,11 @@ of course you can do more.
 
 ```
 Usage:
-$ fx up   func1 func2 ...       deploy a function or a group of functions
-$ fx down func1 func2 ...       destroy a function or a group of functions
-$ fx list                       list deployed services
-$ fx server start               start fx server
-$ fx server stop                stop fx server
-$ fx server status              show status of fx server
-$ fx --version                  show current version of f(x)
+$ fx serve                                      start f(x) server
+$ fx up   func1.js func2.py func3.go ...        deploy a function or a group of functions
+$ fx down [service ID] ...                      destroy a function or a group of functions
+$ fx list                                       list deployed services
+$ fx --version                                  show current version of f(x)
 ```
 
 ### Architecture
