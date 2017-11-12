@@ -5,39 +5,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path"
 	"strings"
 
-	"../utils"
-	"./worker"
 	Config "../config"
+	"./handlers"
+	"./env"
 
 	"github.com/gorilla/websocket"
-	"github.com/takama/daemon"
 )
 
 var upgrader = websocket.Upgrader{} // use default options
-
-func setupEnv() {
-	exist, err := utils.IsPathExists(path.Join(Config.CacheDir, "images"))
-	if err != nil {
-		panic(err)
-	}
-	if !exist {
-		fmt.Println("Downloading Resources ...")
-		if err := utils.Download("./images.zip", Config.RemoteImagesUrl); err != nil {
-			panic(err)
-		}
-		if err := utils.Unzip("./Images.zip", Config.CacheDir); err != nil {
-			panic(err)
-		}
-	}
-}
-
-func deploy() {
-	log.Print("deployed")
-}
 
 func health(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "I am OK, %s!", r.URL.Path[1:])
@@ -64,7 +41,7 @@ func up(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	worker.Up(lang, body, c, mt)
+	handlers.Up(lang, body, c, mt)
 
 	for {
 		_, msg, err := c.ReadMessage()
@@ -89,7 +66,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	containers := worker.List()
+	containers := handlers.List()
 
 	msg := "Function ID" + "\t" + "Service URL"
 	err = c.WriteMessage(mt, []byte(msg))
@@ -126,7 +103,7 @@ func down(w http.ResponseWriter, r *http.Request) {
 	var ids []string
 	if string(message) == "*" {
 		fmt.Println("end all")
-		containers := worker.List()
+		containers := handlers.List()
 		ids = make([]string, len(containers))
 		for i, container := range containers {
 			ids[i] = container.ID[:10]
@@ -137,7 +114,7 @@ func down(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, id := range ids {
-		go worker.Stop(id, msgCh, doneCh)
+		go handlers.Down(id, msgCh, doneCh)
 	}
 
 	numSuccess := 0
@@ -174,7 +151,7 @@ func Start() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	setupEnv()
+	env.Init();
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
@@ -185,58 +162,4 @@ func Start() {
 	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
 
 	log.Printf("addr: %p", *Config.ServerAddr)
-}
-
-type service struct {
-	daemon.Daemon
-}
-
-func (serv *service) manage() (string, error) {
-	usage := `Usage:
-  $ fx server start    start fx server
-  $ fx server stop     stop fx server
-  $ fx server status   show fx server status
-`
-
-	if len(os.Args) > 2 {
-		command := os.Args[2]
-		switch command {
-		case "install":
-			return serv.Install("server", "run")
-		case "remove":
-			return serv.Remove()
-		case "start":
-			serv.Install("server", "run")
-			return serv.Start()
-		case "stop":
-			serv.Stop()
-			return serv.Remove()
-		case "status":
-			return serv.Status()
-		// case "run":
-		// 	start()
-		default:
-			return usage, nil
-		}
-	}
-
-	return usage, nil
-}
-
-func Run() {
-	d, err := daemon.New("fx server", "fx server")
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(1)
-	}
-
-	serv := &service{d}
-
-	status, err := serv.manage()
-	if err != nil {
-		fmt.Println(status, "\nError: ", err)
-		os.Exit(1)
-	}
-
-	fmt.Println(status)
 }
