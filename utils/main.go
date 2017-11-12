@@ -240,15 +240,8 @@ func GetCurrentExecPath() (scriptPath string) {
 	return scriptPath
 }
 
-// func main() {
-// 	url := "https://raw.githubusercontent.com/metrue/fx/fix/images-management/images.zip"
-// 	// resp, err := http.Get(url)
-// 	// if err != nil {
-// 	// 	panic(err)
-// 	// }
-// 	// fmt.Println(resp)
-// 	// defer resp.Body.Close()
-//
-// 	download("images.zip", url)
-// 	unzip("./images.zip", "./abc")
-// }
+func HandleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
