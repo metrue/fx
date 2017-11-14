@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"./commands/down"
-	"./commands/list"
-	"./commands/up"
-	"./server"
+	"github.com/metrue/fx/commands/down"
+	"github.com/metrue/fx/commands/list"
+	"github.com/metrue/fx/commands/up"
+	"github.com/metrue/fx/server"
 )
 
 const version string = "0.0.2"
