@@ -24,7 +24,22 @@ $ make install-deps && make build
 now you can make a function to service in a second.
 
 ```
-./build/fx up fx/example/functions/func.js
+./build/fx up ./example/functions/func.js
+```
+
+the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then return;
+
+func.js
+```
+module.exports = (input) => {
+    return parseInt(input.a, 10) + parseInt(input.b, 10)
+}
+```
+
+then you can test your service:
+
+```
+curl -X POST 0.0.0.0:55965 -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
 ```
 
 of course you can do more.
@@ -37,10 +52,6 @@ $ fx down [service ID] ...                      destroy a function or a group of
 $ fx list                                       list deployed services
 $ fx --version                                  show current version of f(x)
 ```
-
-### Architecture
-
-TODO
 
 ### Features
 
