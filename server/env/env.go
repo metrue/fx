@@ -1,10 +1,11 @@
 package env
 
 import (
-	"../../utils"
-	Config "../../config"
 	"fmt"
 	"path"
+
+	Config "github.com/metrue/fx/config"
+	"github.com/metrue/fx/utils"
 )
 
 func Init() {

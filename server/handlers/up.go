@@ -6,9 +6,9 @@ import (
 	"path"
 	"strconv"
 
-	"../../utils"
-	api "../docker-api"
 	"github.com/gorilla/websocket"
+	api "github.com/metrue/fx/server/docker-api"
+	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
