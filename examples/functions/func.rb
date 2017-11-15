@@ -1,3 +1,3 @@
 def fx(input)
-    return input["a"] + input["a"]
+    return input['a'] + input['b']
 end
