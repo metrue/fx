@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	api "../docker-api"
+	api "github.com/metrue/fx/server/docker-api"
 )
 
 func Down(

@@ -1,18 +1,14 @@
 OUTPUT_DIR=./build
 DIST_DIR=./dist
-GOPATH=$(shell pwd)/vendor
 
 install-deps:
-	@mkdir -p ./vendor/src
-	@glide install --strip-vendor --strip-vcs
-	@mkdir -p ./vendor/src
-	@mv ./vendor/* ./vendor/src > /dev/null 2>&1;true
+	@glide install -v
 build:
-	GOPATH=${GOPATH} go build -o ${OUTPUT_DIR}/fx fx.go
+	go build -o ${OUTPUT_DIR}/fx fx.go
 cross:
-	GOPATH=${GOPATH} goreleaser --snapshot --skip-publish --skip-validate
+	goreleaser --snapshot --skip-publish --skip-validate
 release:
-	GOPATH=${GOPATH} goreleaser --skip-validate
+	goreleaser --skip-validate
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}

@@ -7,11 +7,11 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/jhoonb/archivex"
 
-	"os"
 	"context"
-	"log"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"time"
 )
 
@@ -83,7 +83,7 @@ func Deploy(name string, dir string, port string) {
 	fmt.Println(resp.ID)
 }
 
-func Stop(containerID string) (err error){
+func Stop(containerID string) (err error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		return err

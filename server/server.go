@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	Config "../config"
-	"./handlers"
-	"./env"
+	Config "github.com/metrue/fx/config"
+	"github.com/metrue/fx/server/env"
+	"github.com/metrue/fx/server/handlers"
 
 	"github.com/gorilla/websocket"
 )
@@ -151,7 +151,7 @@ func Start() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	env.Init();
+	env.Init()
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)
