@@ -10,6 +10,7 @@ import (
 	Config "github.com/metrue/fx/config"
 	"github.com/metrue/fx/server/env"
 	"github.com/metrue/fx/server/handlers"
+	"github.com/metrue/fx/utils"
 
 	"github.com/gorilla/websocket"
 )
@@ -158,8 +159,6 @@ func Start() {
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("fx serves on %s", *Config.ServerAddr)
+	log.Printf("fx serves on %s:%s", utils.GetHostIP(), Config.ServePort)
 	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
-
-	log.Printf("addr: %p", *Config.ServerAddr)
 }
