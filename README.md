@@ -11,7 +11,7 @@ Poor man's function as a service.
 * clone and build
 
 ```
-$ git clone https://github.com/metrue/fx
+$ go get github.com/metrue/fx
 $ make install-deps && make build
 ```
 
