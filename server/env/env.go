@@ -18,7 +18,7 @@ func Init() {
 		if err := utils.Download("./images.zip", Config.RemoteImagesUrl); err != nil {
 			panic(err)
 		}
-		if err := utils.Unzip("./Images.zip", Config.CacheDir); err != nil {
+		if err := utils.Unzip("./images.zip", Config.CacheDir); err != nil {
 			panic(err)
 		}
 	}
