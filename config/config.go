@@ -7,5 +7,5 @@ import (
 )
 
 var CacheDir = path.Join(os.Getenv("HOME"), ".fx/")
-var RemoteImagesUrl = "https://raw.githubusercontent.com/metrue/fx/fix/images-management/images.zip"
+var RemoteImagesUrl = "https://raw.githubusercontent.com/metrue/fx/master/images.zip"
 var ServerAddr = flag.String("addr", "localhost:8080", "http service address")
