@@ -60,7 +60,7 @@ func main() {
 	checkFlag()
 
 	switch os.Args[1] {
-	case "serve":
+	case "server":
 		server.Start()
 	case "up":
 		up.Up()
