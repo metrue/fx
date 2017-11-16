@@ -1,11 +1,16 @@
 package config
 
 import (
-	"path"
 	"os"
-	"flag"
+	"path"
 )
 
-var CacheDir = path.Join(os.Getenv("HOME"), ".fx/")
-var RemoteImagesUrl = "https://raw.githubusercontent.com/metrue/fx/master/images.zip"
-var ServerAddr = flag.String("addr", "localhost:8080", "http service address")
+var Server = map[string]string{
+	"host": "localhost",
+	"port": "8080",
+}
+
+var Client = map[string]string{
+	"cache_dir":        path.Join(os.Getenv("HOME"), ".fx/"),
+	"remote_images_url": "https://raw.githubusercontent.com/metrue/fx/master/images.zip",
+}

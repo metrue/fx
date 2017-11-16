@@ -158,8 +158,7 @@ func Start() {
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("fx serves on %s", *Config.ServerAddr)
-	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
-
-	log.Printf("addr: %p", *Config.ServerAddr)
+	addr := fmt.Sprintf("%s:%s", Config.Server["host"], Config.Server["port"])
+	log.Printf("fx serves on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
