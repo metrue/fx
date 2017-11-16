@@ -11,6 +11,6 @@ var Server = map[string]string{
 }
 
 var Client = map[string]string{
-	"CacheDir":        path.Join(os.Getenv("HOME"), ".fx/"),
-	"RemoteImagesUrl": "https://raw.githubusercontent.com/metrue/fx/master/images.zip",
+	"cache_dir":        path.Join(os.Getenv("HOME"), ".fx/"),
+	"remote_images_url": "https://raw.githubusercontent.com/metrue/fx/master/images.zip",
 }

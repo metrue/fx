@@ -9,16 +9,16 @@ import (
 )
 
 func Init() {
-	exist, err := utils.IsPathExists(path.Join(Config.Client.CacheDir, "images"))
+	exist, err := utils.IsPathExists(path.Join(Config.Client["cache_dir"], "images"))
 	if err != nil {
 		panic(err)
 	}
 	if !exist {
 		fmt.Println("Downloading Resources ...")
-		if err := utils.Download("./images.zip", Config.Client.RemoteImagesUrl); err != nil {
+		if err := utils.Download("./images.zip", Config.Client["remote_images_url"]); err != nil {
 			panic(err)
 		}
-		if err := utils.Unzip("./images.zip", Config.Client.CacheDir); err != nil {
+		if err := utils.Unzip("./images.zip", Config.Client["cache_dir"]); err != nil {
 			panic(err)
 		}
 	}
