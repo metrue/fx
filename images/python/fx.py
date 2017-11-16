@@ -1,2 +1,2 @@
 def fx(j):
-    return j
+    return j.a + j.b
