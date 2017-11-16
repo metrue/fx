@@ -247,7 +247,7 @@ func HandleError(err error) {
 	}
 }
 
-func GetHostIP() {
+func GetHostIP() (ip net.IP) {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	HandleError(err)
 
