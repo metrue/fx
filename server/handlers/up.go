@@ -80,7 +80,7 @@ func Up(
 
 	notify(connection, messageType, "function built")
 	api.Deploy(name, dir, strconv.Itoa(port))
-	msg := fmt.Sprintf("function deployed at: %s:%s", utils.GetHostIP, strconv.Itoa(port))
+	msg := fmt.Sprintf("function deployed at: %s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
 	notify(connection, messageType, msg)
 
 	closeConnection(connection)
