@@ -10,23 +10,25 @@ Poor man's function as a service.
 
 * clone and build
 
-make you have [glide](https://github.com/Masterminds/glide#install) installed first.
+make you have [dep](https://github.com/golang/dep) installed first.
 
 ```
 $ git clone https://github.com/metrue/fx.git
-$ make install-deps && make build
+$ cd fx
+$ dep ensure
+$ go install ./
 ```
 
 * start server
 
 ```
-./build/fx serve
+fx serve
 ```
 
 now you can make a function to service in a second.
 
 ```
-./build/fx up ./example/functions/func.js
+fx up ./example/functions/func.js
 ```
 
 the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then return;
