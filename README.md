@@ -10,8 +10,10 @@ Poor man's function as a service.
 
 * clone and build
 
+make you have [glide](https://github.com/Masterminds/glide#install) installed first.
+
 ```
-$ go get github.com/metrue/fx
+$ git clone github.com/metrue/fx
 $ make install-deps && make build
 ```
 
@@ -39,7 +41,7 @@ module.exports = (input) => {
 then you can test your service:
 
 ```
-curl -X POST 0.0.0.0:55965 -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
+curl -X POST <service url> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
 ```
 
 of course you can do more.
