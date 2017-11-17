@@ -38,7 +38,7 @@ func dispatchFuncion(lang string, data []byte, dir string) {
 		panic(err)
 	}
 
-	log.Println("func recved: %s", n)
+	log.Println("func recved:", n)
 }
 
 func notify(connection *websocket.Conn, messageType int, message string) {
