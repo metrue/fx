@@ -22,6 +22,7 @@ var funcNames = map[string]string{
 	"node":   "/fx.js",
 	"ruby":   "/fx.rb",
 	"python": "/fx.py",
+	"php":    "/fx.php",
 }
 
 func dispatchFuncion(lang string, data []byte, dir string) {
