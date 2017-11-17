@@ -31,7 +31,7 @@ jobs:
           name: Test
           command: |
               fx serve > server_output.log 2>&1 &
-              fx up examples/functions/func.js
+              fx up examples/functions/func.js && cat server_output.log
 
 deployment:
     production:
