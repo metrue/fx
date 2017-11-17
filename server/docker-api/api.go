@@ -1,6 +1,9 @@
 package api
 
 import (
+	"bufio"
+	"encoding/json"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -9,11 +12,14 @@ import (
 
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
 )
+
+type dockerInfo struct {
+	Stream string `json:"stream"`
+}
 
 func Build(name string, dir string) {
 	cli, err := client.NewEnvClient()
@@ -39,13 +45,18 @@ func Build(name string, dir string) {
 	if buildErr != nil {
 		panic(buildErr)
 	}
-	log.Println("build ", buildResponse, buildErr)
+	log.Println("build", buildResponse.OSType)
 
-	response, err := ioutil.ReadAll(buildResponse.Body)
-	if err != nil {
-		fmt.Printf("%s", err.Error())
+	scanner := bufio.NewScanner(buildResponse.Body)
+	for scanner.Scan() {
+		var info dockerInfo
+		err := json.Unmarshal(scanner.Bytes(), &info)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		fmt.Printf(info.Stream)
 	}
-	fmt.Println(string(response))
 }
 
 func Deploy(name string, dir string, port string) {
