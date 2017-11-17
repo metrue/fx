@@ -13,7 +13,7 @@ Poor man's function as a service.
 make you have [glide](https://github.com/Masterminds/glide#install) installed first.
 
 ```
-$ git clone github.com/metrue/fx
+$ git clone https://github.com/metrue/fx.git
 $ make install-deps && make build
 ```
 
