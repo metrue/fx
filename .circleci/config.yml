@@ -1,4 +1,7 @@
 version: 2
+machine:
+    services:
+        - docker
 dependencies:
     override:
         - sudo add-apt-repository ppa:masterminds/glide -y
