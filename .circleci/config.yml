@@ -1,4 +1,7 @@
 version: 2
+machine:
+    services:
+        - docker
 dependencies:
     override:
         - sudo add-apt-repository ppa:masterminds/glide -y
@@ -14,16 +17,28 @@ jobs:
     steps:
       - checkout
 
+      - setup_remote_docker
+
       - run:
           name: Install tools
           command: |
-              curl https://glide.sh/get | sh
+              go get github.com/golang/dep
+              cd $GOPATH/src/github.com/golang/dep
+              go install ./...
 
       - run:
-          name: Build
+          name: Build and Install
           command: |
-              export PATH="$HOME/bin:$PATH"
-              make install-deps && make clean && make build
+              dep ensure
+              go install ./
+
+      - run:
+          name: Test
+          command: |
+              fx serve > server_output.log 2>&1 &
+              sleep 20
+              fx up examples/functions/func.js && cat server_output.log
+
 deployment:
     production:
     branch: master
