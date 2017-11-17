@@ -17,7 +17,9 @@ jobs:
       - run:
           name: Install tools
           command: |
-              curl https://glide.sh/get | sh
+              go get github.com/golang/dep
+              cd $GOPATH/src/github.com/golang/dep
+              go install ./...
 
       - run:
           name: Build
