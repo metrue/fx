@@ -1,12 +1,12 @@
-package list
+package common
 
 import (
-	"fmt"
-	"os"
 	"flag"
-	"path"
+	"fmt"
 	"io/ioutil"
 	"net/url"
+	"os"
+	"path"
 )
 
 type argPtrs struct {
@@ -14,11 +14,11 @@ type argPtrs struct {
 	help *bool
 }
 
-func setupFlags() (
+func SetupFlags(option string) (
 	args *argPtrs,
 	flagSet *flag.FlagSet,
-){
-	flagSet = flag.NewFlagSet("list", flag.ExitOnError)
+) {
+	flagSet = flag.NewFlagSet(option, flag.ExitOnError)
 	args = &argPtrs{
 		addr: flagSet.String(
 			"addr",
@@ -34,7 +34,8 @@ func setupFlags() (
 	return
 }
 
-func parseArgs(
+func ParseArgs(
+	option string,
 	s []string,
 	ptrs *argPtrs,
 	fs *flag.FlagSet,
@@ -49,13 +50,13 @@ func parseArgs(
 	fs.Parse(s)
 
 	if *(ptrs.help) {
-		flagsAndExit(fs)
+		FlagsAndExit(fs)
 	}
 
 	u := url.URL{
 		Scheme: "ws",
 		Host:   *(ptrs.addr),
-		Path:   "/list",
+		Path:   "/" + option,
 	}
 	addr = u.String()
 
@@ -67,7 +68,7 @@ func parseArgs(
 	return
 }
 
-func flagsAndExit(fs *flag.FlagSet) {
+func FlagsAndExit(fs *flag.FlagSet) {
 	fmt.Println("Flags:")
 	fs.PrintDefaults()
 	os.Exit(0)

@@ -2,19 +2,22 @@ package list
 
 import (
 	"fmt"
-	"strings"
 	"os"
+	"strings"
 
 	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/commands/common"
 )
 
 func List() {
+	option := "list"
 	nArgs := len(os.Args)
-	args, flagSet := setupFlags()
+	args, flagSet := common.SetupFlags(option)
 	if nArgs < 2 {
-		flagsAndExit(flagSet)
+		common.FlagsAndExit(flagSet)
 	}
-	functions, address := parseArgs(
+	functions, address := common.ParseArgs(
+		option,
 		os.Args[2:],
 		args,
 		flagSet,
@@ -22,14 +25,18 @@ func List() {
 
 	dialer := websocket.Dialer{}
 	conn, _, err := dialer.Dial(address, nil)
-	if checkErr(err) { return }
+	if checkErr(err) {
+		return
+	}
 	defer conn.Close()
 
 	err = conn.WriteMessage(
 		websocket.TextMessage,
 		[]byte(strings.Join(functions, " ")),
 	)
-	if checkErr(err) { return }
+	if checkErr(err) {
+		return
+	}
 
 	for {
 		_, msg, err := conn.ReadMessage()
