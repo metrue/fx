@@ -22,10 +22,17 @@ jobs:
               go install ./...
 
       - run:
-          name: Build
+          name: Build and Install
           command: |
-              export PATH="$HOME/bin:$PATH"
-              make install-deps && make clean && make build
+              dep ensure
+              go install ./
+
+      - run:
+          name: Test
+          command: |
+              fx serve > server_output.log 2>&1 &
+              fx up examples/functions/func.js
+
 deployment:
     production:
     branch: master
