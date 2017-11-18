@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/commands/common"
 )
 
 var langs = map[string]string{
@@ -18,12 +19,14 @@ var langs = map[string]string{
 }
 
 func Up() {
+	option := "up"
 	nArgs := len(os.Args)
-	args, flagSet := setupFlags()
+	args, flagSet := common.SetupFlags(option)
 	if nArgs == 2 {
-		flagsAndExit(flagSet)
+		common.FlagsAndExit(flagSet)
 	}
-	functions, address := parseArgs(
+	functions, address := commoon.ParseArgs(
+		option,
 		os.Args[2:],
 		args,
 		flagSet,
