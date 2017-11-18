@@ -73,6 +73,8 @@ but f(x)
 
 ### Contributors
 
+Thank you to all the people who already contributed to fx!
+
 <table>
   <tbody>
     <tr>
