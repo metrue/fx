@@ -6,11 +6,36 @@ Poor man's function as a service.
   <img src="https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7"/>
 </p>
 
+### Introduction
+
+fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
+
+| Language      | Status        |
+| ------------- |:-------------:|
+| Go            | Supported     |
+| Node          | Supported     |
+| Python        | Supported     |
+| Ruby          | Supported     |
+| PHP           | Supported     |
+| Perl          | Working on    |
+| R             | Working on    |
+| Rust          | Working on    |
+
+tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
+
 ### Usage
 
-* clone and build
+#### Requirements
 
-make you have [dep](https://github.com/golang/dep) installed first.
+* Docker
+
+make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on you server.
+
+* dep
+
+fx project is using [dep](https://github.com/golang/dep) to do the golang dependency management.
+
+#### Build and Run
 
 ```
 $ git clone https://github.com/metrue/fx.git
@@ -73,25 +98,29 @@ but f(x)
 
 ### Contributors
 
+Thank you to all the people who already contributed to fx!
+
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/metrue.png?s=150">
-        <br>
-        <a href="https://github.com/metrue">Minghe</a>
-        <p>Core</p>
-        <br>
-        <p>Founder of f(x)</p>
-      </td>
-      <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/pplam.png?s=150">
-        <br>
-        <a href="https://github.com/pplam">Tim</a>
-        <p>Core</p>
-        <br>
-        <p>Founder of f(x)</p>
-      </td>
-     </tr>
+        <a href="https://github.com/metrue" target="_blank">
+            <img alt="metrue" src="https://avatars2.githubusercontent.com/u/1001246?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/pplam" target="_blank">
+            <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/mbesancon" target="_blank">
+            <img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/avelino" target="_blank">
+            <img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/DaidoujiChen" target="_blank">
+            <img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/chlins" target="_blank">
+            <img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">
+        </a>
+    </tr>
   </tbody>
 </table>
