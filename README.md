@@ -27,17 +27,13 @@ tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
 
 ### Usage
 
-#### Requirements
-
+##### Requirements
 * Docker
-
-make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on you server.
-
+  make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on you server.
 * dep
+  fx project is using [dep](https://github.com/golang/dep) to do the golang dependency management.
 
-fx project is using [dep](https://github.com/golang/dep) to do the golang dependency management.
-
-#### Build and Run
+##### Build and Run
 
 ```
 $ git clone https://github.com/metrue/fx.git
@@ -58,9 +54,7 @@ now you can make a function to service in a second.
 fx up ./example/functions/func.js
 ```
 
-the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then return;
-
-func.js
+the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then return:
 ```
 module.exports = (input) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
@@ -68,13 +62,11 @@ module.exports = (input) => {
 ```
 
 then you can test your service:
-
 ```
 curl -X POST <service url> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
 ```
 
 of course you can do more.
-
 ```
 Usage:
 $ fx serve                                      start f(x) server
@@ -84,19 +76,58 @@ $ fx list                                       list deployed services
 $ fx --version                                  show current version of f(x)
 ```
 
-### Features
+#### How to write your function
 
-* no API Gateway
-* no Function Watchdog
-* no Docker Swarm
-* no Kubernets
-* no fancy web dashboard
+functions example with Go, Ruby, Python, Node, PHP.
 
-but f(x)
+* Go
+```
+package main
 
-* **makes a function to be a service in seconds**.
-* **supports all major programming languages (Node, Golang, Ruby, Python, PHP) functions to services**.
+type Input struct {
+	A int32
+	B int32
+}
 
+type Output struct {
+	Sum int32
+}
+
+func Fx(input *Input) (output *Output) {
+	output = &Output{
+		Sum: input.A + input.B,
+	}
+	return
+}
+```
+
+* Ruby
+```
+def fx(input)
+    return input['a'] + input['b']
+end
+```
+
+* Python
+```
+def fx(input):
+    return input['a'] + input['b']
+```
+
+* Node
+```
+module.exports = (input) => {
+    return parseInt(input.a, 10) + parseInt(input.b, 10)
+}
+```
+
+* PHP
+```
+<?php
+    function Fx($input) {
+        return $input["a"]+$input["b"];
+    }
+```
 
 ### Contributors
 
