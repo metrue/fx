@@ -76,22 +76,12 @@ but f(x)
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/metrue.png?s=150">
-        <br>
-        <a href="https://github.com/metrue">Minghe</a>
-        <p>Core</p>
-        <br>
-        <p>Founder of f(x)</p>
-      </td>
-      <td align="center" valign="top">
-        <img width="150" height="150" src="https://github.com/pplam.png?s=150">
-        <br>
-        <a href="https://github.com/pplam">Tim</a>
-        <p>Core</p>
-        <br>
-        <p>Founder of f(x)</p>
-      </td>
-     </tr>
+    [<img alt="metrue" src="https://avatars2.githubusercontent.com/u/1001246?v=4&s=50" width="50">](https://github.com/metrue)
+    [<img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">](https://github.com/pplam)
+    [<img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">](https://github.com/mbesancon)
+    [<img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">](https://github.com/avelino)
+    [<img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">](https://github.com/DaidoujiChen)
+    [<img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">](https://github.com/chlins)
+    </tr>
   </tbody>
 </table>
