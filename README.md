@@ -76,12 +76,24 @@ but f(x)
 <table>
   <tbody>
     <tr>
-    [<img alt="metrue" src="https://avatars2.githubusercontent.com/u/1001246?v=4&s=50" width="50">](https://github.com/metrue)
-    [<img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">](https://github.com/pplam)
-    [<img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">](https://github.com/mbesancon)
-    [<img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">](https://github.com/avelino)
-    [<img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">](https://github.com/DaidoujiChen)
-    [<img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">](https://github.com/chlins)
+        <a href="https://github.com/metrue" target="_blank">
+            <img alt="metrue" src="https://avatars2.githubusercontent.com/u/1001246?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/pplam" target="_blank">
+            <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/mbesancon" target="_blank">
+            <img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/avelino" target="_blank">
+            <img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/DaidoujiChen" target="_blank">
+            <img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/chlins" target="_blank">
+            <img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">
+        </a>
     </tr>
   </tbody>
 </table>
