@@ -25,7 +25,7 @@ func Up() {
 	if nArgs == 2 {
 		common.FlagsAndExit(flagSet)
 	}
-	functions, address := commoon.ParseArgs(
+	functions, address := common.ParseArgs(
 		option,
 		os.Args[2:],
 		args,
