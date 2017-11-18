@@ -6,11 +6,36 @@ Poor man's function as a service.
   <img src="https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7"/>
 </p>
 
+### Introduction
+
+fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
+
+| Language      | Status        |
+| ------------- |:-------------:|
+| Go            | Supported     |
+| Node          | Supported     |
+| Python        | Supported     |
+| Ruby          | Supported     |
+| PHP           | Supported     |
+| Perl          | Working on    |
+| R             | Working on    |
+| Rust          | Working on    |
+
+tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
+
 ### Usage
 
-* clone and build
+#### Requirements
 
-make you have [dep](https://github.com/golang/dep) installed first.
+* Docker
+
+make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on you server.
+
+* dep
+
+fx project is using [dep](https://github.com/golang/dep) to do the golang dependency management.
+
+#### Build and Run
 
 ```
 $ git clone https://github.com/metrue/fx.git
