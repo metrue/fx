@@ -16,7 +16,7 @@ func Down() {
 	if nArgs == 2 {
 		common.FlagsAndExit(flagSet)
 	}
-	functions, address := common.parseArgs(
+	functions, address := common.ParseArgs(
 		option,
 		os.Args[2:],
 		args,
