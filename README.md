@@ -68,7 +68,7 @@ $ fx --version                                  show current version of f(x)
 but f(x)
 
 * **makes a function to be a service in seconds**.
-* **supports all major programming languages (Node, Golang, Ruby, Python, Php) functions to services**.
+* **supports all major programming languages (Node, Golang, Ruby, Python, PHP) functions to services**.
 
 
 ### Contributors
