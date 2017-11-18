@@ -28,10 +28,8 @@ tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
 ### Usage
 
 ##### Requirements
-* Docker
-  make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on you server.
-* dep
-  fx project is using [dep](https://github.com/golang/dep) to do the golang dependency management.
+* Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
+* dep: fx project uses [dep](https://github.com/golang/dep) to do the golang dependency management.
 
 ##### Build and Run
 
@@ -54,7 +52,7 @@ now you can make a function to service in a second.
 fx up ./example/functions/func.js
 ```
 
-the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then return:
+the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then returns:
 ```
 module.exports = (input) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
