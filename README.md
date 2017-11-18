@@ -49,10 +49,10 @@ fx serve
 now you can make a function to service in a second.
 
 ```
-fx up ./example/functions/func.js
+fx up ./examples/functions/func.js
 ```
 
-the function defined in *exmaple/functions/func.js* is quite simple, it calculates the sum of two numbers then returns:
+the function defined in *examples/functions/func.js* is quite simple, it calculates the sum of two numbers then returns:
 ```
 module.exports = (input) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
