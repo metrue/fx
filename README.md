@@ -155,3 +155,7 @@ Thank you to all the people who already contributed to fx!
     </tr>
   </tbody>
 </table>
+
+### LICENSE
+
+MIT
