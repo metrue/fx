@@ -23,6 +23,7 @@ var funcNames = map[string]string{
 	"node":   "/fx.js",
 	"ruby":   "/fx.rb",
 	"python": "/fx.py",
+	"php":    "/fx.php",
 }
 
 func dispatchFuncion(lang string, data []byte, dir string) {
@@ -38,7 +39,7 @@ func dispatchFuncion(lang string, data []byte, dir string) {
 		panic(err)
 	}
 
-	log.Println("func recved: %s", n)
+	log.Println("func recved:", n)
 }
 
 func notify(connection *websocket.Conn, messageType int, message string) {
