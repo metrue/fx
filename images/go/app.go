@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
 func handler(res http.ResponseWriter, req *http.Request) {
@@ -22,7 +22,6 @@ func handler(res http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 }
-
 
 func main() {
 	http.HandleFunc("/", handler)

@@ -2,20 +2,20 @@ package up
 
 import (
 	"fmt"
-	"os"
 	"io"
+	"os"
 	"os/signal"
 
 	"github.com/gorilla/websocket"
 )
 
 type Worker struct {
-	conn *websocket.Conn
-	ch chan<- bool
-	src string
-	lang string
+	conn   *websocket.Conn
+	ch     chan<- bool
+	src    string
+	lang   string
 	logger *Logger
-	dead bool
+	dead   bool
 }
 
 func NewWorker(
@@ -25,18 +25,18 @@ func NewWorker(
 	ch chan<- bool,
 ) *Worker {
 	worker := &Worker{
-		dead: false,
-		src: src,
-		lang: lang,
-		conn: conn,
-		ch: ch,
+		dead:   false,
+		src:    src,
+		lang:   lang,
+		conn:   conn,
+		ch:     ch,
 		logger: NewLogger("[" + src + "]"),
 	}
 	worker.conn.SetCloseHandler(worker.closeHandler)
 	return worker
 }
 
-func (worker *Worker)	checkErr(err error) bool {
+func (worker *Worker) checkErr(err error) bool {
 	if err != nil {
 		worker.logger.Err(err)
 		if !websocket.IsCloseError(err, 1000) {
@@ -68,41 +68,58 @@ func (worker *Worker) Work() {
 	logger.Log("Deploying...")
 
 	// Open function source file
-	if worker.dead { return }
+	if worker.dead {
+		return
+	}
 	file, err := os.Open(worker.src)
-	if worker.checkErr(err) { return }
+	if worker.checkErr(err) {
+		return
+	}
 	defer file.Close()
 
 	// Send source language type
-	if worker.dead { return }
+	if worker.dead {
+		return
+	}
 	err = conn.WriteMessage(
 		websocket.TextMessage,
 		[]byte(worker.lang),
 	)
-	if worker.checkErr(err) { return }
+	if worker.checkErr(err) {
+		return
+	}
 
 	// Get websocket connection writer
-	if worker.dead { return }
+	if worker.dead {
+		return
+	}
 	writer, err := conn.NextWriter(
 		websocket.TextMessage,
 	)
-	if worker.checkErr(err) { return }
+	if worker.checkErr(err) {
+		return
+	}
 
 	// Send function source file
-	if worker.dead { return }
+	if worker.dead {
+		return
+	}
 	bytesSent, err := io.Copy(
 		writer,
 		file,
 	)
-	if worker.checkErr(err) { return }
+	if worker.checkErr(err) {
+		return
+	}
 	logger.Log(
 		fmt.Sprintf(
 			"Sent bytes: %d",
 			bytesSent,
 		))
 	err = writer.Close()
-	if worker.checkErr(err) { return }
-
+	if worker.checkErr(err) {
+		return
+	}
 
 	interrupt := make(chan os.Signal, 2)
 	signal.Notify(interrupt, os.Interrupt, os.Kill)
@@ -131,10 +148,14 @@ func (worker *Worker) Work() {
 			conn.WriteMessage(websocket.CloseMessage, closeMsg)
 		case newMsg := <-msgChan:
 			logger.Log(newMsg)
-			if worker.dead { return }
+			if worker.dead {
+				return
+			}
 			go readReply(conn, msgChan, errChan)
 		case newErr := <-errChan:
-			if worker.checkErr(newErr) { return }
+			if worker.checkErr(newErr) {
+				return
+			}
 		}
 	}
 }
