@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Worker handles a functional service
 type Worker struct {
 	conn   *websocket.Conn
 	ch     chan<- bool
@@ -18,14 +19,9 @@ type Worker struct {
 	dead   bool
 }
 
-func NewWorker(
-	src string,
-	lang string,
-	conn *websocket.Conn,
-	ch chan<- bool,
-) *Worker {
+// NewWorker creates and returns a new worker
+func NewWorker(src, lang string, conn *websocket.Conn, ch chan<- bool) *Worker {
 	worker := &Worker{
-		dead:   false,
 		src:    src,
 		lang:   lang,
 		conn:   conn,
@@ -62,25 +58,21 @@ func (worker *Worker) closeHandler(
 	return nil
 }
 
+// Work starts and handles a function from Worker's information
 func (worker *Worker) Work() {
-	logger := worker.logger
-	conn := worker.conn
-	logger.Log("Deploying...")
-
-	// Open function source file
 	if worker.dead {
 		return
 	}
+	logger := worker.logger
+	conn := worker.conn
+	logger.Log("Deploying...")
+	// Open function source file
 	file, err := os.Open(worker.src)
 	if worker.checkErr(err) {
 		return
 	}
 	defer file.Close()
-
 	// Send source language type
-	if worker.dead {
-		return
-	}
 	err = conn.WriteMessage(
 		websocket.TextMessage,
 		[]byte(worker.lang),
@@ -90,9 +82,6 @@ func (worker *Worker) Work() {
 	}
 
 	// Get websocket connection writer
-	if worker.dead {
-		return
-	}
 	writer, err := conn.NextWriter(
 		websocket.TextMessage,
 	)
@@ -101,9 +90,6 @@ func (worker *Worker) Work() {
 	}
 
 	// Send function source file
-	if worker.dead {
-		return
-	}
 	bytesSent, err := io.Copy(
 		writer,
 		file,

@@ -18,6 +18,7 @@ var langs = map[string]string{
 	".php": "php",
 }
 
+// Up starts the functions specified in flags
 func Up() {
 	option := "up"
 	nArgs := len(os.Args)

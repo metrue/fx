@@ -3,3 +3,4 @@ vendor/
 dist/
 build/
 *.pyc
+fx

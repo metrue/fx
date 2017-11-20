@@ -9,6 +9,7 @@ import (
 	"github.com/metrue/fx/commands/common"
 )
 
+// List lists all running function services
 func List() {
 	option := "list"
 	nArgs := len(os.Args)
