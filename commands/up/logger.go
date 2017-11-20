@@ -1,8 +1,8 @@
 package up
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 // Customer logger
