@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 )
 
+// Download a resource from URL to given path
 func Download(filepath string, url string) (err error) {
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -33,6 +34,7 @@ func Download(filepath string, url string) (err error) {
 	return nil
 }
 
+// Unzip a folder to destination
 func Unzip(source string, target string) (err error) {
 	reader, err := zip.OpenReader(source)
 	if err != nil {
@@ -70,6 +72,7 @@ func Unzip(source string, target string) (err error) {
 	return nil
 }
 
+// CopyFile from src to dst
 func CopyFile(src, dst string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
@@ -112,7 +115,6 @@ func CopyFile(src, dst string) (err error) {
 // CopyDir recursively copies a directory tree, attempting to preserve permissions.
 // Source directory must exist, destination directory must *not* exist.
 // Symlinks are ignored and skipped.
-
 func CopyDir(src string, dst string) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
@@ -168,6 +170,7 @@ func CopyDir(src string, dst string) (err error) {
 	return
 }
 
+// TarDir builds a tar from directory
 func TarDir(srcDir string, desFileName string) {
 	dir, err := os.Open(srcDir)
 	if err != nil {
@@ -216,6 +219,7 @@ func TarDir(srcDir string, desFileName string) {
 	}
 }
 
+// IsPathExists checks whether a path exists or if failed to check
 func IsPathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -233,6 +237,7 @@ func checkerror(err error) {
 	}
 }
 
+// GetCurrentExecPath parses a path from running executable/go file
 func GetCurrentExecPath() (scriptPath string) {
 	scriptPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
@@ -247,6 +252,7 @@ func HandleError(err error) {
 	}
 }
 
+// GetHostIP returns the host's IP
 func GetHostIP() (ip net.IP) {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	HandleError(err)
