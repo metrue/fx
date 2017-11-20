@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -38,7 +39,7 @@ func dispatchFuncion(lang string, data []byte, dir string) {
 		panic(err)
 	}
 
-	log.Println("func recved: %s", n)
+	log.Println("func recved:", n)
 }
 
 func notify(connection *websocket.Conn, messageType int, message string) {
@@ -80,7 +81,8 @@ func Up(
 
 	notify(connection, messageType, "function built")
 	api.Deploy(name, dir, strconv.Itoa(port))
-	notify(connection, messageType, "function deployed: http://localhost:"+strconv.Itoa(port))
+	msg := fmt.Sprintf("function deployed at: %s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
+	notify(connection, messageType, msg)
 
 	closeConnection(connection)
 	// }()

@@ -2,7 +2,7 @@ OUTPUT_DIR=./build
 DIST_DIR=./dist
 
 install-deps:
-	@glide install -v
+	@dep ensure
 build:
 	go build -o ${OUTPUT_DIR}/fx fx.go
 cross:

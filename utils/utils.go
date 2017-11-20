@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -244,4 +245,14 @@ func HandleError(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func GetHostIP() (ip net.IP) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	HandleError(err)
+
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return localAddr.IP
 }

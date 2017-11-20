@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	Config "github.com/metrue/fx/config"
+	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/server/env"
 	"github.com/metrue/fx/server/handlers"
 
@@ -17,7 +17,7 @@ import (
 var upgrader = websocket.Upgrader{} // use default options
 
 func health(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "I am OK, %s!", r.URL.Path[1:])
+	fmt.Fprintf(w, "I am OK, %s!", r.URL.Path[1:])
 }
 
 func up(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +31,13 @@ func up(w http.ResponseWriter, r *http.Request) {
 
 	_, lang, err := c.ReadMessage()
 	if err != nil {
-		log.Println("read:", err)
+		log.Printf("read error: %s", err.Error())
 		return
 	}
 
 	mt, body, err := c.ReadMessage()
 	if err != nil {
-		log.Println("read:", err)
+		log.Printf("read error: %s", err.Error())
 		return
 	}
 
@@ -46,7 +46,7 @@ func up(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, msg, err := c.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
+			log.Printf("read error: %s", err.Error())
 			return
 		}
 		log.Println("read:", msg)
@@ -56,7 +56,7 @@ func up(w http.ResponseWriter, r *http.Request) {
 func list(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("upgrade: ", err)
+		log.Printf("Error during upgrade: %s", err.Error())
 	}
 	defer c.Close()
 
@@ -88,7 +88,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 func down(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("upgrade: ", err)
+		log.Printf("upgrade: %s", err.Error())
 	}
 	defer c.Close()
 
@@ -158,8 +158,7 @@ func Start() {
 	http.HandleFunc("/down", down)
 	http.HandleFunc("/list", list)
 
-	log.Printf("fx serves on %s", *Config.ServerAddr)
-	log.Fatal(http.ListenAndServe(*Config.ServerAddr, nil))
-
-	log.Printf("addr: %p", *Config.ServerAddr)
+	addr := fmt.Sprintf("%s:%s", config.Server["host"], config.Server["port"])
+	log.Printf("fx serves on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
