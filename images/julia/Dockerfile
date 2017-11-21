@@ -6,4 +6,4 @@ RUN apt-get update && apt-get install -y gcc apt-utils unzip make libhttp-parser
 RUN julia /app/deps.jl
 
 CMD julia /app/app.jl
-EXPOSE 8080
+EXPOSE 3000

@@ -14,4 +14,4 @@ srv = Server() do req::Request, res::Response
     end
 end
 
-run(srv, 8080)
+run(srv, 3000)
