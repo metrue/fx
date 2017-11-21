@@ -15,7 +15,10 @@ import (
 )
 
 func closeConnection(connection *websocket.Conn) {
-	connection.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"))
+	connection.WriteMessage(
+		websocket.CloseMessage,
+		websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"),
+	)
 }
 
 var funcNames = map[string]string{
@@ -24,6 +27,7 @@ var funcNames = map[string]string{
 	"ruby":   "/fx.rb",
 	"python": "/fx.py",
 	"php":    "/fx.php",
+	"julia":  "/fx.jl",
 }
 
 func dispatchFuncion(lang string, data []byte, dir string) {
@@ -56,34 +60,23 @@ func initWorkDirectory(lang string, dir string) {
 	}
 }
 
-func Up(
-	lang []byte,
-	body []byte,
-	connection *websocket.Conn,
-	messageType int,
-) {
-	// go func() {
+// Up spins up a new function
+func Up(lang []byte, body []byte, connection *websocket.Conn, messageType int) {
 	var guid = xid.New().String()
 	var dir = guid
 	var name = guid
-
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		panic(err)
 	}
-
 	initWorkDirectory(string(lang), dir)
 	notify(connection, messageType, "work dir initialized")
 	dispatchFuncion(string(lang), body, dir)
 	notify(connection, messageType, "function dispatched")
-
 	api.Build(name, dir)
-
 	notify(connection, messageType, "function built")
 	api.Deploy(name, dir, strconv.Itoa(port))
 	msg := fmt.Sprintf("function deployed at: %s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
 	notify(connection, messageType, msg)
-
 	closeConnection(connection)
-	// }()
 }

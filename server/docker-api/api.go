@@ -21,6 +21,7 @@ type dockerInfo struct {
 	Stream string `json:"stream"`
 }
 
+// Build builds a docker image from the image directory
 func Build(name string, dir string) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -59,13 +60,13 @@ func Build(name string, dir string) {
 	}
 }
 
+// Deploy spins up a new container
 func Deploy(name string, dir string, port string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
-
 	imageName := name
 	containerConfig := &container.Config{
 		Image: imageName,
@@ -94,6 +95,7 @@ func Deploy(name string, dir string, port string) {
 	fmt.Println(resp.ID)
 }
 
+// Stop interrupts a running container
 func Stop(containerID string) (err error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
