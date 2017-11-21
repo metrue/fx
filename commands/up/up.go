@@ -16,6 +16,7 @@ var langs = map[string]string{
 	".rb":  "ruby",
 	".py":  "python",
 	".php": "php",
+	".jl":  "julia",
 }
 
 // Up starts the functions specified in flags
