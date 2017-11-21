@@ -43,7 +43,9 @@ jobs:
               fx up examples/functions/func.py >> deploy.log
               fx up examples/functions/func.go >> deploy.log
               fx up examples/functions/func.php >> deploy.log
-              cat deploy.log | grep Succed | wc -l | grep 5
+              cat server_output.log
+              cat deploy.log;
+              cat deploy.log | grep 'Succed: 1' | wc -l | grep 5
 
 deployment:
     production:
