@@ -147,6 +147,7 @@ func closeConn(c *websocket.Conn, msg string) {
 	c.WriteMessage(websocket.CloseMessage, byteMsg)
 }
 
+// Start parses input and launches the fx server in a blocking process
 func Start() {
 	flag.Parse()
 	log.SetFlags(0)

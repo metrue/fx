@@ -8,16 +8,10 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/metrue/fx/commands/common"
+	"github.com/metrue/fx/config"
 )
 
-var langs = map[string]string{
-	".js":  "node",
-	".go":  "go",
-	".rb":  "ruby",
-	".py":  "python",
-	".php": "php",
-}
-
+// Up starts the functions specified in flags
 func Up() {
 	option := "up"
 	nArgs := len(os.Args)
@@ -48,7 +42,7 @@ func Up() {
 			numFail++
 			continue
 		}
-		lang := langs[filepath.Ext(function)]
+		lang := config.ExtLangMap[filepath.Ext(function)]
 		worker := NewWorker(function, lang, conn, channel)
 		go worker.Work()
 	}

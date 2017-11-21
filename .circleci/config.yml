@@ -37,7 +37,15 @@ jobs:
           command: |
               fx serve > server_output.log 2>&1 &
               sleep 20
-              fx up examples/functions/func.js && cat server_output.log
+              touch deploy.log
+              fx up examples/functions/func.js >> deploy.log
+              fx up examples/functions/func.rb >> deploy.log
+              fx up examples/functions/func.py >> deploy.log
+              fx up examples/functions/func.go >> deploy.log
+              fx up examples/functions/func.php >> deploy.log
+              cat server_output.log
+              cat deploy.log;
+              cat deploy.log | grep 'Succed: 1' | wc -l | grep 5
 
 deployment:
     production:
