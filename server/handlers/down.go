@@ -7,11 +7,8 @@ import (
 	api "github.com/metrue/fx/server/docker-api"
 )
 
-func Down(
-	containID string,
-	msgChan chan<- string,
-	doneChan chan<- bool,
-) {
+// Down stops the processes designated by a function
+func Down(containID string, msgChan chan<- string, doneChan chan<- bool) {
 	checkErr := func(err error) bool {
 		if err != nil {
 			log.Println(err)

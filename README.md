@@ -6,22 +6,27 @@ Poor man's function as a service.
 ![build](https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
+![](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
 
 ### Introduction
 
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
 
-| Language      | Status        |
-| ------------- |:-------------:|
-| Go            | Supported     |
-| Node          | Supported     |
-| Python        | Supported     |
-| Ruby          | Supported     |
-| PHP           | Supported     |
-| Perl          | Working on    |
-| R             | Working on    |
-| Rust          | Working on    |
+| Language      | Status        | Contributor   |
+| ------------- |:-------------:|:-------------:|
+| Go            | Supported     | fx            |
+| Node          | Supported     | fx            |
+| Python        | Supported     | fx            |
+| Ruby          | Supported     | fx            |
+| PHP           | Supported     | [@chlins](https://github.com/chlins)|
+| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
+| Java          | No            | |
+| Scala         | No            | |
+| Perl          | Working on    | |
+| .Net          | Working on    | |
+| R             | Working on    | |
+| Rust          | Working on    | |
 
 tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
 
@@ -125,6 +130,18 @@ module.exports = (input) => {
     function Fx($input) {
         return $input["a"]+$input["b"];
     }
+```
+
+* Julia
+```
+struct Input
+    a::Number
+    b::Number
+end
+
+fx = function(input::Input)
+    return input.a + input.b
+end
 ```
 
 ### Contributors
