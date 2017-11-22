@@ -13,16 +13,20 @@ Poor man's function as a service.
 
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
 
-| Language      | Status        |
-| ------------- |:-------------:|
-| Go            | Supported     |
-| Node          | Supported     |
-| Python        | Supported     |
-| Ruby          | Supported     |
-| PHP           | Supported     |
-| Perl          | Working on    |
-| R             | Working on    |
-| Rust          | Working on    |
+| Language      | Status        | Contributor   |
+| ------------- |:-------------:|:-------------:|
+| Go            | Supported     | fx            |
+| Node          | Supported     | fx            |
+| Python        | Supported     | fx            |
+| Ruby          | Supported     | fx            |
+| PHP           | Supported     | [@chlins](https://github.com/chlins)|
+| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
+| Java          | No            | |
+| Scala         | No            | |
+| Perl          | Working on    | |
+| .Net          | Working on    | |
+| R             | Working on    | |
+| Rust          | Working on    | |
 
 tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
 
