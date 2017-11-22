@@ -1,4 +1,3 @@
-
 struct Input
     a::Number
     b::Number

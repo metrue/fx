@@ -132,6 +132,18 @@ module.exports = (input) => {
     }
 ```
 
+* Julia
+```
+struct Input
+    a::Number
+    b::Number
+end
+
+fx = function(input::Input)
+    return input.a + input.b
+end
+```
+
 ### Contributors
 
 Thank you to all the people who already contributed to fx!
