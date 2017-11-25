@@ -28,7 +28,7 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 | R             | Working on    | |
 | Rust          | Working on    | |
 
-tweet [@_metrue](https://twitter.com/_metrue) or issue is welcome.
+Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe)
 
 ### Usage
 
