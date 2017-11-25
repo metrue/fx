@@ -16,7 +16,7 @@ type Worker struct {
 	ch     chan<- bool
 	src    string
 	lang   string
-	logger *Logger
+	logger log.*Logger
 	dead   bool
 }
 
