@@ -1,4 +1,4 @@
-package up
+package log
 
 import (
 	"log"

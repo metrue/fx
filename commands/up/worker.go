@@ -7,6 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/log"
 )
 
 // Worker handles a functional service
@@ -26,7 +27,7 @@ func NewWorker(src, lang string, conn *websocket.Conn, ch chan<- bool) *Worker {
 		lang:   lang,
 		conn:   conn,
 		ch:     ch,
-		logger: NewLogger("[" + src + "]"),
+		logger: log.NewLogger("[" + src + "]"),
 	}
 	worker.conn.SetCloseHandler(worker.closeHandler)
 	return worker
