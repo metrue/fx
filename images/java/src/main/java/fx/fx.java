@@ -1,6 +1,5 @@
 package fx;
 
-import io.javalin.Javalin;
 import org.json.JSONObject;
 
 public class Fx {
