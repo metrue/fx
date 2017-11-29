@@ -15,5 +15,5 @@ RUN ["mvn", "verify"]
 ADD src /code/src
 RUN ["mvn", "package"]
 
-EXPOSE 4567
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/sparkexample-jar-with-dependencies.jar"]
+EXPOSE 3000
+CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/fx-app-java-0.1.0.jar"]
