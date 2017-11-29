@@ -128,6 +128,11 @@ func (worker *Worker) Work() {
 	go readReply(conn, msgChan, errChan)
 
 	// Wait for deploy done
+	defer func() {
+		close(interrupt)
+		close(errChan)
+		close(msgChan)
+	}()
 	for {
 		select {
 		case <-interrupt:

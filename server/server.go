@@ -119,6 +119,10 @@ func down(w http.ResponseWriter, r *http.Request) {
 
 	numSuccess := 0
 	numFail := 0
+	defer func() {
+		close(doneCh)
+		close(msgCh)
+	}()
 	for {
 		select {
 		case newDone := <-doneCh:
