@@ -19,13 +19,13 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 | Node          | Supported     | fx            |
 | Python        | Supported     | fx            |
 | Ruby          | Supported     | fx            |
+| Java          | Supported     | fx            |
 | PHP           | Supported     | [@chlins](https://github.com/chlins)|
 | Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
-| Java          | No            | |
-| Scala         | No            | |
+| R             | Working on [help your help](https://github.com/metrue/fx/issues/31)   | |
+| Scala         | Working on     | |
 | Perl          | Working on    | |
 | .Net          | Working on    | |
-| R             | Working on    | |
 | Rust          | Working on    | |
 
 Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe)
