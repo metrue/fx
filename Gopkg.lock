@@ -44,6 +44,12 @@
   revision = "be4efa7ec0c38ab76d56037014c90d48d6b13037"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/metrue/fx"
+  packages = ["commands/common","commands/down","commands/list","commands/up","config","log","server","server/docker-api","server/env","server/handlers","utils"]
+  revision = "bcf6dbd1a424d86255fa2df66b34646dbf31f898"
+
+[[projects]]
   name = "github.com/phayes/freeport"
   packages = ["."]
   revision = "b8543db493a5ed890c5499e935e2cad7504f3a04"
@@ -76,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f39bdc99a6e57f902cb0bbb772098222008d68464eac29614370e04d9080c8b0"
+  inputs-digest = "fd61515bf755bfafc698e347d14d33fbd54ae957466e55e672fba0a1573214ce"
   solver-name = "gps-cdcl"
   solver-version = 1
