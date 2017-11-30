@@ -24,4 +24,5 @@ var ExtLangMap = map[string]string {
 	".py":  "python",
 	".php": "php",
 	".jl":  "julia",
+	".java": "java",
 }
