@@ -6,6 +6,7 @@ import (
 
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/utils"
+	api "github.com/metrue/fx/server/docker-api"
 )
 
 // Init creates the server
@@ -22,5 +23,15 @@ func Init() {
 		if err := utils.Unzip("./images.zip", config.Client["cache_dir"]); err != nil {
 			panic(err)
 		}
+	}
+
+	baseImages := []string{
+		"metrue/fx-java-base",
+		"metrue/fx-julia-base",
+		"metrue/fx-python-base",
+		"metrue/fx-node-base",
+	}
+	for _, image := range baseImages {
+		api.Pull(image)
 	}
 }

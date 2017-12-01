@@ -60,6 +60,20 @@ func Build(name string, dir string) {
 	}
 }
 
+func Pull(name string) {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	if r, pullErr := cli.ImagePull(ctx, name, types.ImagePullOptions{}); pullErr != nil {
+		panic(pullErr)
+	} else {
+		io.Copy(os.Stdout, r)
+	}
+}
+
 // Deploy spins up a new container
 func Deploy(name string, dir string, port string) {
 	ctx := context.Background()
