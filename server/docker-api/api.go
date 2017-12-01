@@ -12,6 +12,7 @@ import (
 
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -57,6 +58,22 @@ func Build(name string, dir string) {
 			continue
 		}
 		fmt.Printf(info.Stream)
+	}
+}
+
+func Pull(name string, bool verbose) {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	if r, pullErr := cli.ImagePull(ctx, name, types.ImagePullOptions{}); pullErr != nil {
+		panic(pullErr)
+	} else {
+		if verbose {
+			io.Copy(os.Stdout, r)
+		}
 	}
 }
 
