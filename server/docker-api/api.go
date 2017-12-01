@@ -12,9 +12,9 @@ import (
 
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"io"
 	"time"
 )
 
@@ -61,7 +61,7 @@ func Build(name string, dir string) {
 	}
 }
 
-func Pull(name string) {
+func Pull(name string, bool verbose) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -71,7 +71,9 @@ func Pull(name string) {
 	if r, pullErr := cli.ImagePull(ctx, name, types.ImagePullOptions{}); pullErr != nil {
 		panic(pullErr)
 	} else {
-		io.Copy(os.Stdout, r)
+		if verbose {
+			io.Copy(os.Stdout, r)
+		}
 	}
 }
 
