@@ -1,4 +1,4 @@
-FROM node:latest
+FROM metrue/fx-node-base
 
 COPY . .
 EXPOSE 3000

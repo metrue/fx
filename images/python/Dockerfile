@@ -1,7 +1,4 @@
-FROM python:3
-
-RUN pip install flask
-ENV FLASK_APP=app.py
+FROM metrue/fx-python-base
 
 COPY . .
 EXPOSE 3000

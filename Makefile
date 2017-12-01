@@ -14,5 +14,6 @@ clean:
 	rm -rf ${DIST_DIR}
 zip:
 	zip -r images.zip images/
-
+sync:
+	rsync  -avzhe ssh root@45.79.111.212:/root/.go-workspace/src/fx/vendor .
 .PHONY: test build start list clean
