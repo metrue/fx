@@ -46,7 +46,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/metrue/fx"
-  packages = ["common","config","log","server","server/docker-api","server/env","server/handlers","utils"]
+  packages = ["."]
   revision = "5d8bcac543332e535da655f27dd7158589411d84"
 
 [[projects]]
