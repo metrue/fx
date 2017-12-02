@@ -156,7 +156,7 @@ func Start() {
 	flag.Parse()
 	log.SetFlags(0)
 
-	env.Init()
+	env.Init(true)
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)

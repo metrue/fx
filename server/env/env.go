@@ -9,16 +9,21 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
-func PullBaseDockerImage() {
+func PullBaseDockerImage(verbose bool) {
 	baseImages := []string{
 		"metrue/fx-java-base",
 		"metrue/fx-julia-base",
 		"metrue/fx-python-base",
 		"metrue/fx-node-base",
 	}
-	verbose := true
-	for _, image := range baseImages {
+
+	task := func(image string, verbose bool) {
+		fmt.Println("Pulling %s", image)
 		api.Pull(image, verbose)
+	}
+
+	for _, image := range baseImages {
+		go task(image, verbose)
 	}
 }
 
@@ -33,7 +38,7 @@ func FetchPresetDockerfile() {
 }
 
 // Init creates the server
-func Init() {
+func Init(verbose bool) {
 	exist, err := utils.IsPathExists(path.Join(config.Client["cache_dir"], "images"))
 	if err != nil {
 		panic(err)
@@ -41,5 +46,5 @@ func Init() {
 	if !exist {
 		FetchPresetDockerfile()
 	}
-	PullBaseDockerImage()
+	PullBaseDockerImage(verbose)
 }
