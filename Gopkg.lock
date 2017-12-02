@@ -47,7 +47,7 @@
   branch = "master"
   name = "github.com/metrue/fx"
   packages = ["."]
-  revision = "5d8bcac543332e535da655f27dd7158589411d84"
+  revision = "50b37a72bd96bb61e85a0616a9a4efcc189f98e2"
 
 [[projects]]
   name = "github.com/phayes/freeport"
