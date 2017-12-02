@@ -3,6 +3,7 @@ DIST_DIR=./dist
 
 install-deps:
 	@dep ensure -update
+	@dep ensure
 build:
 	go build -o ${OUTPUT_DIR}/fx fx.go
 cross:
