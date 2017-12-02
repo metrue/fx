@@ -1,4 +1,4 @@
-package down
+package commands
 
 import (
 	"fmt"
@@ -6,14 +6,15 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"github.com/metrue/fx/commands/common"
+	"github.com/metrue/fx/common"
 )
 
-func Down() {
-	option := "down"
+// List lists all running function services
+func List() {
+	option := "list"
 	nArgs := len(os.Args)
 	args, flagSet := common.SetupFlags(option)
-	if nArgs == 2 {
+	if nArgs < 2 {
 		common.FlagsAndExit(flagSet)
 	}
 	functions, address := common.ParseArgs(
@@ -25,7 +26,7 @@ func Down() {
 
 	dialer := websocket.Dialer{}
 	conn, _, err := dialer.Dial(address, nil)
-	if checkErr(err) {
+	if common.CheckError(err) {
 		return
 	}
 	defer conn.Close()
@@ -34,7 +35,7 @@ func Down() {
 		websocket.TextMessage,
 		[]byte(strings.Join(functions, " ")),
 	)
-	if checkErr(err) {
+	if common.CheckError(err) {
 		return
 	}
 
@@ -52,12 +53,4 @@ func Down() {
 		}
 		fmt.Println(string(msg))
 	}
-}
-
-func checkErr(err error) bool {
-	if err != nil {
-		fmt.Println(err)
-		return true
-	}
-	return false
 }

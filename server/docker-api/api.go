@@ -61,6 +61,7 @@ func Build(name string, dir string) {
 	}
 }
 
+// Pull image from hub.docker.com
 func Pull(name string, verbose bool) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()

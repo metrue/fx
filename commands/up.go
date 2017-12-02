@@ -1,4 +1,4 @@
-package up
+package commands
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/websocket"
-	"github.com/metrue/fx/commands/common"
+	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/config"
 )
 

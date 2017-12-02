@@ -3,11 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"fx/commands"
 	"os"
 
-	"github.com/metrue/fx/commands/down"
-	"github.com/metrue/fx/commands/list"
-	"github.com/metrue/fx/commands/up"
 	"github.com/metrue/fx/server"
 )
 
@@ -37,6 +35,7 @@ func checkFlag() {
 		false,
 		"Help information.",
 	)
+
 	versionPtr := flag.Bool(
 		"version",
 		false,
@@ -63,11 +62,11 @@ func main() {
 	case "serve":
 		server.Start()
 	case "up":
-		up.Up()
+		commands.Up()
 	case "down":
-		down.Down()
+		commands.Down()
 	case "list":
-		list.List()
+		commands.List()
 	default:
 		fmt.Print(usage)
 		os.Exit(1)
