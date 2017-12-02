@@ -61,7 +61,7 @@ func Build(name string, dir string) {
 	}
 }
 
-func Pull(name string, bool verbose) {
+func Pull(name string, verbose bool) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
