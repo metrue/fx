@@ -2,7 +2,7 @@ OUTPUT_DIR=./build
 DIST_DIR=./dist
 
 install-deps:
-	@dep ensure
+	@dep ensure -update
 build:
 	go build -o ${OUTPUT_DIR}/fx fx.go
 cross:
