@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"fx/commands"
 	"os"
 
 	"github.com/metrue/fx/server"
+	"github.com/metrue/fx/commands"
 )
 
 const version string = "0.0.2"
