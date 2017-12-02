@@ -20,7 +20,7 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: Install tools
+          name: Install Dep
           command: |
               go get github.com/golang/dep
               cd $GOPATH/src/github.com/golang/dep
@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Build and Install
           command: |
-              dep ensure
+              make install-deps
               go install ./
 
       - run:
