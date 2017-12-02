@@ -46,8 +46,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/metrue/fx"
-  packages = ["commands/common","commands/down","commands/list","commands/up","config","log","server","server/docker-api","server/env","server/handlers","utils"]
-  revision = "bcf6dbd1a424d86255fa2df66b34646dbf31f898"
+  packages = ["common","config","log","server","server/docker-api","server/env","server/handlers","utils"]
+  revision = "5d8bcac543332e535da655f27dd7158589411d84"
 
 [[projects]]
   name = "github.com/phayes/freeport"
@@ -71,17 +71,17 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","proxy"]
-  revision = "9dfe39835686865bff950a07b394c12a98ddc811"
+  revision = "a8b9294777976932365dabb6640cf1468d95c70f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["windows"]
-  revision = "0ac51a24ef1c37380f98ba8b98f56e3bffd59850"
+  revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fd61515bf755bfafc698e347d14d33fbd54ae957466e55e672fba0a1573214ce"
+  inputs-digest = "c527b57b07e4e899bacaeb0e6cd06e3a112bef6b6896a1aff83f7fe635f4804f"
   solver-name = "gps-cdcl"
   solver-version = 1
