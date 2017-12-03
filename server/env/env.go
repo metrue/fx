@@ -18,7 +18,7 @@ func PullBaseDockerImage(verbose bool) {
 	}
 
 	task := func(image string, verbose bool) {
-		fmt.Println("Pulling %s", image)
+		fmt.Printf("Pulling %s\n", image)
 		api.Pull(image, verbose)
 	}
 
