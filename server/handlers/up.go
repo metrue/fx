@@ -73,19 +73,19 @@ func cleanup(dir string) {
 
 // Up spins up a new function
 func Up(lang []byte, body []byte, connection *websocket.Conn, messageType int) {
-	var guid = xid.New().String()
-	var dir = os.TempDir() + "fx-" + guid
-	var name = guid
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		panic(err)
 	}
+	var guid = xid.New().String()
+	var dir = os.TempDir() + "fx-" + guid
+	defer cleanup(dir)
+	var name = guid
 	initWorkDirectory(string(lang), dir)
 	notify(connection, messageType, "work dir initialized")
 	dispatchFuncion(string(lang), body, dir)
 	notify(connection, messageType, "function dispatched")
 	api.Build(name, dir)
-	go cleanup(dir)
 	notify(connection, messageType, "function built")
 	api.Deploy(name, dir, strconv.Itoa(port))
 	msg := fmt.Sprintf("function deployed at: %s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
