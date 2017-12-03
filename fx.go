@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/metrue/fx/server"
 	"github.com/metrue/fx/commands"
+	"github.com/metrue/fx/server"
 )
 
 const version string = "0.0.2"
@@ -15,7 +15,7 @@ const usage = `Usage:
   $ fx up   func1 func2 ...       deploy a function or a group of functions
   $ fx down func1 func2 ...       destroy a function or a group of functions
   $ fx list                       list deployed services
-  $ fx serve                     manage fx server
+  $ fx serve                      manage fx server
   $ fx --version                  show current version of f(x)
 `
 
