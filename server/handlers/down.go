@@ -18,7 +18,7 @@ func Down(containID string, msgChan chan<- string, doneChan chan<- bool) {
 		return false
 	}
 
-	err := api.Stop(containID)
+	err := api.Remove(containID)
 	if checkErr(err) {
 		return
 	}
