@@ -3,10 +3,9 @@ package commands
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/metrue/fx/common"
-	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/utils"
 )
 
 type FunctionMeta struct {
@@ -39,7 +38,7 @@ func Up() {
 
 	for _, function := range functions {
 		funcMeta := &FunctionMeta{
-			lang: config.ExtLangMap[filepath.Ext(function)],
+			lang: utils.GetLangFromFileName(function),
 			path: function,
 		}
 

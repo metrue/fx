@@ -262,3 +262,17 @@ func GetHostIP() (ip net.IP) {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	return localAddr.IP
 }
+
+// get programming language from file name extension
+func GetLangFromFileName(fileName string) (lang string) {
+	extLangMap := map[string]string{
+		".js":   "node",
+		".go":   "go",
+		".rb":   "ruby",
+		".py":   "python",
+		".php":  "php",
+		".jl":   "julia",
+		".java": "java",
+	}
+	return extLangMap[filepath.Ext(fileName)]
+}
