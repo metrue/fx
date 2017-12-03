@@ -20,7 +20,13 @@ type Worker struct {
 }
 
 // NewWorker creates and returns a new worker
-func NewWorker(funcMeta *FunctionMeta, conn *websocket.Conn, ch chan<- bool) *Worker {
+func NewWorker(funcMeta *FunctionMeta, serverAddress string, ch chan<- bool) *Worker {
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(serverAddress, nil)
+	if err != nil {
+		panic(err)
+	}
+
 	worker := &Worker{
 		funcMeta: funcMeta,
 		conn:     conn,

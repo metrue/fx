@@ -2,11 +2,9 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/gorilla/websocket"
 	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/config"
 )
@@ -32,7 +30,6 @@ func Up() {
 	)
 
 	fmt.Println("Deploy starting...")
-	dialer := websocket.Dialer{}
 
 	channel := make(chan bool)
 	defer close(channel)
@@ -41,18 +38,12 @@ func Up() {
 	numFail := 0
 
 	for _, function := range functions {
-		conn, _, err := dialer.Dial(address, nil)
-		if err != nil {
-			log.Print(err)
-			numFail++
-			continue
-		}
 		funcMeta := &FunctionMeta{
 			lang: config.ExtLangMap[filepath.Ext(function)],
 			path: function,
 		}
 
-		worker := NewWorker(funcMeta, conn, channel)
+		worker := NewWorker(funcMeta, address, channel)
 		go worker.Work()
 	}
 
