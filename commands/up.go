@@ -11,6 +11,11 @@ import (
 	"github.com/metrue/fx/config"
 )
 
+type FunctionMeta struct {
+	lang string
+	path string
+}
+
 // Up starts the functions specified in flags
 func Up() {
 	option := "up"
@@ -42,8 +47,12 @@ func Up() {
 			numFail++
 			continue
 		}
-		lang := config.ExtLangMap[filepath.Ext(function)]
-		worker := NewWorker(function, lang, conn, channel)
+		funcMeta := &FunctionMeta{
+			lang: config.ExtLangMap[filepath.Ext(function)],
+			path: function,
+		}
+
+		worker := NewWorker(funcMeta, conn, channel)
 		go worker.Work()
 	}
 
