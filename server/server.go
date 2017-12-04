@@ -26,7 +26,6 @@ func up(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade: ", err)
 	}
 
-	log.Println("to up")
 	defer c.Close()
 
 	_, lang, err := c.ReadMessage()
