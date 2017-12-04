@@ -106,20 +106,14 @@ func down(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ids []string
-	if string(message) == "*" {
-		fmt.Println("end all")
-		containers := handlers.List()
-		ids = make([]string, len(containers))
-		for i, container := range containers {
-			ids[i] = container.ID[:10]
-		}
-	} else {
-		fmt.Println("end list")
-		ids = strings.Split(string(message), " ")
+	if msg := string(message); msg != "*" {
+		ids = strings.Split(msg, " ")
 	}
-
-	for _, id := range ids {
-		go handlers.Down(id, msgCh, doneCh)
+	containers := handlers.List(ids...)
+	count := len(containers)
+	for _, container := range containers {
+		ids = append(ids, container.ID)
+		go handlers.Down(container.ID[:10], container.Image, msgCh, doneCh)
 	}
 
 	numSuccess := 0
@@ -137,7 +131,7 @@ func down(w http.ResponseWriter, r *http.Request) {
 				numFail++
 			}
 
-			if numSuccess+numFail == len(ids) {
+			if numSuccess+numFail == count {
 				res := fmt.Sprintf("Succed: %d", numSuccess)
 				c.WriteMessage(mt, []byte(res))
 				res = fmt.Sprintf("Failed: %d", numFail)

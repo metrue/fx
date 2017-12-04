@@ -9,13 +9,16 @@ import (
 )
 
 // List returns the list of running services
-func List() []types.Container {
+func List(containerIds ...string) []types.Container {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
 	filters := filters.NewArgs()
-	filters.Add("label", "fx")
+	filters.Add("label", "belong-to=fx")
+	for _, id := range containerIds {
+		filters.Add("id", id)
+	}
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
 		All:     true,
 		Filters: filters,

@@ -42,13 +42,14 @@ func Build(name string, dir string) {
 	buildOptions := types.ImageBuildOptions{
 		Dockerfile: "Dockerfile", // optional, is the default
 		Tags:       []string{name},
-		Labels:     map[string]string{"fx": ""},
+		Labels:     map[string]string{"belong-to": "fx"},
 	}
 	buildResponse, buildErr := cli.ImageBuild(context.Background(), dockerBuildContext, buildOptions)
 	if buildErr != nil {
 		panic(buildErr)
 	}
 	log.Println("build", buildResponse.OSType)
+	defer buildResponse.Body.Close()
 
 	scanner := bufio.NewScanner(buildResponse.Body)
 	for scanner.Scan() {
@@ -132,4 +133,14 @@ func Remove(containerID string) (err error) {
 		return err
 	}
 	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
+}
+
+// Remove remove docker image by imageID
+func ImageRemove(imageID string) (err error) {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+	_, err = cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
+	return err
 }
