@@ -150,11 +150,11 @@ func closeConn(c *websocket.Conn, msg string) {
 }
 
 // Start parses input and launches the fx server in a blocking process
-func Start() {
+func Start(verbose bool) {
 	flag.Parse()
 	log.SetFlags(0)
 
-	env.Init(true)
+	env.Init(verbose)
 
 	http.HandleFunc("/health", health)
 	http.HandleFunc("/up", up)

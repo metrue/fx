@@ -29,7 +29,7 @@ func helpAndExit() {
 	os.Exit(0)
 }
 
-func checkFlag() {
+func parseFlags() (version bool, help bool, verbose bool) {
 	helpPtr := flag.Bool(
 		"help",
 		false,
@@ -42,13 +42,19 @@ func checkFlag() {
 		"Version information.",
 	)
 
+	verbosePtr := flag.Bool(
+		"verbose",
+		false,
+		"Make the operation more talkative",
+	)
+
 	flag.Parse()
-	if *helpPtr {
-		helpAndExit()
-	}
-	if *versionPtr {
-		versionAndExit()
-	}
+
+	version = *versionPtr
+	help = *helpPtr
+	verbose = *verbosePtr
+
+	return version, help, verbose
 }
 
 func main() {
@@ -56,11 +62,19 @@ func main() {
 	if nArgs < 2 {
 		helpAndExit()
 	}
-	checkFlag()
+
+	version, help, verbose := parseFlags()
+	if help {
+		helpAndExit()
+	}
+
+	if version {
+		versionAndExit()
+	}
 
 	switch os.Args[1] {
 	case "serve":
-		server.Start()
+		server.Start(verbose)
 	case "up":
 		commands.Up()
 	case "down":
