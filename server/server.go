@@ -68,14 +68,19 @@ func list(w http.ResponseWriter, r *http.Request) {
 
 	containers := handlers.List()
 
-	msg := "Function ID" + "\t" + "Service URL"
+	format := "%-15s\t%-10s\t%s"
+	msg := fmt.Sprintf(format, "Function ID", "State", "Service URL")
 	err = c.WriteMessage(mt, []byte(msg))
 	if err != nil {
 		log.Println("write: ", err)
 	}
 
 	for _, container := range containers {
-		msg = fmt.Sprintf("%s\t%s:%d", container.ID[:10], container.Ports[0].IP, container.Ports[0].PublicPort)
+		var serviceURL string
+		if len(container.Ports) > 0 {
+			serviceURL = fmt.Sprintf("%s:%d", container.Ports[0].IP, container.Ports[0].PublicPort)
+		}
+		msg = fmt.Sprintf(format, container.ID[:10], container.State, serviceURL)
 		err = c.WriteMessage(mt, []byte(msg))
 		if err != nil {
 			log.Println("write: ", err)
