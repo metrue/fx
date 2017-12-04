@@ -62,12 +62,13 @@ func initWorkDirectory(lang string, dir string) {
 }
 
 func cleanup(dir string) {
+	format := "cleanup temp file [%s] error: %s\n"
 	if err := os.RemoveAll(dir); err != nil {
-		log.Printf("cleanup [%s] error: %s\n", dir, err.Error())
+		log.Printf(format, dir, err.Error())
 	}
 	dirTar := dir + ".tar"
 	if err := os.RemoveAll(dirTar); err != nil {
-		log.Printf("cleanup [%s] error: %s\n", dirTar, err.Error())
+		log.Printf(format, dirTar, err.Error())
 	}
 }
 
