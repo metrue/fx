@@ -17,6 +17,7 @@ func List() []types.Container {
 	filters := filters.NewArgs()
 	filters.Add("label", "fx")
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
+		All:     true,
 		Filters: filters,
 	})
 	if err != nil {
