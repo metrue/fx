@@ -172,6 +172,9 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/pplam" target="_blank">
             <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
         </a>
+        <a href="https://github.com/xwjdsh" target="_blank">
+            <img alt="xwjdsh" src="https://avatars2.githubusercontent.com/u/11025519?v=4&s=50" width="50">
+        </a>
         <a href="https://github.com/mbesancon" target="_blank">
             <img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">
         </a>
