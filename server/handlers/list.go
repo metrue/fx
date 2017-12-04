@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 )
 
@@ -13,7 +14,11 @@ func List() []types.Container {
 	if err != nil {
 		panic(err)
 	}
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	filters := filters.NewArgs()
+	filters.Add("label", "fx")
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
+		Filters: filters,
+	})
 	if err != nil {
 		panic(err)
 	}

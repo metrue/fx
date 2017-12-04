@@ -42,6 +42,7 @@ func Build(name string, dir string) {
 	buildOptions := types.ImageBuildOptions{
 		Dockerfile: "Dockerfile", // optional, is the default
 		Tags:       []string{name},
+		Labels:     map[string]string{"fx": ""},
 	}
 	buildResponse, buildErr := cli.ImageBuild(context.Background(), dockerBuildContext, buildOptions)
 	if buildErr != nil {
