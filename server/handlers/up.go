@@ -78,7 +78,7 @@ func Up(lang []byte, body []byte, connection *websocket.Conn, messageType int) {
 		panic(err)
 	}
 	var guid = xid.New().String()
-	var dir = os.TempDir() + "fx-" + guid
+	var dir = path.Join(os.TempDir(), "fx-", guid)
 	defer cleanup(dir)
 	var name = guid
 	initWorkDirectory(string(lang), dir)
