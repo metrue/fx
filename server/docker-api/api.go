@@ -124,3 +124,12 @@ func Stop(containerID string) (err error) {
 	err = cli.ContainerStop(context.Background(), containerID, &timeout)
 	return err
 }
+
+// Remove interrupts and remove a running container
+func Remove(containerID string) (err error) {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
+}
