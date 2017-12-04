@@ -12,22 +12,26 @@ import (
 
 // Worker handles a functional service
 type Worker struct {
-	conn   *websocket.Conn
-	ch     chan<- bool
-	src    string
-	lang   string
-	logger *log.Logger
-	dead   bool
+	conn     *websocket.Conn
+	ch       chan<- bool
+	funcMeta *FunctionMeta
+	logger   *log.Logger
+	dead     bool
 }
 
 // NewWorker creates and returns a new worker
-func NewWorker(src, lang string, conn *websocket.Conn, ch chan<- bool) *Worker {
+func NewWorker(funcMeta *FunctionMeta, serverAddress string, ch chan<- bool) *Worker {
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(serverAddress, nil)
+	if err != nil {
+		panic(err)
+	}
+
 	worker := &Worker{
-		src:    src,
-		lang:   lang,
-		conn:   conn,
-		ch:     ch,
-		logger: log.NewLogger("[" + src + "]"),
+		funcMeta: funcMeta,
+		conn:     conn,
+		ch:       ch,
+		logger:   log.NewLogger("[" + funcMeta.path + "]"),
 	}
 	worker.conn.SetCloseHandler(worker.closeHandler)
 	return worker
@@ -68,7 +72,7 @@ func (worker *Worker) Work() {
 	conn := worker.conn
 	logger.Log("Deploying...")
 	// Open function source file
-	file, err := os.Open(worker.src)
+	file, err := os.Open(worker.funcMeta.path)
 	if worker.checkErr(err) {
 		return
 	}
@@ -76,7 +80,7 @@ func (worker *Worker) Work() {
 	// Send source language type
 	err = conn.WriteMessage(
 		websocket.TextMessage,
-		[]byte(worker.lang),
+		[]byte(worker.funcMeta.lang),
 	)
 	if worker.checkErr(err) {
 		return

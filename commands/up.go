@@ -2,14 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"path/filepath"
 
-	"github.com/gorilla/websocket"
 	"github.com/metrue/fx/common"
-	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/utils"
 )
+
+type FunctionMeta struct {
+	lang string
+	path string
+}
 
 // Up starts the functions specified in flags
 func Up() {
@@ -27,7 +29,6 @@ func Up() {
 	)
 
 	fmt.Println("Deploy starting...")
-	dialer := websocket.Dialer{}
 
 	channel := make(chan bool)
 	defer close(channel)
@@ -36,14 +37,12 @@ func Up() {
 	numFail := 0
 
 	for _, function := range functions {
-		conn, _, err := dialer.Dial(address, nil)
-		if err != nil {
-			log.Print(err)
-			numFail++
-			continue
+		funcMeta := &FunctionMeta{
+			lang: utils.GetLangFromFileName(function),
+			path: function,
 		}
-		lang := config.ExtLangMap[filepath.Ext(function)]
-		worker := NewWorker(function, lang, conn, channel)
+
+		worker := NewWorker(funcMeta, address, channel)
 		go worker.Work()
 	}
 
