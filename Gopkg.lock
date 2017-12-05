@@ -47,7 +47,7 @@
   branch = "master"
   name = "github.com/metrue/fx"
   packages = ["commands","common","config","log","server","server/docker-api","server/env","server/handlers","utils"]
-  revision = "8ed8fac9e9a980d75fa82f2ccf14220e40e2fc6b"
+  revision = "27a02c8a7476e83cefbd73a9d6205674eb21790d"
 
 [[projects]]
   name = "github.com/phayes/freeport"
@@ -78,6 +78,13 @@
   name = "golang.org/x/sys"
   packages = ["windows"]
   revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jteeuwen/go-bindata"
+  packages = ["."]
+  revision = "a0ff2567cfb70903282db057e799fd826784d41d"
+
 
 [solve-meta]
   analyzer-name = "dep"
