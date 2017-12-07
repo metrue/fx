@@ -12,9 +12,9 @@ import (
 
 func GetGoImageAssets() {
 	names := []string{
-		"assets/images/go/Dockerfile",
-		"assets/images/go/app.go",
-		"assets/images/go/fx.go",
+		"assets/dockerfiles/fx/go/Dockerfile",
+		"assets/dockerfiles/fx/go/app.go",
+		"assets/dockerfiles/fx/go/fx.go",
 	}
 	for _, name := range names {
 		data, err := common.Asset(name)
