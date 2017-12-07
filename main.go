@@ -1,20 +1,20 @@
 package main
 
 import (
-	"path"
 	"io/ioutil"
+	"path"
 	"path/filepath"
 	// "fmt"
 
-	"./common"
-	"./utils"
+	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/utils"
 )
 
 func GetGoImageAssets() {
 	names := []string{
-		"images/go/Dockerfile",
-		"images/go/app.go",
-		"images/go/fx.go",
+		"assets/images/go/Dockerfile",
+		"assets/images/go/app.go",
+		"assets/images/go/fx.go",
 	}
 	for _, name := range names {
 		data, err := common.Asset(name)
@@ -24,9 +24,9 @@ func GetGoImageAssets() {
 
 		fp := path.Join("/tmp", name)
 		dir := filepath.Dir(fp)
-		utils.EnsurerDir(dir);
+		utils.EnsurerDir(dir)
 
-		werr :=ioutil.WriteFile(fp, data, 0644)
+		werr := ioutil.WriteFile(fp, data, 0644)
 		if werr != nil {
 			panic(werr)
 		}
@@ -36,29 +36,3 @@ func GetGoImageAssets() {
 func main() {
 	GetGoImageAssets()
 }
-
-// images/go/Dockerfile
-// images/go/app.go
-// images/go/fx.go
-// images/java/Dockerfile
-// images/java/pom.xml
-// images/java/src/main/java/fx/Fx.java
-// images/java/src/main/java/fx/app.java
-// images/julia/Dockerfile
-// images/julia/REQUIRE
-// images/julia/app.jl
-// images/julia/deps.jl
-// images/julia/fx.jl
-// images/node/Dockerfile
-// images/node/app.js
-// images/node/fx.js
-// images/php/Dockerfile
-// images/php/fx.php
-// images/php/index.php
-// images/python/Dockerfile
-// images/python/app.py
-// images/python/fx.py
-// images/ruby/Dockerfile
-// images/ruby/app.rb
-// images/ruby/fx.rb
-
