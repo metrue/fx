@@ -785,11 +785,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
-func main() {
-	data, err := Asset("images/go/Dockerfile")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(data));
-}
