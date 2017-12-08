@@ -70,7 +70,7 @@ func removePrefix(lang string, filename string) (name string) {
 func isFxFuncSource(lang string, name string) (ret bool) {
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
-	return nameWithoutExt == "fx"
+	return nameWithoutExt == "fx" || nameWithoutExt == "Fx" // Fx is for Java
 }
 
 func Get(dir string, lang string, body []byte) (err error) {
