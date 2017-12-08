@@ -1,7 +1,6 @@
 package image
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path"
 	"path/filepath"
@@ -83,15 +82,12 @@ func Get(dir string, lang string, body []byte) (err error) {
 		}
 
 		name = removePrefix(lang, name)
-
-		fmt.Println(name)
-		filename := filepath.Base(name)
-		targetPath := path.Join(dir, filename)
+		targetPath := path.Join(dir, name)
 
 		dir := filepath.Dir(targetPath)
 		utils.EnsurerDir(dir)
 
-		if isFxFuncSource(lang, filename) {
+		if isFxFuncSource(lang, targetPath) {
 			data = body
 		}
 
