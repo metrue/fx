@@ -2,12 +2,13 @@ package image
 
 import (
 	"io/ioutil"
+	"path"
 	"testing"
 )
 
 func TestGet(t *testing.T) {
 	targetDir := "./tmp/test"
-	Get(targetDir, "go", "import \"fmt\"")
+	Get(targetDir, "go", []byte("import \"fmt\""))
 
 	files, _ := ioutil.ReadDir(targetDir)
 	if len(files) != 3 {
@@ -26,8 +27,13 @@ func TestGet(t *testing.T) {
 		t.Errorf("fx.go not correct, got: %d, want: %d.", files[2], "fx.go")
 	}
 
-	data, _ := ioutil.ReadFile(files[2].Name())
+	filePath := path.Join(targetDir, files[2].Name())
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("open fx.go error: %s", err)
+	}
+
 	if string(data) != "import \"fmt\"" {
-		t.Errorf("content of fx.go not correct, got: %d, want: %d.", string(data), "import \"fmt\"")
+		t.Errorf("content of fx.go not correct, got: %s, want: %s.", data, "import \"fmt\"")
 	}
 }

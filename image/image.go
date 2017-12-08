@@ -73,7 +73,7 @@ func isFxFuncSource(lang string, name string) (ret bool) {
 	return nameWithoutExt == "fx"
 }
 
-func Get(dir string, lang string, body string) (err error) {
+func Get(dir string, lang string, body []byte) (err error) {
 	names := assetsMap[lang]
 	err = nil
 	for _, name := range names {
@@ -90,6 +90,10 @@ func Get(dir string, lang string, body string) (err error) {
 
 		dir := filepath.Dir(targetPath)
 		utils.EnsurerDir(dir)
+
+		if isFxFuncSource(lang, filename) {
+			data = body
+		}
 
 		writeErr := ioutil.WriteFile(targetPath, data, 0644)
 		if writeErr != nil {
