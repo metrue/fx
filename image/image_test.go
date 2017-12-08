@@ -6,7 +6,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	targetDir := "/tmp/fx/test"
+	targetDir := "./tmp/test"
 	Get(targetDir, "go", "import \"fmt\"")
 
 	files, _ := ioutil.ReadDir(targetDir)

@@ -1,10 +1,12 @@
 package image
 
 import (
+	"fmt"
 	"fx/utils"
 	"io/ioutil"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/metrue/fx/common"
 )
@@ -60,6 +62,17 @@ var assetsMap = map[string][]string{
 	},
 }
 
+func removePrefix(lang string, filename string) (name string) {
+	prefix := "assets/dockerfiles/fx" + "/" + lang + "/"
+	return strings.Split(filename, prefix)[1]
+}
+
+func isFxFuncSource(lang string, name string) (ret bool) {
+	basename := filepath.Base(name)
+	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
+	return nameWithoutExt == "fx"
+}
+
 func Get(dir string, lang string, body string) (err error) {
 	names := assetsMap[lang]
 	err = nil
@@ -69,6 +82,9 @@ func Get(dir string, lang string, body string) (err error) {
 			err = assetErr
 		}
 
+		name = removePrefix(lang, name)
+
+		fmt.Println(name)
 		filename := filepath.Base(name)
 		targetPath := path.Join(dir, filename)
 
