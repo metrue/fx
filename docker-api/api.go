@@ -22,13 +22,18 @@ type dockerInfo struct {
 	Stream string `json:"stream"`
 }
 
-// Build builds a docker image from the image directory
-func Build(name string, dir string) {
-	cli, err := client.NewEnvClient()
+var cli *client.Client
+
+func init() {
+	var err error
+	cli, err = client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
+}
 
+// Build builds a docker image from the image directory
+func Build(name string, dir string) {
 	tar := new(archivex.TarFile)
 	tar.Create(dir)
 	tar.AddAll(dir, false)
@@ -66,11 +71,6 @@ func Build(name string, dir string) {
 // Pull image from hub.docker.com
 func Pull(name string, verbose bool) {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		panic(err)
-	}
-
 	if r, pullErr := cli.ImagePull(ctx, name, types.ImagePullOptions{}); pullErr != nil {
 		panic(pullErr)
 	} else {
@@ -83,10 +83,6 @@ func Pull(name string, verbose bool) {
 // Deploy spins up a new container
 func Deploy(name string, dir string, port string) {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		panic(err)
-	}
 	imageName := name
 	containerConfig := &container.Config{
 		Image: imageName,
@@ -117,10 +113,6 @@ func Deploy(name string, dir string, port string) {
 
 // Stop interrupts a running container
 func Stop(containerID string) (err error) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return err
-	}
 	timeout := time.Duration(1) * time.Second
 	err = cli.ContainerStop(context.Background(), containerID, &timeout)
 	return err
@@ -128,19 +120,11 @@ func Stop(containerID string) (err error) {
 
 // Remove interrupts and remove a running container
 func Remove(containerID string) (err error) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return err
-	}
 	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
 }
 
 // Remove remove docker image by imageID
 func ImageRemove(imageID string) (err error) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return err
-	}
 	_, err = cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
 	return err
 }
