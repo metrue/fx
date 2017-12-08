@@ -2,13 +2,13 @@ package image
 
 import (
 	"fmt"
-	"fx/utils"
 	"io/ioutil"
 	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/utils"
 )
 
 var funcNames = map[string]string{
