@@ -1,12 +1,14 @@
 package server
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/env"
 	"github.com/metrue/fx/handlers"
@@ -29,28 +31,32 @@ func up(w http.ResponseWriter, r *http.Request) {
 
 	defer c.Close()
 
-	_, lang, err := c.ReadMessage()
+	mt, data, err := c.ReadMessage()
 	if err != nil {
 		log.Printf("read error: %s", err.Error())
 		return
 	}
+	var funcList []common.FunctionMeta
+	json.Unmarshal(data, &funcList)
 
-	mt, body, err := c.ReadMessage()
-	if err != nil {
-		log.Printf("read error: %s", err.Error())
-		return
+	count := len(funcList)
+	upResultCh := make(chan Message.UpMsgMeta, count)
+	for _, funcMeta := range funcList {
+		go handlers.Up(funcMeta, upResultCh)
 	}
 
-	handlers.Up(lang, body, c, mt)
-
-	for {
-		_, msg, err := c.ReadMessage()
-		if err != nil {
-			log.Printf("read error: %s", err.Error())
-			return
+	// collect down result
+	var ups []Message.UpMsgMeta
+	for upResult := range upResultCh {
+		ups = append(ups, upResult)
+		if len(ups) == count {
+			close(upResultCh)
 		}
-		log.Println("read:", msg)
 	}
+
+	msg := Message.CreateUpMessage(ups)
+	c.WriteMessage(mt, []byte(msg))
+	closeConn(c, "0")
 }
 
 func list(w http.ResponseWriter, r *http.Request) {

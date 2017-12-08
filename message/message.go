@@ -32,3 +32,22 @@ ID			ServiceStatus		ResourceStatus`
 	msg += msgSuffix
 	return msg
 }
+
+type UpMsgMeta struct {
+	FunctionSource string
+	LocalAddress   string
+	RemoteAddress  string
+}
+
+func CreateUpMessage(ups []UpMsgMeta) (msg string) {
+	msgPrefix := `------------------------------------------------------
+FunctionSource			LocalAddress		RemoteAddress`
+
+	msg += msgPrefix
+	for _, up := range ups {
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", up.FunctionSource, up.LocalAddress, up.RemoteAddress)
+	}
+	msgSuffix := "\n------------------------------------------------------"
+	msg += msgSuffix
+	return msg
+}
