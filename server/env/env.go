@@ -1,13 +1,6 @@
 package env
 
-import (
-	"fmt"
-	"path"
-
-	"github.com/metrue/fx/config"
-	api "github.com/metrue/fx/server/docker-api"
-	"github.com/metrue/fx/utils"
-)
+import api "github.com/metrue/fx/server/docker-api"
 
 func PullBaseDockerImage(verbose bool) {
 	baseImages := []string{
@@ -26,24 +19,7 @@ func PullBaseDockerImage(verbose bool) {
 	}
 }
 
-func FetchPresetDockerfile() {
-	fmt.Println("Downloading Resources ...")
-	if err := utils.Download("./images.zip", config.Client["remote_images_url"]); err != nil {
-		panic(err)
-	}
-	if err := utils.Unzip("./images.zip", config.Client["cache_dir"]); err != nil {
-		panic(err)
-	}
-}
-
 // Init creates the server
 func Init(verbose bool) {
-	exist, err := utils.IsPathExists(path.Join(config.Client["cache_dir"], "images"))
-	if err != nil {
-		panic(err)
-	}
-	if !exist {
-		FetchPresetDockerfile()
-	}
 	PullBaseDockerImage(verbose)
 }
