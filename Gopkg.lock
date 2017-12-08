@@ -46,8 +46,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/metrue/fx"
-  packages = ["commands","common","config","log","server","server/docker-api","server/env","server/handlers","utils"]
-  revision = "27a02c8a7476e83cefbd73a9d6205674eb21790d"
+  packages = ["commands","common","config","docker-api","env","handlers","image","log","server","utils"]
+  revision = "2872f64a1298b98f14471c384bbc0d0a4c495618"
 
 [[projects]]
   name = "github.com/phayes/freeport"
@@ -79,16 +79,9 @@
   packages = ["windows"]
   revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
 
-[[projects]]
-  branch = "master"
-  name = "github.com/jteeuwen/go-bindata"
-  packages = ["."]
-  revision = "a0ff2567cfb70903282db057e799fd826784d41d"
-
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1d5d223cc97f10443430ebff583cc56a8ab851e4284bef8b20b0d916933de5a6"
+  inputs-digest = "2caef8ac96ea5238ab85196869b84f1779036334e940cb1e763da7805545bf59"
   solver-name = "gps-cdcl"
   solver-version = 1
