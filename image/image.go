@@ -1,7 +1,12 @@
 package image
 
 import (
-	"github.com/metrue/common"
+	"fx/utils"
+	"io/ioutil"
+	"path"
+	"path/filepath"
+
+	"github.com/metrue/fx/common"
 )
 
 var funcNames = map[string]string{
@@ -14,23 +19,23 @@ var funcNames = map[string]string{
 	"java":   "/src/main/java/fx/Fx.java",
 }
 
-var assetsMap = map[string][string] {
+var assetsMap = map[string][]string{
 	"go": {
-		"assets/images/go/Dockerfile",
-		"assets/images/go/app.go",
-		"assets/images/go/fx.go",
+		"assets/dockerfiles/fx/go/Dockerfile",
+		"assets/dockerfiles/fx/go/app.go",
+		"assets/dockerfiles/fx/go/fx.go",
 	},
 	"java": {
 		"assets/dockerfiles/fx/java/Dockerfile",
 		"assets/dockerfiles/fx/java/pom.xml",
-		"assets/dockerfiles/fx/java/src/main/java/fx/Fx.java"
+		"assets/dockerfiles/fx/java/src/main/java/fx/Fx.java",
 		"assets/dockerfiles/fx/java/src/main/java/fx/app.java",
 	},
 	"julia": {
 		"assets/dockerfiles/fx/julia/Dockerfile",
 		"assets/dockerfiles/fx/julia/REQUIRE",
 		"assets/dockerfiles/fx/julia/app.jl",
-		"assets/dockerfiles/fx/julia/deps.jl"
+		"assets/dockerfiles/fx/julia/deps.jl",
 		"assets/dockerfiles/fx/julia/fx.jl",
 	},
 	"node": {
@@ -52,15 +57,28 @@ var assetsMap = map[string][string] {
 		"assets/dockerfiles/fx/ruby/Dockerfile",
 		"assets/dockerfiles/fx/ruby/app.rb",
 		"assets/dockerfiles/fx/ruby/fx.rb",
-	}
+	},
 }
 
-func Get(dir string, lang []byte, body []byte) (err error){
+func Get(dir string, lang string, body string) (err error) {
 	names := assetsMap[lang]
+	err = nil
 	for _, name := range names {
-		data, err := common.Asset(name);
+		data, assetErr := common.Asset(name)
+		if assetErr != nil {
+			err = assetErr
+		}
 
-		targetPath := path.Join(dir,name)
-		err := ioutil.WriteFile(targetPath, data, 0644)
+		filename := filepath.Base(name)
+		targetPath := path.Join(dir, filename)
+
+		dir := filepath.Dir(targetPath)
+		utils.EnsurerDir(dir)
+
+		writeErr := ioutil.WriteFile(targetPath, data, 0644)
+		if writeErr != nil {
+			err = writeErr
+		}
 	}
+	return err
 }
