@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/image"
 	api "github.com/metrue/fx/server/docker-api"
 	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
@@ -21,43 +22,10 @@ func closeConnection(connection *websocket.Conn) {
 	)
 }
 
-var funcNames = map[string]string{
-	"go":     "/fx.go",
-	"node":   "/fx.js",
-	"ruby":   "/fx.rb",
-	"python": "/fx.py",
-	"php":    "/fx.php",
-	"julia":  "/fx.jl",
-	"java":   "/src/main/java/fx/Fx.java",
-}
-
-func dispatchFuncion(lang string, data []byte, dir string) {
-	fileName := funcNames[lang]
-	f, err := os.Create(dir + fileName)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	n, err := f.Write(data)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Println("func recved:", n)
-}
-
 func notify(connection *websocket.Conn, messageType int, message string) {
 	err := connection.WriteMessage(messageType, []byte(message))
 	if err != nil {
 		log.Println("write: ", err)
-	}
-}
-
-func initWorkDirectory(lang string, dir string) {
-	err := utils.CopyDir(path.Join(os.Getenv("HOME"), ".fx/images", lang), dir)
-	if err != nil {
-		panic(err)
 	}
 }
 
@@ -82,10 +50,8 @@ func Up(lang []byte, body []byte, connection *websocket.Conn, messageType int) {
 	var dir = path.Join(os.TempDir(), "fx-", guid)
 	defer cleanup(dir)
 	var name = guid
-	initWorkDirectory(string(lang), dir)
-	notify(connection, messageType, "work dir initialized")
-	dispatchFuncion(string(lang), body, dir)
-	notify(connection, messageType, "function dispatched")
+	image.Get(dir, string(lang), body)
+
 	api.Build(name, dir)
 	notify(connection, messageType, "function built")
 	api.Deploy(name, dir, strconv.Itoa(port))
