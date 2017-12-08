@@ -40,11 +40,11 @@ func TestCreateUpMessage(t *testing.T) {
 
 	ups := []UpMsgMeta{a, b}
 	msg := CreateUpMessage(ups)
-	expectMsg := `------------------------------------------------------
-FunctionSource			LocalAddress		RemoteAddress
+	expectMsg := `-----------------------------------------------------------------
+FunctionSource				LocalAddress			RemoteAddress
 a.js		127.0.0.1:9090			156.23.23.1:9090
 b.js		127.0.0.1:9090			156.23.23.1:9090
-------------------------------------------------------`
+-----------------------------------------------------------------`
 	if msg != expectMsg {
 		t.Errorf("expect: \n%s, \ngot: \n%s", expectMsg, msg)
 	}
