@@ -4,20 +4,20 @@ import "testing"
 
 func TestCreateDownMessage(t *testing.T) {
 	a := DownMsgMeta{
-		containerId:     "id1",
-		containerStatus: "stopped",
-		imageStatus:     "removed",
+		ContainerId:     "id1",
+		ContainerStatus: "stopped",
+		ImageStatus:     "removed",
 	}
 	b := DownMsgMeta{
-		containerId:     "id2",
-		containerStatus: "stopped",
-		imageStatus:     "removed",
+		ContainerId:     "id2",
+		ContainerStatus: "stopped",
+		ImageStatus:     "removed",
 	}
 
 	downs := []DownMsgMeta{a, b}
 	msg := CreateDownMessage(downs)
 	expectMsg := `------------------------------------------------------
-ID		ServiceStatus		ResourceStatus
+ID			ServiceStatus		ResourceStatus
 id1		stopped			removed
 id2		stopped			removed
 ------------------------------------------------------`

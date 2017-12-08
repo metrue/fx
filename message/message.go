@@ -11,9 +11,9 @@ func NewMessage(msgType string, msgBody string) {
 }
 
 type DownMsgMeta struct {
-	containerId     string
-	containerStatus string
-	imageStatus     string
+	ContainerId     string
+	ContainerStatus string
+	ImageStatus     string
 }
 
 //----------------------------
@@ -22,11 +22,11 @@ type DownMsgMeta struct {
 //----------------------------
 func CreateDownMessage(downs []DownMsgMeta) (msg string) {
 	msgPrefix := `------------------------------------------------------
-ID		ServiceStatus		ResourceStatus`
+ID			ServiceStatus		ResourceStatus`
 
 	msg += msgPrefix
 	for _, down := range downs {
-		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", down.containerId, down.containerStatus, down.imageStatus)
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", down.ContainerId, down.ContainerStatus, down.ImageStatus)
 	}
 	msgSuffix := "\n------------------------------------------------------"
 	msg += msgSuffix

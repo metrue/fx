@@ -10,6 +10,7 @@ import (
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/env"
 	"github.com/metrue/fx/handlers"
+	Message "github.com/metrue/fx/message"
 
 	"github.com/gorilla/websocket"
 )
@@ -96,9 +97,6 @@ func down(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	doneCh := make(chan bool)
-	msgCh := make(chan string)
-
 	mt, message, err := c.ReadMessage()
 	if err != nil {
 		log.Println("read: ", err)
@@ -109,39 +107,26 @@ func down(w http.ResponseWriter, r *http.Request) {
 		ids = strings.Split(msg, " ")
 	}
 	containers := handlers.List(ids...)
+
 	count := len(containers)
+	downResultCh := make(chan Message.DownMsgMeta, count)
 	for _, container := range containers {
 		ids = append(ids, container.ID)
-		go handlers.Down(container.ID[:10], container.Image, msgCh, doneCh)
+		go handlers.Down(container.ID[:10], container.Image, downResultCh)
 	}
 
-	numSuccess := 0
-	numFail := 0
-	defer func() {
-		close(doneCh)
-		close(msgCh)
-	}()
-	for {
-		select {
-		case newDone := <-doneCh:
-			if newDone {
-				numSuccess++
-			} else {
-				numFail++
-			}
-
-			if numSuccess+numFail == count {
-				res := fmt.Sprintf("Succed: %d", numSuccess)
-				c.WriteMessage(mt, []byte(res))
-				res = fmt.Sprintf("Failed: %d", numFail)
-				c.WriteMessage(mt, []byte(res))
-				closeConn(c, "0")
-				return
-			}
-		case newMsg := <-msgCh:
-			c.WriteMessage(mt, []byte(newMsg))
+	// collect down result
+	var downs []Message.DownMsgMeta
+	for downResult := range downResultCh {
+		downs = append(downs, downResult)
+		if len(downs) == count {
+			close(downResultCh)
 		}
 	}
+
+	msg := Message.CreateDownMessage(downs)
+	c.WriteMessage(mt, []byte(msg))
+	closeConn(c, "0")
 }
 
 func closeConn(c *websocket.Conn, msg string) {

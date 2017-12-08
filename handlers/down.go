@@ -1,36 +1,26 @@
 package handlers
 
 import (
-	"fmt"
-	"log"
-
 	api "github.com/metrue/fx/docker-api"
+	Message "github.com/metrue/fx/message"
 )
 
 // Down stops the processes designated by a function
-func Down(containID, image string, msgChan chan<- string, doneChan chan<- bool) {
-	checkErr := func(err error) bool {
-		if err != nil {
-			log.Println(err)
-			doneChan <- false
-			return true
-		}
-		return false
+func Down(containerId string, image string, result chan<- Message.DownMsgMeta) {
+	res := Message.DownMsgMeta{
+		ContainerId:     containerId,
+		ContainerStatus: "",
+		ImageStatus:     "",
+	}
+	err := api.Remove(containerId)
+	if err == nil {
+		res.ContainerStatus = "stopped"
 	}
 
-	err := api.Remove(containID)
-	if checkErr(err) {
-		return
-	}
-
-	fmt.Println("I am closed " + containID)
-	msgChan <- fmt.Sprintf("Container[%s] Removed", containID)
 	if err := api.ImageRemove(image); err != nil {
-		log.Printf("cleanup docker image[%s] error: %s\n", image, err.Error())
-		msgChan <- fmt.Sprintf("Image[%s] Removing Failed", image)
+		res.ImageStatus = "not removed"
 	} else {
-		msgChan <- fmt.Sprintf("Image[%s] Removed", image)
+		res.ImageStatus = "removed"
 	}
-
-	doneChan <- true
+	result <- res
 }
