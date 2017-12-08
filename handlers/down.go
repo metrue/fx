@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	api "github.com/metrue/fx/server/docker-api"
+	api "github.com/metrue/fx/docker-api"
 )
 
 // Down stops the processes designated by a function

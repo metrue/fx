@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/server/env"
-	"github.com/metrue/fx/server/handlers"
+	"github.com/metrue/fx/env"
+	"github.com/metrue/fx/handlers"
 
 	"github.com/gorilla/websocket"
 )

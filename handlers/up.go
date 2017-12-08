@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/websocket"
+	api "github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
-	api "github.com/metrue/fx/server/docker-api"
 	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"

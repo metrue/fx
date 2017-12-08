@@ -1,6 +1,6 @@
 package env
 
-import api "github.com/metrue/fx/server/docker-api"
+import api "github.com/metrue/fx/docker-api"
 
 func PullBaseDockerImage(verbose bool) {
 	baseImages := []string{
