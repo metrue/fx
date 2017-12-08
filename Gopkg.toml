@@ -41,3 +41,7 @@
 
 [[constraint]]
   name = "github.com/rs/xid"
+
+[[constraint]]
+  name = "github.com/jteeuwen/go-bindata"
+  version = "3.0.7"

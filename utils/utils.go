@@ -170,6 +170,15 @@ func CopyDir(src string, dst string) (err error) {
 	return
 }
 
+// Create Dir if not exist
+func EnsurerDir(dir string) (err error) {
+	if _, statError := os.Stat(dir); os.IsNotExist(statError) {
+		mkError := os.MkdirAll(dir, os.ModePerm)
+		return mkError
+	}
+	return nil
+}
+
 // TarDir builds a tar from directory
 func TarDir(srcDir string, desFileName string) {
 	dir, err := os.Open(srcDir)
