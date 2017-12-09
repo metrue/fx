@@ -17,6 +17,7 @@ download_and_unzip() {
     # TODO we can do it on one line
     rm -rf fx.tar.gz
     curl -o fx.tar.gz -L -O ${url} && tar -xvzf ./fx.tar.gz -C /usr/local/bin
+    rm -rf ./fx.tar.gz
 }
 
 url=""
