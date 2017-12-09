@@ -53,6 +53,9 @@ or Wget:
 wget -qO- https://raw.githubusercontent.com/metrue/fx/master/bin/install.sh | bash
 ```
 
+fx will be installed into /usr/local/bin, if fx not found after installation, you may need to checkout if `/usr/local/bin/fx` exists.
+sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available on $PAHT.
+
 * Window
 
 You can go the release page to [download](https://github.com/metrue/fx/releases) fx manually;
