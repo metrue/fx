@@ -1,36 +1,43 @@
 #!/usr/bin/env bash
 
-# v0.0.1
-# https://github.com/metrue/fx/releases/download/v0.0.1/fx_0.0.1_checksums.txt
-# https://github.com/metrue/fx/releases/download/v0.0.1/fx_0.0.1_macOS_64-bit.tar.gz
-# https://github.com/metrue/fx/releases/download/v0.0.1/fx_0.0.1_Tux_64-bit.tar.gz
-# https://github.com/metrue/fx/releases/download/v0.0.1/fx_0.0.1_windows_64-bit.tar.gz
+fx_has() {
+  type "$1" > /dev/null 2>&1
+}
 
 get_package_url() {
-    local label=$1
+    label=""
+    if [ "$(uname)" == "Darwin" ]; then
+        label="macOS"
+    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+        label="Tux"
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+        label="windows"
+    elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
+        label="windows"
+    fi
+
     curl -s https://api.github.com/repos/metrue/fx/releases/latest | grep browser_download_url | awk -F'"' '{print $4}' | grep ${label}
 }
 
-download_and_unzip() {
+download_and_install() {
     local url=$1
-    echo ${url}
     # TODO we can do it on one line
     rm -rf fx.tar.gz
     curl -o fx.tar.gz -L -O ${url} && tar -xvzf ./fx.tar.gz -C /usr/local/bin
     rm -rf ./fx.tar.gz
 }
 
-url=""
-if [ "$(uname)" == "Darwin" ]; then
-    url=$(get_package_url 'macOS')
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    url=$(get_package_url 'Tux')
-# elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-#     # TODO no support
-# elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
-    # TODO no support
-fi
+main() {
+    if fx_has "docker"; then
+        url=$(get_package_url)
+        if [ ${url}"X" != "X" ];then
+            download_and_install ${url}
+        fi
+    else
+        echo "No Docker found on this host"
+        echo "  - Docker installation: https://docs.docker.com/engine/installation"
+    fi
+}
 
-if [ ${url}"X" != "X" ];then
-    download_and_unzip ${url}
-fi
+# main
+main
