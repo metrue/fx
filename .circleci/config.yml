@@ -53,7 +53,7 @@ jobs:
               fx up examples/functions/func.java >> deploy.log
               cat server_output.log
               cat deploy.log;
-              cat deploy.log | grep '-----------------------------------------------------------------' | wc -l | grep 14
+              cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
 
 deployment:
     production:
