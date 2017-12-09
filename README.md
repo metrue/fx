@@ -59,6 +59,8 @@ You can go the release page to [download](https://github.com/metrue/fx/releases)
 
 ### Usage
 
+Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first.
+
 * start server
 
 ```
