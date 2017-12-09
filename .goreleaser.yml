@@ -28,6 +28,3 @@ brew:
   homepage: "https://github.com/metrue/fx"
 
   description: "fx, a simple but powerful Function as a Service build tools"
-  dependencies:
-    - git
-    - zsh

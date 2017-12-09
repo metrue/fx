@@ -1,16 +1,20 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 
+	"github.com/gorilla/websocket"
 	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/utils"
 )
 
 type FunctionMeta struct {
-	lang string
-	path string
+	Lang    string
+	Path    string
+	Content string
 }
 
 // Up starts the functions specified in flags
@@ -33,36 +37,39 @@ func Up() {
 	channel := make(chan bool)
 	defer close(channel)
 
-	numSuccess := 0
-	numFail := 0
-
+	var funcList []FunctionMeta
 	for _, function := range functions {
-		funcMeta := &FunctionMeta{
-			lang: utils.GetLangFromFileName(function),
-			path: function,
+		data, err := ioutil.ReadFile(function)
+		if err != nil {
+			panic(err)
 		}
 
-		worker := NewWorker(funcMeta, address, channel)
-		go worker.Work()
+		funcMeta := FunctionMeta{
+			Lang:    utils.GetLangFromFileName(function),
+			Path:    function,
+			Content: string(data),
+		}
+		funcList = append(funcList, funcMeta)
+	}
+	funcListData, jsonErr := json.Marshal(funcList)
+	if jsonErr != nil {
+		panic(jsonErr)
 	}
 
-	// Loop until all function deploy done
-loop:
-	for {
-		select {
-		case status := <-channel:
-			if status {
-				numSuccess++
-			} else {
-				numFail++
-			}
-		default:
-			if numSuccess+numFail == len(functions) {
-				fmt.Printf("Succed: %d\n", numSuccess)
-				fmt.Printf("Failed: %d\n", numFail)
-				fmt.Println("All deploy done!")
-				break loop
-			}
-		}
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(address, nil)
+	if err != nil {
+		panic(err)
 	}
+
+	err = conn.WriteMessage(websocket.TextMessage, funcListData)
+	if err != nil {
+		panic(err)
+	}
+
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(msg))
 }

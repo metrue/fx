@@ -33,7 +33,13 @@ jobs:
               go install ./
 
       - run:
-          name: Test
+          name: Unit Test
+          command: |
+              go test image/image.go image/image_test.go
+              go test message/message.go message/message_test.go
+
+      - run:
+          name: Integration Test
           command: |
               fx serve > server_output.log 2>&1 &
               sleep 20
@@ -47,7 +53,7 @@ jobs:
               fx up examples/functions/func.java >> deploy.log
               cat server_output.log
               cat deploy.log;
-              cat deploy.log | grep 'Succed: 1' | wc -l | grep 7
+              cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
 
 deployment:
     production:
