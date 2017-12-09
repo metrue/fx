@@ -13,7 +13,10 @@ get_package_url() {
 
 download_and_unzip() {
     local url=$1
-    curl -OL ${url} | tar xvz
+    echo ${url}
+    # TODO we can do it on one line
+    rm -rf fx.tar.gz
+    curl -o fx.tar.gz -L -O ${url} && tar -xvzf ./fx.tar.gz -C /usr/local/bin
 }
 
 url=""
