@@ -1,12 +1,12 @@
 package commands
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 
-	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/utils"
 )
@@ -37,39 +37,37 @@ func Up() {
 	channel := make(chan bool)
 	defer close(channel)
 
-	var funcList []FunctionMeta
+	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
 			panic(err)
 		}
 
-		funcMeta := FunctionMeta{
+		funcMeta := &api.FunctionMeta{
 			Lang:    utils.GetLangFromFileName(function),
 			Path:    function,
 			Content: string(data),
 		}
 		funcList = append(funcList, funcMeta)
 	}
-	funcListData, jsonErr := json.Marshal(funcList)
-	if jsonErr != nil {
-		panic(jsonErr)
-	}
 
-	dialer := websocket.Dialer{}
-	conn, _, err := dialer.Dial(address, nil)
+	client, conn, err := api.NewClient(address)
 	if err != nil {
 		panic(err)
 	}
 
-	err = conn.WriteMessage(websocket.TextMessage, funcListData)
+	defer conn.Close()
+
+	ctx := context.Background()
+	req := &api.UpRequest{
+		Functions: funcList,
+	}
+	res, err := client.Up(ctx, req)
+
 	if err != nil {
 		panic(err)
 	}
 
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(msg))
+	fmt.Println(UpMessage(res.Instances))
 }

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"path"
 )
@@ -53,12 +52,7 @@ func ParseArgs(
 		FlagsAndExit(fs)
 	}
 
-	u := url.URL{
-		Scheme: "ws",
-		Host:   *(ptrs.addr),
-		Path:   "/" + option,
-	}
-	addr = u.String()
+	addr = *(ptrs.addr)
 
 	if fs.NFlag() == 0 {
 		funcs = s
