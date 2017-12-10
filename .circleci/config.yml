@@ -35,8 +35,8 @@ jobs:
       - run:
           name: Unit Test
           command: |
-              go test image/image.go image/image_test.go
-              go test message/message.go message/message_test.go
+              ./bin/coverage.sh
+              bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
       - run:
           name: Integration Test
