@@ -18,7 +18,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 	// collect down result
 	var downs []*api.DownMsgMeta
 	for downResult := range downResultCh {
-		downs = append(downs, downResult)
+		downs = append(downs, &downResult)
 		if len(downs) == count {
 			close(downResultCh)
 		}

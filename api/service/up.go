@@ -12,13 +12,13 @@ func Up(req *api.UpRequest) (*api.UpResponse, error) {
 	count := len(funcList)
 	upResultCh := make(chan api.UpMsgMeta, count)
 	for _, funcMeta := range funcList {
-		go handlers.Up(funcMeta, upResultCh)
+		go handlers.Up(*funcMeta, upResultCh)
 	}
 
 	// collect down result
 	var ups []*api.UpMsgMeta
 	for upResult := range upResultCh {
-		ups = append(ups, upResult)
+		ups = append(ups, &upResult)
 		if len(ups) == count {
 			close(upResultCh)
 		}
