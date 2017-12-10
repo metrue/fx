@@ -7,29 +7,14 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
-	Message "github.com/metrue/fx/message"
 	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
-
-func closeConnection(connection *websocket.Conn) {
-	connection.WriteMessage(
-		websocket.CloseMessage,
-		websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"),
-	)
-}
-
-func notify(connection *websocket.Conn, messageType int, message string) {
-	err := connection.WriteMessage(messageType, []byte(message))
-	if err != nil {
-		log.Println("write: ", err)
-	}
-}
 
 func cleanup(dir string) {
 	format := "cleanup temp file [%s] error: %s\n"
@@ -43,7 +28,7 @@ func cleanup(dir string) {
 }
 
 // Up spins up a new function
-func Up(funcMeta common.FunctionMeta, result chan<- Message.UpMsgMeta) {
+func Up(funcMeta common.FunctionMeta, result chan<- api.UpMsgMeta) {
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		panic(err)
@@ -58,7 +43,7 @@ func Up(funcMeta common.FunctionMeta, result chan<- Message.UpMsgMeta) {
 
 	localAddr := fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port))
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
-	res := Message.UpMsgMeta{
+	res := api.UpMsgMeta{
 		FunctionSource: string(funcMeta.Path),
 		LocalAddress:   localAddr,
 		RemoteAddress:  remoteAddr,

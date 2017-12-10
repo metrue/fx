@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/api/service"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/env"
 )
@@ -18,7 +18,7 @@ func Start(verbose bool) {
 	env.Init(verbose)
 
 	go func() {
-		err := api.Start(config.GrpcEndpoint)
+		err := service.Start(config.GrpcEndpoint)
 		if err != nil {
 			log.Fatal(err)
 		}

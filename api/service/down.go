@@ -1,11 +1,12 @@
-package api
+package service
 
 import (
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/handlers"
 	Message "github.com/metrue/fx/message"
 )
 
-func Down(req *DownRequest) (*DownResponse, error) {
+func Down(req *api.DownRequest) (*api.DownResponse, error) {
 
 	containers := handlers.List(req.ID...)
 	count := len(containers)
@@ -16,10 +17,10 @@ func Down(req *DownRequest) (*DownResponse, error) {
 	}
 
 	// collect down result
-	var downs []*DownMsgMeta
+	var downs []*api.DownMsgMeta
 	for downResult := range downResultCh {
 		//TODO use only one type avoiding conversion where possible
-		downs = append(downs, &DownMsgMeta{
+		downs = append(downs, &api.DownMsgMeta{
 			ContainerId:     downResult.ContainerId,
 			ContainerStatus: downResult.ContainerStatus,
 			ImageStatus:     downResult.ImageStatus,
@@ -29,7 +30,7 @@ func Down(req *DownRequest) (*DownResponse, error) {
 		}
 	}
 
-	res := &DownResponse{
+	res := &api.DownResponse{
 		Instances: downs,
 	}
 

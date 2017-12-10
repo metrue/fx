@@ -1,15 +1,16 @@
-package api
+package service
 
 import (
 	"fmt"
 
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/handlers"
 )
 
-func List(req *ListRequest) (*ListResponse, error) {
+func List(req *api.ListRequest) (*api.ListResponse, error) {
 
 	containers := handlers.List(req.ID...)
-	var list []*ListItem
+	var list []*api.ListItem
 	for _, container := range containers {
 
 		var serviceURL string
@@ -17,7 +18,7 @@ func List(req *ListRequest) (*ListResponse, error) {
 			serviceURL = fmt.Sprintf("%s:%d", container.Ports[0].IP, container.Ports[0].PublicPort)
 		}
 
-		item := &ListItem{
+		item := &api.ListItem{
 			FunctionID: container.ID[:10],
 			ServiceURL: serviceURL,
 			State:      container.State,
@@ -26,7 +27,7 @@ func List(req *ListRequest) (*ListResponse, error) {
 		list = append(list, item)
 	}
 
-	res := &ListResponse{
+	res := &api.ListResponse{
 		Instances: list,
 	}
 
