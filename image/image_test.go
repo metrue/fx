@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 	"path"
 	"testing"
+	"os"
 )
 
 func TestGet(t *testing.T) {
-	targetDir := "./tmp/test"
+	targetDir, _ := ioutil.TempDir("", "image_test")
 	Get(targetDir, "go", []byte("import \"fmt\""))
 
 	files, _ := ioutil.ReadDir(targetDir)
@@ -36,4 +37,6 @@ func TestGet(t *testing.T) {
 	if string(data) != "import \"fmt\"" {
 		t.Errorf("content of fx.go not correct, got: %s, want: %s.", data, "import \"fmt\"")
 	}
+
+	defer os.RemoveAll(targetDir)
 }
