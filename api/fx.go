@@ -14,11 +14,15 @@ var server *grpc.Server
 
 type fx struct{}
 
+func newFxService() FxServiceServer {
+	return new(fx)
+}
+
 //Start the gRPC server
 func Start(uri string) error {
 
 	if server != nil {
-		return nil
+		return errors.New("gRPC uri not provided")
 	}
 
 	listen, err := net.Listen("tcp", uri)
@@ -27,11 +31,11 @@ func Start(uri string) error {
 	}
 	server = grpc.NewServer()
 	RegisterFxServiceServer(server, newFxService())
-	server.Serve(listen)
-	return nil
+
+	return server.Serve(listen)
 }
 
-//Stop the server
+//Stop the gRPC server
 func Stop() {
 	if server == nil {
 		return
@@ -40,13 +44,13 @@ func Stop() {
 }
 
 func (f *fx) Up(ctx context.Context, msg *UpRequest) (*UpResponse, error) {
-	return nil, errors.New("Not implemented")
+	return Up(msg)
 }
 
 func (f *fx) Down(ctx context.Context, msg *DownRequest) (*DownResponse, error) {
-	return nil, errors.New("Not implemented")
+	return Down(msg)
 }
 
 func (f *fx) List(ctx context.Context, msg *ListRequest) (*ListResponse, error) {
-	return nil, errors.New("Not implemented")
+	return List(msg)
 }

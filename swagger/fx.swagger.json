@@ -95,14 +95,80 @@
     }
   },
   "definitions": {
+    "apiDownMsgMeta": {
+      "type": "object",
+      "properties": {
+        "ContainerId": {
+          "type": "string"
+        },
+        "ContainerStatus": {
+          "type": "string"
+        },
+        "ImageStatus": {
+          "type": "string"
+        }
+      }
+    },
     "apiDownRequest": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "apiDownResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "Instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiDownMsgMeta"
+          }
+        }
+      }
+    },
+    "apiFunctionMeta": {
+      "type": "object",
+      "properties": {
+        "Lang": {
+          "type": "string"
+        },
+        "Path": {
+          "type": "string"
+        },
+        "Content": {
+          "type": "string"
+        }
+      }
+    },
+    "apiListItem": {
+      "type": "object",
+      "properties": {
+        "FunctionID": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "ServiceURL": {
+          "type": "string"
+        }
+      }
     },
     "apiListRequest": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "apiListResponse": {
       "type": "object",
@@ -110,12 +176,12 @@
         "Instances": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiUpResponse"
+            "$ref": "#/definitions/apiListItem"
           }
         }
       }
     },
-    "apiUpRequest": {
+    "apiUpMsgMeta": {
       "type": "object",
       "properties": {
         "FunctionSource": {
@@ -129,17 +195,25 @@
         }
       }
     },
+    "apiUpRequest": {
+      "type": "object",
+      "properties": {
+        "Functions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiFunctionMeta"
+          }
+        }
+      }
+    },
     "apiUpResponse": {
       "type": "object",
       "properties": {
-        "FunctionID": {
-          "type": "string"
-        },
-        "State": {
-          "type": "string"
-        },
-        "ServiceURL": {
-          "type": "string"
+        "Instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiUpMsgMeta"
+          }
         }
       }
     }
