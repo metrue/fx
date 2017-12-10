@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/docker-api"
-	Message "github.com/metrue/fx/message"
 )
 
 // Down stops the processes designated by a function
-func Down(containerId string, image string, result chan<- Message.DownMsgMeta) {
-	res := Message.DownMsgMeta{
+func Down(containerId string, image string, result chan<- api.DownMsgMeta) {
+	res := api.DownMsgMeta{
 		ContainerId:     containerId,
 		ContainerStatus: "",
 		ImageStatus:     "",

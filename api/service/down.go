@@ -3,14 +3,13 @@ package service
 import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/handlers"
-	Message "github.com/metrue/fx/message"
 )
 
 func Down(req *api.DownRequest) (*api.DownResponse, error) {
 
 	containers := handlers.List(req.ID...)
 	count := len(containers)
-	downResultCh := make(chan Message.DownMsgMeta, count)
+	downResultCh := make(chan api.DownMsgMeta, count)
 
 	for _, container := range containers {
 		go handlers.Down(container.ID[:10], container.Image, downResultCh)
