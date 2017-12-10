@@ -35,8 +35,7 @@ jobs:
       - run:
           name: Unit Test
           command: |
-              go test image/image.go image/image_test.go
-              go test message/message.go message/message_test.go
+              go test -cover ./commands/... ./common/... ./config/... ./docker-api/... ./env/... ./handlers/... ./image/... ./log/... ./message/... ./server/... ./utils/...
 
       - run:
           name: Integration Test
