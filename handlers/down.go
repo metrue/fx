@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	api "github.com/metrue/fx/docker-api"
+	"github.com/metrue/fx/docker-api"
 	Message "github.com/metrue/fx/message"
 )
 
@@ -12,12 +12,12 @@ func Down(containerId string, image string, result chan<- Message.DownMsgMeta) {
 		ContainerStatus: "",
 		ImageStatus:     "",
 	}
-	err := api.Remove(containerId)
+	err := docker.Remove(containerId)
 	if err == nil {
 		res.ContainerStatus = "stopped"
 	}
 
-	if err := api.ImageRemove(image); err != nil {
+	if err := docker.ImageRemove(image); err != nil {
 		res.ImageStatus = "not removed"
 	} else {
 		res.ImageStatus = "removed"

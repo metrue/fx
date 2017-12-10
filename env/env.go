@@ -1,6 +1,6 @@
 package env
 
-import api "github.com/metrue/fx/docker-api"
+import "github.com/metrue/fx/docker-api"
 
 func PullBaseDockerImage(verbose bool) {
 	baseImages := []string{
@@ -11,7 +11,7 @@ func PullBaseDockerImage(verbose bool) {
 	}
 
 	task := func(image string, verbose bool) {
-		api.Pull(image, verbose)
+		docker.Pull(image, verbose)
 	}
 
 	for _, image := range baseImages {

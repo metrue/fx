@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/metrue/fx/common"
-	api "github.com/metrue/fx/docker-api"
+	"github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
 	Message "github.com/metrue/fx/message"
 	"github.com/metrue/fx/utils"
@@ -53,8 +53,8 @@ func Up(funcMeta common.FunctionMeta, result chan<- Message.UpMsgMeta) {
 	defer cleanup(dir)
 	var name = guid
 	image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
-	api.Build(name, dir)
-	api.Deploy(name, dir, strconv.Itoa(port))
+	docker.Build(name, dir)
+	docker.Deploy(name, dir, strconv.Itoa(port))
 
 	localAddr := fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port))
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
