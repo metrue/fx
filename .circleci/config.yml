@@ -35,7 +35,8 @@ jobs:
       - run:
           name: Unit Test
           command: |
-              go test -cover ./commands/... ./common/... ./config/... ./docker-api/... ./env/... ./handlers/... ./image/... ./log/... ./message/... ./server/... ./utils/...
+              ./bin/coverage.sh
+              bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
       - run:
           name: Integration Test
