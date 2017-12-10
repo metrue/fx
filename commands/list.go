@@ -7,6 +7,7 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/config"
 )
 
 // List lists all running function services
@@ -17,14 +18,14 @@ func List() {
 	if nArgs < 2 {
 		common.FlagsAndExit(flagSet)
 	}
-	functions, address := common.ParseArgs(
+	functions, _ := common.ParseArgs(
 		option,
 		os.Args[2:],
 		args,
 		flagSet,
 	)
 
-	client, conn, err := api.NewClient(address)
+	client, conn, err := api.NewClient(config.GrpcEndpoint)
 	if err != nil {
 		panic(err)
 	}

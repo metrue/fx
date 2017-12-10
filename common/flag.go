@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/metrue/fx/config"
 )
 
 type argPtrs struct {
@@ -17,11 +19,17 @@ func SetupFlags(option string) (
 	args *argPtrs,
 	flagSet *flag.FlagSet,
 ) {
+
+	uri := config.GrpcEndpoint
+	if uri[:1] == ":" {
+		uri = "localhost" + uri
+	}
+
 	flagSet = flag.NewFlagSet(option, flag.ExitOnError)
 	args = &argPtrs{
 		addr: flagSet.String(
 			"addr",
-			"localhost:8080",
+			uri,
 			"Server address.",
 		),
 		help: flagSet.Bool(

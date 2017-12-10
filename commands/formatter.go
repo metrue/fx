@@ -12,9 +12,9 @@ ID			ServiceStatus		ResourceStatus`
 
 	msg += msgPrefix
 	for _, down := range downs {
-		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", down.ContainerId, down.ContainerStatus, down.ImageStatus)
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s\n", down.ContainerId, down.ContainerStatus, down.ImageStatus)
 	}
-	msgSuffix := "\n------------------------------------------------------"
+	msgSuffix := "\n------------------------------------------------------\n"
 	msg += msgSuffix
 	return msg
 }
@@ -25,7 +25,7 @@ FunctionSource				LocalAddress			RemoteAddress`
 
 	msg += msgPrefix
 	for _, up := range ups {
-		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", up.FunctionSource, up.LocalAddress, up.RemoteAddress)
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s\n", up.FunctionSource, up.LocalAddress, up.RemoteAddress)
 	}
 	msgSuffix := "\n-----------------------------------------------------------------"
 	msg += msgSuffix
@@ -34,9 +34,9 @@ FunctionSource				LocalAddress			RemoteAddress`
 
 func ListMessage(containers []*api.ListItem) (msg string) {
 
-	format := "%-15s\t%-10s\t%s"
+	format := "%-15s\t%-10s\t%s\n"
 	msg = fmt.Sprintf(format, "Function ID", "State", "Service URL")
-
+	msg += "-----------------------------------------------------------------\n"
 	for _, container := range containers {
 		msg += fmt.Sprintf(format, container.FunctionID, container.State, container.ServiceURL)
 	}
