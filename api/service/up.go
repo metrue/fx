@@ -12,24 +12,13 @@ func Up(req *api.UpRequest) (*api.UpResponse, error) {
 	count := len(funcList)
 	upResultCh := make(chan api.UpMsgMeta, count)
 	for _, funcMeta := range funcList {
-		//TODO use only one type avoiding conversion where possible
-		meta := api.FunctionMeta{
-			Content: funcMeta.Content,
-			Lang:    funcMeta.Lang,
-			Path:    funcMeta.Path,
-		}
-		go handlers.Up(meta, upResultCh)
+		go handlers.Up(funcMeta, upResultCh)
 	}
 
 	// collect down result
 	var ups []*api.UpMsgMeta
 	for upResult := range upResultCh {
-		//TODO use only one type avoiding conversion where possible
-		ups = append(ups, &api.UpMsgMeta{
-			FunctionSource: upResult.FunctionSource,
-			LocalAddress:   upResult.LocalAddress,
-			RemoteAddress:  upResult.RemoteAddress,
-		})
+		ups = append(ups, upResult)
 		if len(ups) == count {
 			close(upResultCh)
 		}

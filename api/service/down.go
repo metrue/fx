@@ -18,12 +18,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 	// collect down result
 	var downs []*api.DownMsgMeta
 	for downResult := range downResultCh {
-		//TODO use only one type avoiding conversion where possible
-		downs = append(downs, &api.DownMsgMeta{
-			ContainerId:     downResult.ContainerId,
-			ContainerStatus: downResult.ContainerStatus,
-			ImageStatus:     downResult.ImageStatus,
-		})
+		downs = append(downs, downResult)
 		if len(downs) == count {
 			close(downResultCh)
 		}
