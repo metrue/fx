@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/handlers"
 )
 
@@ -14,7 +13,7 @@ func Up(req *api.UpRequest) (*api.UpResponse, error) {
 	upResultCh := make(chan api.UpMsgMeta, count)
 	for _, funcMeta := range funcList {
 		//TODO use only one type avoiding conversion where possible
-		meta := common.FunctionMeta{
+		meta := api.FunctionMeta{
 			Content: funcMeta.Content,
 			Lang:    funcMeta.Lang,
 			Path:    funcMeta.Path,

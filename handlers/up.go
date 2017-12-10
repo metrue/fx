@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
 	"github.com/metrue/fx/utils"
@@ -28,7 +27,7 @@ func cleanup(dir string) {
 }
 
 // Up spins up a new function
-func Up(funcMeta common.FunctionMeta, result chan<- api.UpMsgMeta) {
+func Up(funcMeta api.FunctionMeta, result chan<- api.UpMsgMeta) {
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		panic(err)
