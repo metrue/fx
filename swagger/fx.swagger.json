@@ -1,0 +1,147 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "fx.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/down": {
+      "post": {
+        "operationId": "Down",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiDownResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDownRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FxService"
+        ]
+      }
+    },
+    "/v1/list": {
+      "post": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FxService"
+        ]
+      }
+    },
+    "/v1/up": {
+      "post": {
+        "operationId": "Up",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiUpResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUpRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FxService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "apiDownRequest": {
+      "type": "object"
+    },
+    "apiDownResponse": {
+      "type": "object"
+    },
+    "apiListRequest": {
+      "type": "object"
+    },
+    "apiListResponse": {
+      "type": "object",
+      "properties": {
+        "Instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiUpResponse"
+          }
+        }
+      }
+    },
+    "apiUpRequest": {
+      "type": "object",
+      "properties": {
+        "FunctionSource": {
+          "type": "string"
+        },
+        "LocalAddress": {
+          "type": "string"
+        },
+        "RemoteAddress": {
+          "type": "string"
+        }
+      }
+    },
+    "apiUpResponse": {
+      "type": "object",
+      "properties": {
+        "FunctionID": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "ServiceURL": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

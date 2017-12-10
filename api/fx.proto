@@ -1,0 +1,51 @@
+
+syntax = "proto3";
+
+package api;
+
+import "google/api/annotations.proto";
+
+message UpRequest {
+    string FunctionSource = 1;
+    string LocalAddress   = 2;
+    string RemoteAddress  = 3;
+}
+
+message DownRequest {
+}
+
+message ListRequest {
+}
+
+message UpResponse {
+    string FunctionID = 1;
+    string State = 2;
+    string ServiceURL = 3;
+}
+
+message DownResponse {
+}
+message ListResponse {
+    repeated UpResponse Instances = 1;
+}
+
+service FxService {
+  rpc Up (UpRequest) returns (UpResponse) {
+    option (google.api.http) = {
+        post: "/v1/up"
+        body: "*"
+    };
+  }
+  rpc Down (DownRequest) returns (DownResponse) {
+    option (google.api.http) = {
+        post: "/v1/down"
+        body: "*"
+    };
+  }
+  rpc List (ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+        post: "/v1/list"
+        body: "*"
+    };
+  }
+}
