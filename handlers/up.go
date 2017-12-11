@@ -27,25 +27,42 @@ func cleanup(dir string) {
 }
 
 // Up spins up a new function
-func Up(funcMeta api.FunctionMeta, result chan<- api.UpMsgMeta) {
+func Up(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
+
 	port, err := freeport.GetFreePort()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
+
 	var guid = xid.New().String()
 	var dir = path.Join(os.TempDir(), "fx-", guid)
 	defer cleanup(dir)
+
 	var name = guid
-	image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
-	docker.Build(name, dir)
-	docker.Deploy(name, dir, strconv.Itoa(port))
+	err = image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
+	if err != nil {
+		return nil, err
+	}
+
+	err = docker.Build(name, dir)
+	if err != nil {
+		return nil, err
+	}
+
+	containerInfo, err := docker.Deploy(name, dir, strconv.Itoa(port))
+	if err != nil {
+		return nil, err
+	}
 
 	localAddr := fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port))
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
-	res := api.UpMsgMeta{
+
+	res := &api.UpMsgMeta{
+		FunctionID:     containerInfo.ID,
 		FunctionSource: string(funcMeta.Path),
 		LocalAddress:   localAddr,
 		RemoteAddress:  remoteAddr,
 	}
-	result <- res
+
+	return res, nil
 }
