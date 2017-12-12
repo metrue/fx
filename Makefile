@@ -4,7 +4,7 @@ DIST_DIR=./dist
 install-deps:
 	@dep ensure
 generate:
-	@go generate api/fx.go
+	@go generate ./api/fx.go
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
 cross:

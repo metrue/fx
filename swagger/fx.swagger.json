@@ -106,6 +106,9 @@
         },
         "ImageStatus": {
           "type": "string"
+        },
+        "Error": {
+          "type": "string"
         }
       }
     },
@@ -184,6 +187,9 @@
     "apiUpMsgMeta": {
       "type": "object",
       "properties": {
+        "FunctionID": {
+          "type": "string"
+        },
         "FunctionSource": {
           "type": "string"
         },
@@ -191,6 +197,9 @@
           "type": "string"
         },
         "RemoteAddress": {
+          "type": "string"
+        },
+        "Error": {
           "type": "string"
         }
       }

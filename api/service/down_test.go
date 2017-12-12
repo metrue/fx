@@ -19,19 +19,31 @@ func TestDown(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	req := &api.UpRequest{}
-	res, err = client.Up(ctx, req)
+	upReq := &api.UpRequest{
+		Functions: []*api.FunctionMeta{
+			&api.FunctionMeta{
+				Lang:    "node",
+				Content: "module.exports = () => { return \"foo\"; }",
+				Path:    "./",
+			},
+		},
+	}
+	_, err = client.Up(ctx, upReq)
 	if err != nil {
 		t.Fatal(err)
 		return
 	}
 
-	ctx := context.Background()
-	req := &api.DownRequest{}
-	_, err = client.List(ctx, req)
+	ctx = context.Background()
+	listReq := &api.ListRequest{}
+	listRes, err := client.List(ctx, listReq)
 	if err != nil {
 		t.Fatal(err)
 		return
+	}
+
+	for i := 0; i < listRes.Instances; i++ {
+		instance := listRes.Instances[i]
 	}
 
 	conn.Close()
