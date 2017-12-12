@@ -21,7 +21,7 @@ func newFxService() api.FxServiceServer {
 //Start the gRPC server
 func Start(uri string) error {
 
-	if server != nil {
+	if uri == "" {
 		return errors.New("gRPC uri not provided")
 	}
 

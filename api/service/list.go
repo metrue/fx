@@ -7,6 +7,7 @@ import (
 	"github.com/metrue/fx/handlers"
 )
 
+//List handles a functions listing request
 func List(req *api.ListRequest) (*api.ListResponse, error) {
 
 	containers := handlers.List(req.ID...)

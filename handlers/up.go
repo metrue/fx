@@ -58,7 +58,7 @@ func Up(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
 
 	res := &api.UpMsgMeta{
-		FunctionID:     containerInfo.ID,
+		FunctionID:     containerInfo.ID[:10],
 		FunctionSource: string(funcMeta.Path),
 		LocalAddress:   localAddr,
 		RemoteAddress:  remoteAddr,

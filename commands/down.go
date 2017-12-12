@@ -9,6 +9,7 @@ import (
 	"github.com/metrue/fx/common"
 )
 
+// Down invoke the removal of one or more functions
 func Down() {
 	option := "down"
 	nArgs := len(os.Args)

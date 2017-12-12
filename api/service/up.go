@@ -27,10 +27,10 @@ func Up(req *api.UpRequest) (*api.UpResponse, error) {
 	count := len(funcList)
 	results := make(chan upTask, count)
 
-	for _, funcMeta := range funcList {
-		go func() {
+	for _, meta := range funcList {
+		go func(funcMeta *api.FunctionMeta) {
 			results <- newUpTask(handlers.Up(*funcMeta))
-		}()
+		}(meta)
 	}
 
 	// collect up results
@@ -38,7 +38,9 @@ func Up(req *api.UpRequest) (*api.UpResponse, error) {
 	for result := range results {
 		upResult := result.Val
 		if result.Err != nil {
-			upResult.Error = result.Err.Error()
+			upResult = &api.UpMsgMeta{
+				Error: result.Err.Error(),
+			}
 		}
 		ups = append(ups, upResult)
 		if len(ups) == count {

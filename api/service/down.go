@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/docker/docker/api/types"
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/handlers"
 )
@@ -26,10 +27,10 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 	count := len(containers)
 	results := make(chan downTask, count)
 
-	for _, container := range containers {
-		go func() {
+	for _, c := range containers {
+		go func(container types.Container) {
 			results <- newDownTask(handlers.Down(container.ID[:10], container.Image))
-		}()
+		}(c)
 	}
 
 	// collect down result
@@ -37,7 +38,9 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 	for result := range results {
 		downResult := result.Val
 		if result.Err != nil {
-			downResult.Error = result.Err.Error()
+			downResult = &api.DownMsgMeta{
+				Error: result.Err.Error(),
+			}
 		}
 		downs = append(downs, downResult)
 		if len(downs) == count {

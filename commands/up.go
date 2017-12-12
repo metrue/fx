@@ -11,12 +11,6 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
-type FunctionMeta struct {
-	Lang    string
-	Path    string
-	Content string
-}
-
 // Up starts the functions specified in flags
 func Up() {
 	option := "up"
