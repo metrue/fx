@@ -12,7 +12,7 @@ for d in ./image; do
 done
 
 #run service test at once
-go test -race -coverprofile=profile.out -covermode=atomic ./api/service/*_test.go
+go test -race -coverprofile=profile.out -covermode=atomic ./api/service/*
 if [ -f profile.out ]; then
     cat profile.out >> coverage.txt
     rm profile.out

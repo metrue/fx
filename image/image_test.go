@@ -2,9 +2,9 @@ package image
 
 import (
 	"io/ioutil"
+	"os"
 	"path"
 	"testing"
-	"os"
 )
 
 func TestGet(t *testing.T) {
@@ -17,15 +17,15 @@ func TestGet(t *testing.T) {
 	}
 
 	if files[0].Name() != "Dockerfile" {
-		t.Errorf("Dockerfile not correct, got: %d, want: %d.", files[0], "Dockerfile")
+		t.Errorf("Dockerfile not correct, got: %s, want: %s.", files[0], "Dockerfile")
 	}
 
 	if files[1].Name() != "app.go" {
-		t.Errorf("app.go not correct, got: %d, want: %d.", files[1], "app.go")
+		t.Errorf("app.go not correct, got: %s, want: %s.", files[1], "app.go")
 	}
 
 	if files[2].Name() != "fx.go" {
-		t.Errorf("fx.go not correct, got: %d, want: %d.", files[2], "fx.go")
+		t.Errorf("fx.go not correct, got: %s, want: %s.", files[2], "fx.go")
 	}
 
 	filePath := path.Join(targetDir, files[2].Name())

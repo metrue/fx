@@ -1,4 +1,4 @@
-package service_test
+package service
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/api/service"
 )
 
 func removeFunction(client api.FxServiceClient, functionIDs ...string) (bool, error) {
@@ -64,7 +63,7 @@ func TestList(t *testing.T) {
 	client, conn, err := api.NewClient(grpcEndpoint)
 
 	defer conn.Close()
-	defer service.Stop()
+	defer Stop()
 
 	if err != nil {
 		t.Fatal(err)

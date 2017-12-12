@@ -61,13 +61,11 @@ var assetsMap = map[string][]string{
 	},
 }
 
-//removePrefix remove prefix from a filename
 func removePrefix(lang string, filename string) (name string) {
 	prefix := "assets/dockerfiles/fx" + "/" + lang + "/"
 	return strings.Split(filename, prefix)[1]
 }
 
-//isFxFuncSource check if a filename has fx pattern
 func isFxFuncSource(lang string, name string) (ret bool) {
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
