@@ -1,12 +1,13 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"strings"
 
-	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/config"
 )
 
 // List lists all running function services
@@ -17,40 +18,29 @@ func List() {
 	if nArgs < 2 {
 		common.FlagsAndExit(flagSet)
 	}
-	functions, address := common.ParseArgs(
+	functions, _ := common.ParseArgs(
 		option,
 		os.Args[2:],
 		args,
 		flagSet,
 	)
 
-	dialer := websocket.Dialer{}
-	conn, _, err := dialer.Dial(address, nil)
-	if common.CheckError(err) {
-		return
+	client, conn, err := api.NewClient(config.GrpcEndpoint)
+	if err != nil {
+		panic(err)
 	}
+
 	defer conn.Close()
 
-	err = conn.WriteMessage(
-		websocket.TextMessage,
-		[]byte(strings.Join(functions, " ")),
-	)
-	if common.CheckError(err) {
-		return
+	ctx := context.Background()
+	req := &api.ListRequest{
+		ID: functions,
+	}
+	res, err := client.List(ctx, req)
+
+	if err != nil {
+		panic(err)
 	}
 
-	for {
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			if websocket.IsCloseError(err, 1000) {
-				return
-			}
-			fmt.Println(err)
-			if websocket.IsUnexpectedCloseError(err, 1000) {
-				return
-			}
-			continue
-		}
-		fmt.Println(string(msg))
-	}
+	fmt.Println(ListMessage(res.Instances))
 }

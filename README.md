@@ -185,6 +185,7 @@ end
 ##### Requirements
 * Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
 * dep: fx project uses [dep](https://github.com/golang/dep) to do the golang dependency management.
+* protoc / grpc: Used for RPC and types definition (See a [setup script](https://gist.github.com/muka/4cc42c478b2699f0969450a1ec1ce44c) example)
 
 ##### Build and Run
 

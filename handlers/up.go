@@ -7,29 +7,13 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/gorilla/websocket"
-	"github.com/metrue/fx/common"
-	api "github.com/metrue/fx/docker-api"
+	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
-	Message "github.com/metrue/fx/message"
 	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
-
-func closeConnection(connection *websocket.Conn) {
-	connection.WriteMessage(
-		websocket.CloseMessage,
-		websocket.FormatCloseMessage(websocket.CloseNormalClosure, "0"),
-	)
-}
-
-func notify(connection *websocket.Conn, messageType int, message string) {
-	err := connection.WriteMessage(messageType, []byte(message))
-	if err != nil {
-		log.Println("write: ", err)
-	}
-}
 
 func cleanup(dir string) {
 	format := "cleanup temp file [%s] error: %s\n"
@@ -43,25 +27,42 @@ func cleanup(dir string) {
 }
 
 // Up spins up a new function
-func Up(funcMeta common.FunctionMeta, result chan<- Message.UpMsgMeta) {
+func Up(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
+
 	port, err := freeport.GetFreePort()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
+
 	var guid = xid.New().String()
 	var dir = path.Join(os.TempDir(), "fx-", guid)
 	defer cleanup(dir)
+
 	var name = guid
-	image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
-	api.Build(name, dir)
-	api.Deploy(name, dir, strconv.Itoa(port))
+	err = image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
+	if err != nil {
+		return nil, err
+	}
+
+	err = docker.Build(name, dir)
+	if err != nil {
+		return nil, err
+	}
+
+	containerInfo, err := docker.Deploy(name, dir, strconv.Itoa(port))
+	if err != nil {
+		return nil, err
+	}
 
 	localAddr := fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port))
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
-	res := Message.UpMsgMeta{
+
+	res := &api.UpMsgMeta{
+		FunctionID:     containerInfo.ID[:10],
 		FunctionSource: string(funcMeta.Path),
 		LocalAddress:   localAddr,
 		RemoteAddress:  remoteAddr,
 	}
-	result <- res
+
+	return res, nil
 }

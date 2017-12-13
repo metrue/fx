@@ -4,9 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"path"
+
+	"github.com/metrue/fx/config"
 )
 
 type argPtrs struct {
@@ -18,11 +19,17 @@ func SetupFlags(option string) (
 	args *argPtrs,
 	flagSet *flag.FlagSet,
 ) {
+
+	uri := config.GrpcEndpoint
+	if uri[:1] == ":" {
+		uri = "localhost" + uri
+	}
+
 	flagSet = flag.NewFlagSet(option, flag.ExitOnError)
 	args = &argPtrs{
 		addr: flagSet.String(
 			"addr",
-			"localhost:8080",
+			uri,
 			"Server address.",
 		),
 		help: flagSet.Bool(
@@ -53,12 +60,7 @@ func ParseArgs(
 		FlagsAndExit(fs)
 	}
 
-	u := url.URL{
-		Scheme: "ws",
-		Host:   *(ptrs.addr),
-		Path:   "/" + option,
-	}
-	addr = u.String()
+	addr = *(ptrs.addr)
 
 	if fs.NFlag() == 0 {
 		funcs = s

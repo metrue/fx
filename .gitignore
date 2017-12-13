@@ -4,3 +4,5 @@ dist/
 build/
 *.pyc
 *.swp
+/fx
+tmp/
