@@ -2,6 +2,10 @@ OUTPUT_DIR=./build
 DIST_DIR=./dist
 
 install-deps:
+	go get -u google.golang.org/grpc
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+
 	@dep ensure
 generate:
 	@go generate ./api/fx.go
