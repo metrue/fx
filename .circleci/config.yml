@@ -30,7 +30,7 @@ jobs:
           name: Build and Install
           command: |
               make install-deps
-              go install ./
+              make build
 
       - run:
           name: Unit Test
@@ -41,16 +41,16 @@ jobs:
       - run:
           name: Integration Test
           command: |
-              fx serve > server_output.log 2>&1 &
+              ./build/fx serve > server_output.log 2>&1 &
               sleep 20
               touch deploy.log
-              fx up examples/functions/func.js >> deploy.log
-              fx up examples/functions/func.rb >> deploy.log
-              fx up examples/functions/func.py >> deploy.log
-              fx up examples/functions/func.go >> deploy.log
-              fx up examples/functions/func.php >> deploy.log
-              fx up examples/functions/func.jl >> deploy.log
-              fx up examples/functions/func.java >> deploy.log
+              ./build/fx up examples/functions/func.js >> deploy.log
+              ./build/fx up examples/functions/func.rb >> deploy.log
+              ./build/fx up examples/functions/func.py >> deploy.log
+              ./build/fx up examples/functions/func.go >> deploy.log
+              ./build/fx up examples/functions/func.php >> deploy.log
+              ./build/fx up examples/functions/func.jl >> deploy.log
+              ./build/fx up examples/functions/func.java >> deploy.log
               cat server_output.log
               cat deploy.log;
               cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
