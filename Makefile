@@ -12,6 +12,9 @@ install-deps:
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 
+	git clone --depth 1 https://github.com/googleapis/googleapis.git vendor/github.com/googleapis
+	cp -rf vendor/github.com/googleapis/google/ api/google/
+
 	# install the other dependencies
 	@dep ensure
 generate:
