@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-targetDir="../vendor/protoc"
+HERE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+ROOT=$( cd ${HERE}/.. && pwd )
+
+dest_dir="${ROOT}/vendor/protoc"
 
 has() {
   type "$1" > /dev/null 2>&1
@@ -8,13 +11,13 @@ has() {
 
 install_protoc() {
     local url=$1
-    mkdir -p ${targetDir}
-    wget ${url} -O ${targetDir}/protoc.zip
-    cd ${targetDir} && unzip ./protoc.zip && chmod +x ./bin/protoc
+    mkdir -p ${dest_dir}
+    wget ${url} -O ${dest_dir}/protoc.zip
+    cd ${dest_dir} && unzip ./protoc.zip && chmod +x ./bin/protoc
     ./bin/protoc --version
 }
 
-if has "${targetDir}/bin/protoc"; then
+if has "${dest_dir}/bin/protoc"; then
     protoc --version
 else
     if [ "$(uname)" == "Darwin" ]; then
