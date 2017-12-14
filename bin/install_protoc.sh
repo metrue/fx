@@ -1,32 +1,28 @@
 #!/usr/bin/env bash
 
+targetDir="../vendor/protoc"
+
 has() {
   type "$1" > /dev/null 2>&1
 }
 
-install_protoc_mac() {
-    brew tap grpc/grpc
-    brew install --with-plugins grpc
-    protoc --version
+install_protoc() {
+    local url=$1
+    mkdir -p ${targetDir}
+    wget ${url} -O ${targetDir}/protoc.zip
+    cd ${targetDir} && unzip ./protoc.zip && chmod +x ./bin/protoc
+    ./bin/protoc --version
 }
 
-install_protoc_linux() {
-    tmp_dir=/tmp/protoc$(date '+%s')
-    mkdir -p ${tmp_dir}
-    wget https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip -O ${tmp_dir}/protoc.zip
-    cd ${tmp_dir} && unzip ./protoc.zip && mv ./bin/protoc /usr/local/bin/
-    rm -rf ${tmp_dir}
-    chmod +x /usr/local/bin/protoc
-    protoc --version
-}
-
-if has "protoc"; then
+if has "${targetDir}/bin/protoc"; then
     protoc --version
 else
     if [ "$(uname)" == "Darwin" ]; then
-        install_protoc_mac
+        url="https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-osx-x86_64.zip"
+        install_protoc ${url}
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-        install_protoc_linux
+        url="https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip"
+        install_protoc ${url}
     else
         echo 'Sorry, this script on works on Linux/Mac now'
     fi
