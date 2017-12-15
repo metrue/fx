@@ -12,7 +12,7 @@ Poor man's function as a service.
 
 ### Introduction
 
-fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
+fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages, you can refer to the [doc](https://github.com/metrue/fx/blob/master/NEW_LANGUAGE_SUPPORT.md) to make fx support the language not listed bellow.
 
 | Language      | Status        | Contributor   |
 | ------------- |:-------------:|:-------------:|
@@ -24,10 +24,6 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 | PHP           | Supported     | [@chlins](https://github.com/chlins)|
 | Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
-| Scala         | Working on     | |
-| Perl          | Working on    | |
-| .Net          | Working on    | |
-| Rust          | Working on    | |
 
 Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe)
 
