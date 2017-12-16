@@ -22,10 +22,14 @@ func newDownTask(val *api.DownMsgMeta, err error) downTask {
 
 //Down handle function removal requests
 func Down(req *api.DownRequest) (*api.DownResponse, error) {
-
 	containers := handlers.List(req.ID...)
 	count := len(containers)
 	results := make(chan downTask, count)
+	downResponse := &api.DownResponse{}
+
+	if count == 0 {
+		return downResponse, nil
+	}
 
 	for _, c := range containers {
 		go func(container types.Container) {
@@ -48,7 +52,6 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 		}
 	}
 
-	return &api.DownResponse{
-		Instances: downs,
-	}, nil
+	downResponse.Instances = downs
+	return downResponse, nil
 }

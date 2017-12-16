@@ -46,7 +46,7 @@ func createFunction(client api.FxServiceClient) (*api.UpMsgMeta, error) {
 	}
 
 	if len(upRes.Instances) != 1 {
-		return nil, fmt.Errorf("Up response should have one instance, found %s", len(upRes.Instances))
+		return nil, fmt.Errorf("Up response should have one instance, found %d", len(upRes.Instances))
 	}
 
 	if upRes.Instances[0].Error != "" {
