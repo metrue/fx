@@ -99,9 +99,9 @@ func Pull(name string, verbose bool) error {
 	}
 
 	if verbose {
+		io.Copy(os.Stdout, r)
 	}
 
-	io.Copy(os.Stdout, r)
 	return nil
 }
 
