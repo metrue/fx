@@ -584,6 +584,7 @@ class Cgi {
 		this.requestUri = requestUri;
 		this.pathInfo = pathInfo;
 		this.queryString = queryString;
+		this.postJson = null;
 	}
 
 	/** Initializes it using a CGI or CGI-like interface */
@@ -792,6 +793,7 @@ class Cgi {
 				filesArray = assumeUnique(pps._files);
 				files = keepLastOf(filesArray);
 				post = keepLastOf(postArray);
+				this.postJson = pps.postJson;
 				cleanUpPostDataState();
 			}
 
@@ -836,6 +838,7 @@ class Cgi {
 			string boundary;
 			string localBoundary; // the ones used at the end or something lol
 			bool isMultipart;
+			bool isJson;
 
 			ulong expectedLength;
 			ulong contentConsumed;
@@ -846,6 +849,8 @@ class Cgi {
 			bool weHaveAPart;
 			string[] thisOnesHeaders;
 			immutable(ubyte)[] thisOnesData;
+
+			string postJson;
 
 			UploadedFile piece;
 			bool isFile = false;
@@ -948,9 +953,14 @@ class Cgi {
 		} else if(pps.contentType == "multipart/form-data") {
 			pps.isMultipart = true;
 			enforce(pps.boundary.length, "no boundary");
+		} else if(pps.contentType == "application/json") {
+			pps.isJson = true;
+			pps.isMultipart = false;
+		//} else if(pps.contentType == "application/json") {
+			//pps.isJson = true;
 		} else {
 			// FIXME: should set a http error code too
-			//throw new Exception("unknown request content type: " ~ pps.contentType);
+			throw new Exception("unknown request content type: " ~ pps.contentType);
 		}
 	}
 
@@ -1255,7 +1265,7 @@ class Cgi {
 
 			// btw all boundaries except the first should have a \r\n before them
 		} else {
-			// application/x-www-form-urlencoded
+			// application/x-www-form-urlencoded and application/json
 
 				// not using maxContentLength because that might be cranked up to allow
 				// large file uploads. We can handle them, but a huge post[] isn't any good.
@@ -1265,9 +1275,14 @@ class Cgi {
 			pps.buffer ~= chunk;
 
 			// simple handling, but it works... until someone bombs us with gigabytes of crap at least...
-			if(pps.buffer.length == pps.expectedLength)
-				pps._post = decodeVariables(cast(string) pps.buffer);
-			else {
+			if(pps.buffer.length == pps.expectedLength) {
+				if(pps.isJson)
+					pps.postJson = cast(string) pps.buffer;
+				else
+					pps._post = decodeVariables(cast(string) pps.buffer);
+				version(preserveData)
+					originalPostData = pps.buffer;
+			} else {
 				// just for debugging
 			}
 		}
@@ -1538,6 +1553,7 @@ class Cgi {
 			filesArray = assumeUnique(pps._files);
 			files = keepLastOf(filesArray);
 			post = keepLastOf(postArray);
+			postJson = pps.postJson;
 			cleanUpPostDataState();
 		}
 
@@ -2080,6 +2096,8 @@ class Cgi {
 
 	version(preserveData) // note: this can eat lots of memory; don't use unless you're sure you need it.
 	immutable(ubyte)[] originalPostData;
+
+	public immutable string postJson;
 
 	/* Internal state flags */
 	private bool outputtedResponseData;
