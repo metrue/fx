@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/metrue/fx/api"
+	"google.golang.org/grpc"
 )
 
 const grpcEndpoint = "localhost:5001"
@@ -21,6 +22,13 @@ func runServer(t *testing.T) {
 	time.Sleep((time.Millisecond * 500))
 }
 
+func stopServer(conn *grpc.ClientConn) {
+	conn.Close()
+	Stop()
+	//wait for the service to start
+	time.Sleep((time.Millisecond * 500))
+}
+
 func TestServer(t *testing.T) {
 
 	runServer(t)
@@ -29,6 +37,7 @@ func TestServer(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer stopServer(conn)
 
 	ctx := context.Background()
 	req := &api.ListRequest{}
@@ -37,6 +46,4 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	conn.Close()
-	Stop()
 }

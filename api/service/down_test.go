@@ -34,9 +34,7 @@ func TestDownAll(t *testing.T) {
 	runServer(t)
 
 	client, conn, err := api.NewClient(grpcEndpoint)
-
-	defer conn.Close()
-	defer Stop()
+	defer stopServer(conn)
 
 	if err != nil {
 		t.Fatal(err)

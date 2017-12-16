@@ -4,6 +4,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+//NewClient return a new gRPC client with default settings
 func NewClient(grpcEndpoint string) (FxServiceClient, *grpc.ClientConn, error) {
 
 	var opts []grpc.DialOption

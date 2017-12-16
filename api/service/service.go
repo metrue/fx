@@ -41,6 +41,7 @@ func Stop() {
 		return
 	}
 	server.Stop()
+	server = nil
 }
 
 func (f *fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
