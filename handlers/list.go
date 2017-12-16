@@ -17,10 +17,8 @@ func List(containerIds ...string) []types.Container {
 	filters := filters.NewArgs()
 	filters.Add("label", "belong-to=fx")
 	if len(containerIds) > 0 {
-		if containerIds[0] != "*" {
-			for _, id := range containerIds {
-				filters.Add("id", id)
-			}
+		for _, id := range containerIds {
+			filters.Add("id", id)
 		}
 	}
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
