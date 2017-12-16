@@ -204,6 +204,9 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/pplam" target="_blank">
             <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
         </a>
+        <a href="https://github.com/muka" target="_blank">
+            <img alt="muka" src="https://avatars2.githubusercontent.com/u/1021269?v=4&s=50 width="50">
+        </a>
         <a href="https://github.com/xwjdsh" target="_blank">
             <img alt="xwjdsh" src="https://avatars2.githubusercontent.com/u/11025519?v=4&s=50" width="50">
         </a>
@@ -218,6 +221,9 @@ Thank you to all the people who already contributed to fx!
         </a>
         <a href="https://github.com/chlins" target="_blank">
             <img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/andre2007" target="_blank">
+            <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/1451047?s=50&v=4" width="50">
         </a>
     </tr>
   </tbody>

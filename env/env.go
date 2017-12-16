@@ -9,6 +9,7 @@ func PullBaseDockerImage(verbose bool) {
 		"metrue/fx-julia-base",
 		"metrue/fx-python-base",
 		"metrue/fx-node-base",
+		"metrue/fx-d-base",
 	}
 
 	task := func(image string, verbose bool) {

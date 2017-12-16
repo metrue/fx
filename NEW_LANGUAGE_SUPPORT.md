@@ -1,8 +1,8 @@
 1. Prepare your Dockerfile within this [directory](https://github.com/metrue/fx/tree/master/assets/dockerfiles/fx). you can simply test it:
 
 ```
-docker -t <foo-bar> build .
-docker run foo-bar
+docker build -t <foo-bar> .
+docker run -p 3000:3000 foo-bar
 ```
 if everything works as you expected, fx will support it without any extra effort.
 

@@ -6,4 +6,5 @@ build/
 *.swp
 /fx
 tmp/
+/api/google
 /coverage.txt
