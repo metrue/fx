@@ -51,6 +51,7 @@ jobs:
               fx up examples/functions/func.php >> deploy.log
               fx up examples/functions/func.jl >> deploy.log
               fx up examples/functions/func.java >> deploy.log
+              fx up examples/functions/func.d >> deploy.log
               cat server_output.log
               cat deploy.log;
               cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
