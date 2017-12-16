@@ -14,14 +14,18 @@ func Down(containerID string, image string) (*api.DownMsgMeta, error) {
 		ImageStatus:     "",
 	}
 
+	// log.Printf("Removing container `%s`", containerID)
 	err := docker.Remove(containerID)
 	if err != nil {
+		// log.Printf("Failed to remove container `%s`: %s", containerID, err.Error())
 		return nil, err
 	}
 	res.ContainerStatus = "stopped"
 
+	// log.Printf("Removing image `%s`", image)
 	err = docker.ImageRemove(image)
 	if err != nil {
+		// log.Printf("Failed to remove image `%s`: %s", image, err.Error())
 		return nil, err
 	}
 	res.ImageStatus = "removed"

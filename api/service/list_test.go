@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/metrue/fx/api"
 )
@@ -34,7 +35,7 @@ func createFunction(client api.FxServiceClient) (*api.UpMsgMeta, error) {
 		Functions: []*api.FunctionMeta{
 			&api.FunctionMeta{
 				Lang:    "node",
-				Content: "module.exports = () => { return \"foo\"; }",
+				Content: fmt.Sprintf("module.exports = () => { return \"foo_%d\"; }", time.Now().Unix()),
 				Path:    "./",
 			},
 		},

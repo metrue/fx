@@ -72,7 +72,7 @@ func isFxFuncSource(lang string, name string) (ret bool) {
 	return nameWithoutExt == "fx" || nameWithoutExt == "Fx" // Fx is for Java
 }
 
-//Get extract assets to file
+//Get Prepare a container base image and insert the function body
 func Get(dir string, lang string, body []byte) (err error) {
 	names := assetsMap[lang]
 	err = nil
