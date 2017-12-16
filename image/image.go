@@ -18,6 +18,7 @@ var funcNames = map[string]string{
 	"php":    "/fx.php",
 	"julia":  "/fx.jl",
 	"java":   "/src/main/java/fx/Fx.java",
+	"d":      "/fx.d",
 }
 
 var assetsMap = map[string][]string{
@@ -58,6 +59,12 @@ var assetsMap = map[string][]string{
 		"assets/dockerfiles/fx/ruby/Dockerfile",
 		"assets/dockerfiles/fx/ruby/app.rb",
 		"assets/dockerfiles/fx/ruby/fx.rb",
+	},
+	"d": {
+		"assets/dockerfiles/fx/d/Dockerfile",
+		"assets/dockerfiles/fx/d/app.d",
+		"assets/dockerfiles/fx/d/fx.d",
+		"assets/dockerfiles/fx/d/arsd/cgi.d",
 	},
 }
 
