@@ -6,3 +6,4 @@ build/
 *.swp
 /fx
 tmp/
+/coverage.txt
