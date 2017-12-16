@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/metrue/fx/api"
 )
@@ -16,6 +17,8 @@ func runServer(t *testing.T) {
 			t.Fatal(err)
 		}
 	}()
+	//wait for the service to start
+	time.Sleep((time.Millisecond * 500))
 }
 
 func TestServer(t *testing.T) {
