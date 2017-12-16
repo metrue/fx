@@ -45,7 +45,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 
 	for _, c := range containers {
 		go func(container types.Container) {
-			results <- newDownTask(handlers.Down(container.ID[:10], container.ImageID))
+			results <- newDownTask(handlers.Down(container.ID[:10], container.Image))
 		}(c)
 	}
 
@@ -54,9 +54,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 	for result := range results {
 		downResult := result.Val
 		if result.Err != nil {
-			downResult = &api.DownMsgMeta{
-				Error: result.Err.Error(),
-			}
+			downResult.Error = result.Err.Error()
 		}
 		downs = append(downs, downResult)
 		if len(downs) == count {

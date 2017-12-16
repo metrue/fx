@@ -9,11 +9,11 @@ import (
 //DownMessage format a message for the function down command
 func DownMessage(downs []*api.DownMsgMeta) (msg string) {
 	msgPrefix := `------------------------------------------------------
-ID			ServiceStatus		ResourceStatus`
+ID			ServiceStatus		ResourceStatus		Error`
 
 	msg += msgPrefix
 	for _, down := range downs {
-		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s\n", down.ContainerId, down.ContainerStatus, down.ImageStatus)
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s\t\t\t\t%s", down.ContainerId, down.ContainerStatus, down.ImageStatus, down.Error)
 	}
 	msgSuffix := "\n------------------------------------------------------\n"
 	msg += msgSuffix
@@ -27,7 +27,7 @@ FunctionSource				LocalAddress			RemoteAddress`
 
 	msg += msgPrefix
 	for _, up := range ups {
-		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s\n", up.FunctionSource, up.LocalAddress, up.RemoteAddress)
+		msg += fmt.Sprintf("\n%s\t\t%s\t\t\t%s", up.FunctionSource, up.LocalAddress, up.RemoteAddress)
 	}
 	msgSuffix := "\n-----------------------------------------------------------------"
 	msg += msgSuffix
