@@ -3,7 +3,7 @@
 HERE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ROOT=$( cd ${HERE}/.. && pwd )
 
-dest_dir="${ROOT}/vendor/protoc"
+dest_dir="${ROOT}/tmp/protoc"
 
 has() {
   type "$1" > /dev/null 2>&1
@@ -27,6 +27,6 @@ else
         url="https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip"
         install_protoc ${url}
     else
-        echo 'Sorry, this script on works on Linux/Mac now'
+        echo 'Sorry, this script works on Linux/Mac now. Please, Create a PR to provide Windows support!'
     fi
 fi
