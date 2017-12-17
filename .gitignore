@@ -5,5 +5,5 @@ build/
 *.pyc
 *.swp
 /fx
-tmp/
+/tmp
 /api/google
