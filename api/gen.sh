@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-HERE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+HERE=$( cd "$( dirname "${0}" )" && pwd )
 ROOT=$( cd ${HERE}/.. && pwd )
 PROTOSRC="./fx.proto"
 
