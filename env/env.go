@@ -2,6 +2,7 @@ package env
 
 import "github.com/metrue/fx/docker-api"
 
+//PullBaseDockerImage fetch base images from the registry
 func PullBaseDockerImage(verbose bool) {
 	baseImages := []string{
 		"metrue/fx-java-base",

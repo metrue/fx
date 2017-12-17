@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/metrue/fx/api"
 )
@@ -34,7 +35,7 @@ func createFunction(client api.FxServiceClient) (*api.UpMsgMeta, error) {
 		Functions: []*api.FunctionMeta{
 			&api.FunctionMeta{
 				Lang:    "node",
-				Content: "module.exports = () => { return \"foo\"; }",
+				Content: fmt.Sprintf("module.exports = () => { return \"foo_%d\"; }", time.Now().Unix()),
 				Path:    "./",
 			},
 		},
@@ -46,7 +47,7 @@ func createFunction(client api.FxServiceClient) (*api.UpMsgMeta, error) {
 	}
 
 	if len(upRes.Instances) != 1 {
-		return nil, fmt.Errorf("Up response should have one instance, found %s", len(upRes.Instances))
+		return nil, fmt.Errorf("Up response should have one instance, found %d", len(upRes.Instances))
 	}
 
 	if upRes.Instances[0].Error != "" {
@@ -61,9 +62,7 @@ func TestList(t *testing.T) {
 	runServer(t)
 
 	client, conn, err := api.NewClient(grpcEndpoint)
-
-	defer conn.Close()
-	defer Stop()
+	defer stopServer(conn)
 
 	if err != nil {
 		t.Fatal(err)

@@ -13,7 +13,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"time"
 )
@@ -69,7 +68,6 @@ func Build(name string, dir string) error {
 	if buildErr != nil {
 		return buildErr
 	}
-	log.Println("build", buildResponse.OSType)
 	defer buildResponse.Body.Close()
 
 	scanner := bufio.NewScanner(buildResponse.Body)
@@ -79,7 +77,7 @@ func Build(name string, dir string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(info.Stream)
+		// fmt.Printf(info.Stream)
 	}
 
 	return nil
@@ -99,9 +97,9 @@ func Pull(name string, verbose bool) error {
 	}
 
 	if verbose {
+		io.Copy(os.Stdout, r)
 	}
 
-	io.Copy(os.Stdout, r)
 	return nil
 }
 
@@ -141,7 +139,7 @@ func Deploy(name string, dir string, port string) (*container.ContainerCreateCre
 		return nil, err
 	}
 
-	fmt.Println(resp.ID)
+	fmt.Printf("Deployed to container %s\n", resp.ID)
 	return &resp, err
 }
 

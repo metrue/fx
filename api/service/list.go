@@ -10,7 +10,10 @@ import (
 //List handles a functions listing request
 func List(req *api.ListRequest) (*api.ListResponse, error) {
 
-	containers := handlers.List(req.ID...)
+	containers, err := handlers.List(req.ID...)
+	if err != nil {
+		return nil, err
+	}
 	var list []*api.ListItem
 	for _, container := range containers {
 
