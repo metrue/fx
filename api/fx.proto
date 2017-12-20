@@ -10,6 +10,14 @@ message FunctionMeta {
 	string Content = 3;
 }
 
+message DockerfileMeta {
+    string content = 1;
+}
+
+message UpDockerfileRequest {
+    repeated DockerfileMeta dockerfile = 1;
+}
+
 message UpRequest {
     repeated FunctionMeta Functions = 1;
 }
@@ -38,7 +46,7 @@ message DownMsgMeta {
 	string ContainerId     = 1;
 	string ContainerStatus = 2;
 	string ImageStatus     = 3;
-	string Error 		   = 4;	
+	string Error 		   = 4;
 }
 
 message DownResponse {
