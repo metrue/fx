@@ -8,3 +8,5 @@ build/
 /tmp
 /api/google
 /coverage.txt
+/api/fx.pb.go
+/api/fx.pb.gw.go
