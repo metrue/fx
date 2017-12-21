@@ -11,7 +11,7 @@ message FunctionMeta {
 }
 
 message DockerfileMeta {
-    string content = 1;
+    string Content = 1;
 }
 
 message UpDockerfileRequest {
