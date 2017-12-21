@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"strconv"
@@ -14,17 +13,6 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
-
-func cleanup(dir string) {
-	format := "cleanup temp file [%s] error: %s\n"
-	if err := os.RemoveAll(dir); err != nil {
-		log.Printf(format, dir, err.Error())
-	}
-	dirTar := dir + ".tar"
-	if err := os.RemoveAll(dirTar); err != nil {
-		log.Printf(format, dirTar, err.Error())
-	}
-}
 
 // Up spins up a new function
 func UpDockerfile(dockerfile api.DockerfileMeta) (*api.UpMsgMeta, error) {
@@ -38,8 +26,8 @@ func UpDockerfile(dockerfile api.DockerfileMeta) (*api.UpMsgMeta, error) {
 	defer cleanup(dir)
 
 	var name = guid
-	targetPath := path.join(dir, "Dockerfile")
-	writeErr := ioutil.WriteFile(targetPath, []byte(dockerfile.content))
+	targetPath := path.Join(dir, "Dockerfile")
+	writeErr := ioutil.WriteFile(targetPath, []byte(dockerfile.Content), 0644)
 	if writeErr != nil {
 		return nil, err
 	}
@@ -59,7 +47,7 @@ func UpDockerfile(dockerfile api.DockerfileMeta) (*api.UpMsgMeta, error) {
 
 	res := &api.UpMsgMeta{
 		FunctionID:     containerInfo.ID[:10],
-		FunctionSource: string(funcMeta.Path),
+		FunctionSource: string("Dockerfile"),
 		LocalAddress:   localAddr,
 		RemoteAddress:  remoteAddr,
 	}

@@ -15,7 +15,7 @@ message DockerfileMeta {
 }
 
 message UpDockerfileRequest {
-    repeated DockerfileMeta dockerfiles = 1;
+    repeated DockerfileMeta Dockerfiles = 1;
 }
 
 message UpRequest {
@@ -70,6 +70,14 @@ service FxService {
         body: "*"
     };
   }
+
+  rpc UpDockerfile (UpDockerfileRequest) returns (UpResponse) {
+    option (google.api.http) = {
+        post: "/v1/up/dockerfile"
+        body: "*"
+    };
+  }
+
   rpc Down (DownRequest) returns (DownResponse) {
     option (google.api.http) = {
         post: "/v1/down"

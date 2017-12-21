@@ -48,6 +48,10 @@ func (f *fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error
 	return Up(msg)
 }
 
+func (f *fx) UpDockerfile(ctx context.Context, msg *api.UpDockerfileRequest) (*api.UpResponse, error) {
+	return UpDockerfile(msg)
+}
+
 func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse, error) {
 	return Down(msg)
 }
@@ -55,3 +59,4 @@ func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse,
 func (f *fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
 	return List(msg)
 }
+
