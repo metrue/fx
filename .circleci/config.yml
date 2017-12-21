@@ -54,7 +54,7 @@ jobs:
               fx up examples/functions/func.d >> deploy.log
               cat server_output.log
               cat deploy.log;
-              cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
+              cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 16
 
 deployment:
     production:
