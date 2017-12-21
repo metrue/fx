@@ -15,7 +15,7 @@ message DockerfileMeta {
 }
 
 message UpDockerfileRequest {
-    repeated DockerfileMeta dockerfile = 1;
+    repeated DockerfileMeta dockerfiles = 1;
 }
 
 message UpRequest {

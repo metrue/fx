@@ -21,17 +21,14 @@ func newUpTask(val *api.UpMsgMeta, err error) upTask {
 
 //Up deploy and run functions
 func UpDockerfile(req *api.UpDockerfileRequest) (*api.UpResponse, error) {
-	dockerfile = req.dockerfile;
-
-	funcList := req.Functions;
-
-	count := len(funcList)
+	dockerfiles := req.dockerfiles;
+	count := len(dockerfiles)
 	results := make(chan upTask, count)
 
-	for _, meta := range funcList {
-		go func(funcMeta *api.FunctionMeta) {
-			results <- newUpTask(handlers.Up(*funcMeta))
-		}(meta)
+	for _, dockerfile := range dockerfiles {
+		go func(meta *api.DockerfileMeta) {
+			results <- newUpTask(handlers.UpDockerfile(*meta))
+		}(dockerfile)
 	}
 
 	// collect up results
