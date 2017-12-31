@@ -21,7 +21,6 @@ func UpDockerfile(dockerfile api.DockerfileMeta) (*api.UpMsgMeta, error) {
 		return nil, err
 	}
 
-	fmt.Println("====> to write file")
 	var guid = xid.New().String()
 	var dirname = "fx-" + guid
 	var dir = path.Join(os.TempDir(), dirname)
@@ -31,26 +30,19 @@ func UpDockerfile(dockerfile api.DockerfileMeta) (*api.UpMsgMeta, error) {
 	var name = guid
 	targetPath := path.Join(dir, "Dockerfile")
 	writeErr := ioutil.WriteFile(targetPath, []byte(dockerfile.Content), 0644)
-	fmt.Println("====> to write file done %s, writeErr", writeErr)
 	if writeErr != nil {
 		return nil, err
 	}
-
-	fmt.Println("to Build")
 
 	err = docker.Build(name, dir)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("build done")
-
 	containerInfo, err := docker.Deploy(name, dir, strconv.Itoa(port))
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("deployed 2")
 
 	localAddr := fmt.Sprintf("127.0.0.1:%s", strconv.Itoa(port))
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))

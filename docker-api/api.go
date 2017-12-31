@@ -77,7 +77,6 @@ func Build(name string, dir string) error {
 		if err != nil {
 			return err
 		}
-		// fmt.Printf(info.Stream)
 	}
 
 	return nil

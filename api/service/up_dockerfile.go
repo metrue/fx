@@ -7,7 +7,7 @@ import (
 
 //Up deploy and run functions
 func UpDockerfile(req *api.UpDockerfileRequest) (*api.UpResponse, error) {
-	dockerfiles := req.Dockerfiles;
+	dockerfiles := req.Dockerfiles
 	count := len(dockerfiles)
 	results := make(chan upTask, count)
 

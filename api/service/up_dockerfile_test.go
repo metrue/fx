@@ -14,15 +14,8 @@ func createDockerfile(client api.FxServiceClient) (*api.UpMsgMeta, error) {
 	upReq := &api.UpDockerfileRequest{
 		Dockerfiles: []*api.DockerfileMeta{
 			&api.DockerfileMeta{
-				Content: fmt.Sprintf(`FROM ubuntu
-RUN apt-get update
-RUN apt-get install -y ruby rubygems git
-RUN git clone https://github.com/luisbebop/docker-sinatra-hello-world.git /opt/sinatra/
-RUN gem install bundler
-EXPOSE 3000
-RUN echo "%d"
-RUN cd /opt/sinatra && git pull && bundle install
-CMD ["/usr/local/bin/foreman","start","-d","/opt/sinatra"]`, time.Now().Unix()),
+				Content: fmt.Sprintf(`FROM andygrunwald/simple-webserver
+RUN echo '%d'`, time.Now().Unix()),
 			},
 		},
 	}
