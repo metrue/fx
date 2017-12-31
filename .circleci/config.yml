@@ -27,17 +27,17 @@ jobs:
               go install ./...
 
       - run:
-          name: Build and Install
-          command: |
-              make install-deps
-              go install ./
-
-      - run:
           name: Unit Test
           command: |
+              make install-deps
               make generate
               ./bin/coverage.sh
               bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+
+      - run:
+          name: Build and Install
+          command: |
+              go install ./
 
       - run:
           name: Integration Test
