@@ -18,13 +18,15 @@ install-deps:
 
 	# install the other dependencies
 	@dep ensure
-generate:
+generate: install-deps
 	# generate gRPC related code
 	go generate ./api/fx.go
 	# bundle assert into binary
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
+test: generate
+	./bin/coverage.sh
 cross:
 	goreleaser --snapshot --skip-publish --skip-validate
 release:
@@ -32,6 +34,4 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
-zip:
-	zip -r images.zip images/
 .PHONY: test build start list clean generate
