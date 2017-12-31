@@ -35,6 +35,7 @@ jobs:
       - run:
           name: Unit Test
           command: |
+              make generate
               ./bin/coverage.sh
               bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
