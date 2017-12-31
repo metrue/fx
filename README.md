@@ -213,6 +213,10 @@ fx = function(input::Input)
 end
 ```
 
+### Development Status
+
+fx use [Project](https://github.com/metrue/fx/projects) to manage the development.
+
 ### Contributing
 
 ##### Requirements
