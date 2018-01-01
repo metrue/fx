@@ -19,14 +19,14 @@ func runServer(t *testing.T) {
 		}
 	}()
 	//wait for the service to start
-	time.Sleep((time.Millisecond * 500))
+	time.Sleep((time.Millisecond * 2000))
 }
 
 func stopServer(conn *grpc.ClientConn) {
 	conn.Close()
 	Stop()
 	//wait for the service to start
-	time.Sleep((time.Millisecond * 500))
+	time.Sleep((time.Millisecond * 2000))
 }
 
 func TestServer(t *testing.T) {
