@@ -8,6 +8,7 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/decider"
 	"github.com/metrue/fx/utils"
 )
 
@@ -25,6 +26,16 @@ func Up() {
 		args,
 		flagSet,
 	)
+
+	d := decider.NewDecider()
+	upTargetType := d.GetUpTargetType(functions)
+	if upTargetType == decider.UP_TARGET_IS_FUNCTION {
+
+	} else if upTargetType == decider.UP_TARGET_IS_DOCKER_FILE {
+		fmt.Println("to up dockerfile")
+	}
+
+	os.Exit()
 
 	fmt.Println("Deploy starting...")
 

@@ -240,6 +240,29 @@ func IsPathExists(path string) (bool, error) {
 	return true, err
 }
 
+func IsValidDir(path string) (bool, error) {
+	dirInfo, err := os.Stat(path)
+	if err == nil && dirInfo.isDir() {
+		return true, nil
+	}
+
+	return false, err
+}
+
+func IsValidFile(path string) (bool, error) {
+	dirInfo, err := os.Stat(path)
+	if err == nil && dirInfo.isFile() {
+		return true, nil
+	}
+
+	return false, err
+}
+
+func IsValidDockerContainer(name string) (bool, error) {
+	// TODO to finish
+	return false, nil
+}
+
 func checkerror(err error) {
 	if err != nil {
 		panic(err)

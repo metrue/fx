@@ -37,6 +37,11 @@ func SetupFlags(option string) (
 			false,
 			"Help information.",
 		),
+		verbose: flagSet.Boo(
+			"verbose",
+			false,
+			"Make the operation more talktive",
+		),
 	}
 	return
 }
