@@ -6,14 +6,17 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
+	"github.com/pkg/errors"
 )
 
 // List returns the list of running services
 func List(containerIds ...string) ([]types.Container, error) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		err = errors.Wrap(err, "[list.go] New client failed")
+		return nil, err
 	}
+
 	filters := filters.NewArgs()
 	filters.Add("label", "belong-to=fx")
 	filters.Add("status", "running")
@@ -27,7 +30,9 @@ func List(containerIds ...string) ([]types.Container, error) {
 		Filters: filters,
 	})
 	if err != nil {
+		err = errors.Wrap(err, "[list.go] list containers failed")
 		return nil, err
 	}
+
 	return containers, nil
 }
