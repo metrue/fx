@@ -11,8 +11,9 @@ import (
 )
 
 type argPtrs struct {
-	addr *string
-	help *bool
+	addr    *string
+	help    *bool
+	verbose *bool
 }
 
 func SetupFlags(option string) (
@@ -37,7 +38,7 @@ func SetupFlags(option string) (
 			false,
 			"Help information.",
 		),
-		verbose: flagSet.Boo(
+		verbose: flagSet.Bool(
 			"verbose",
 			false,
 			"Make the operation more talktive",
