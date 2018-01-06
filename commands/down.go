@@ -26,7 +26,7 @@ func Down() {
 
 	client, conn, err := api.NewClient(address)
 	if err != nil {
-		panic(err)
+		common.HandleError(err)
 	}
 
 	defer conn.Close()
@@ -38,7 +38,7 @@ func Down() {
 	res, err := client.Down(ctx, req)
 
 	if err != nil {
-		panic(err)
+		common.HandleError(err)
 	}
 
 	fmt.Println(DownMessage(res.Instances))

@@ -1,35 +1,31 @@
 package handlers
 
 import (
-	"log"
-
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/docker-api"
+	"github.com/pkg/errors"
 )
 
 // Down stops the processes designated by a function
 func Down(containerID string, image string) (*api.DownMsgMeta, error) {
-
 	res := &api.DownMsgMeta{
 		ContainerId:     containerID,
 		ContainerStatus: "",
 		ImageStatus:     "removed",
 	}
 
-	log.Printf("Removing container `%s`", containerID)
 	err := docker.Remove(containerID)
 	if err != nil {
-		log.Printf("Failed to remove container `%s`: %s", containerID, err.Error())
+		err = errors.Wrap(err, "Failed to remove container")
 		return res, err
 	}
-	res.ContainerStatus = "stopped"
 
-	log.Printf("Removing image `%s`", image)
+	res.ContainerStatus = "stopped"
 	err = docker.ImageRemove(image)
 	if err != nil {
-		log.Printf("Failed to remove image `%s`: %s", image, err.Error())
+		err = errors.Wrap(err, "[down.go] Failed to remove image")
 		return res, err
 	}
 
-	return res, err
+	return res, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/config"
+	"github.com/pkg/errors"
 )
 
 // List lists all running function services
@@ -27,7 +28,8 @@ func List() {
 
 	client, conn, err := api.NewClient(config.GrpcEndpoint)
 	if err != nil {
-		panic(err)
+		err = errors.Wrap(err, "New client failed")
+		common.HandleError(err)
 	}
 
 	defer conn.Close()
@@ -37,9 +39,9 @@ func List() {
 		ID: functions,
 	}
 	res, err := client.List(ctx, req)
-
 	if err != nil {
-		panic(err)
+		err = errors.Wrap(err, "List deployed functions failed")
+		common.HandleError(err)
 	}
 
 	fmt.Println(ListMessage(res.Instances))
