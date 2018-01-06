@@ -66,5 +66,5 @@ func Up() {
 		common.HandleError(err)
 	}
 
-	fmt.Println(UpMessage(res.Instances))
+	common.HandleUpResult(res.Instances)
 }

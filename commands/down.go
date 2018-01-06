@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/metrue/fx/api"
@@ -41,5 +40,5 @@ func Down() {
 		common.HandleError(err)
 	}
 
-	fmt.Println(DownMessage(res.Instances))
+	common.HandleDownResult(res.Instances)
 }
