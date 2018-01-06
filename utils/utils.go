@@ -241,8 +241,8 @@ func IsPathExists(path string) (bool, error) {
 }
 
 func IsValidDir(path string) (bool, error) {
-	dirInfo, err := os.Stat(path)
-	if err == nil && dirInfo.isDir() {
+	fi, err := os.Stat(path)
+	if err == nil && fi.Mode().IsDir() {
 		return true, nil
 	}
 
@@ -250,8 +250,8 @@ func IsValidDir(path string) (bool, error) {
 }
 
 func IsValidFile(path string) (bool, error) {
-	dirInfo, err := os.Stat(path)
-	if err == nil && dirInfo.isFile() {
+	fi, err := os.Stat(path)
+	if err == nil && fi.Mode().IsRegular() {
 		return true, nil
 	}
 
