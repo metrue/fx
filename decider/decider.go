@@ -16,23 +16,45 @@ const (
 type Decider struct {
 }
 
-func NewDecider() {
-	return &Decider()
+func NewDecider() *Decider {
+	return &Decider{}
 }
 
-func (decider *Decider) GetUpTargetType(string arg) int {
-	if utils.IsValidFile(arg) {
+func isDockerfileInDir(dir string) (bool, error) {
+	isDir, err := utils.IsValidDir(dir)
+	if err == nil && isDir {
+		isDockerfile, err := utils.IsValidFile(path.Join(dir, "Dockerfile"))
+		if err == nil && isDockerfile {
+			return true, err
+		}
+
+		isDockerfile, err = utils.IsValidFile(path.Join(dir, "dockerfile"))
+		if err == nil && isDockerfile {
+			return true, err
+		}
+	}
+	return false, err
+}
+
+func (decider *Decider) GetUpTargetType(arg string) int {
+	isFile, err := utils.IsValidFile(arg)
+	if err == nil && isFile {
 		if path.Base(arg) == "Dockerfile" || path.Base(arg) == "docerfile" {
 			return UP_TARGET_IS_DOCKER_FILE
 		} else {
 			return UP_TARGET_IS_FUNCTION
 		}
-	} else if utils.IsValidDir(arg) {
-		if utils.IsValidFile(path.join(arg, "Dockerfile")) || utils.IsValidFile(path.join(arg, "dockerfile")) {
-			return UP_TARGET_IS_DOCKER_FILE
-		}
-	} else if utils.isValidContainer(arg) {
+	}
+
+	isDockerfile, err := isDockerfileInDir(arg)
+	if err == nil && isDockerfile {
+		return UP_TARGET_IS_DOCKER_FILE
+	}
+
+	isContainer, err := utils.IsValidDockerContainer(arg)
+	if err == nil && isContainer {
 		return UP_TARGET_IS_DOCKER_CONTAINER
 	}
+
 	return UP_TARGET_IS_UNKNOWN
 }
