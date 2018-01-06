@@ -1,6 +1,9 @@
 package env
 
-import "github.com/metrue/fx/docker-api"
+import (
+	docker "github.com/metrue/fx/docker-api"
+	"github.com/pkg/errors"
+)
 
 //PullBaseDockerImage fetch base images from the registry
 func PullBaseDockerImage(verbose bool) {
@@ -22,6 +25,13 @@ func PullBaseDockerImage(verbose bool) {
 }
 
 // Init creates the server
-func Init(verbose bool) {
-	PullBaseDockerImage(verbose)
+func Init(verbose bool) error {
+	err := docker.Info()
+	if err != nil {
+		err = errors.Wrap(err, "docker info")
+	} else {
+		PullBaseDockerImage(verbose)
+	}
+
+	return err
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/jhoonb/archivex"
+	"github.com/pkg/errors"
 
 	"context"
 	"fmt"
@@ -30,6 +31,16 @@ func getClient() (*client.Client, error) {
 	var err error
 	docekClient, err = client.NewEnvClient()
 	return docekClient, err
+}
+
+func Info() error {
+	cli, err := getClient()
+	if err != nil {
+		return errors.Wrap(err, "Create Docker client failed")
+	}
+	ctx := context.Background()
+	_, err = cli.Info(ctx)
+	return err
 }
 
 // Build builds a docker image from the image directory
