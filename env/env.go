@@ -1,12 +1,26 @@
 package env
 
 import (
+	"fmt"
+
 	docker "github.com/metrue/fx/docker-api"
 	"github.com/pkg/errors"
 )
 
+type PullTask struct {
+	ImageName string
+	Err       error
+}
+
+func newPullTask(imageName string, result error) PullTask {
+	return PullTask{
+		ImageName: imageName,
+		Err:       result,
+	}
+}
+
 //PullBaseDockerImage fetch base images from the registry
-func PullBaseDockerImage(verbose bool) {
+func PullBaseDockerImage(verbose bool) []PullTask {
 	baseImages := []string{
 		"metrue/fx-java-base",
 		"metrue/fx-julia-base",
@@ -15,23 +29,41 @@ func PullBaseDockerImage(verbose bool) {
 		"metrue/fx-d-base",
 	}
 
-	task := func(image string, verbose bool) {
-		docker.Pull(image, verbose)
+	count := len(baseImages)
+	results := make(chan PullTask, count)
+
+	task := func(image string, verbose bool) error {
+		return docker.Pull(image, verbose)
 	}
 
+	fmt.Println("fx is pulling some basic resources")
 	for _, image := range baseImages {
-		go task(image, verbose)
+		go func(img string) {
+			err := task(img, verbose)
+			results <- newPullTask(img, err)
+		}(image)
 	}
+
+	var pullResutls []PullTask
+	for result := range results {
+		pullResutls = append(pullResutls, result)
+
+		if len(pullResutls) == count {
+			close(results)
+		}
+	}
+
+	return pullResutls
 }
 
 // Init creates the server
-func Init(verbose bool) error {
-	err := docker.Info()
+func Init(verbose bool) (ret []PullTask, err error) {
+	err = docker.Info()
 	if err != nil {
 		err = errors.Wrap(err, "docker info")
 	} else {
-		PullBaseDockerImage(verbose)
+		ret = PullBaseDockerImage(verbose)
 	}
 
-	return err
+	return ret, err
 }
