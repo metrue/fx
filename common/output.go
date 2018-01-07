@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/metrue/fx/api"
@@ -47,11 +48,11 @@ func HandleListResult(containers []*api.ListItem) {
 
 func HandlePullBaseImageResult(results []env.PullTask) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"fx resource", "state", ""})
+	table.SetHeader([]string{"fx resource", "state"})
 	for _, ret := range results {
 		status := "Ready"
 		if ret.Err != nil {
-			status = "Not Ready"
+			status = fmt.Sprintf("Error: run 'docker pull %s' to fix", ret.ImageName)
 		}
 		table.Append([]string{
 			ret.ImageName,

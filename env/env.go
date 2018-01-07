@@ -1,6 +1,8 @@
 package env
 
 import (
+	"fmt"
+
 	docker "github.com/metrue/fx/docker-api"
 	"github.com/pkg/errors"
 )
@@ -34,6 +36,7 @@ func PullBaseDockerImage(verbose bool) []PullTask {
 		return docker.Pull(image, verbose)
 	}
 
+	fmt.Println("fx is pulling some basic resources")
 	for _, image := range baseImages {
 		go func(img string) {
 			err := task(img, verbose)
