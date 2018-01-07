@@ -30,7 +30,7 @@ jobs:
           name: Build and Install
           command: |
               make install-deps
-              go install ./
+              make build
 
       - run:
           name: Unit Test
