@@ -16,9 +16,11 @@ func Start(verbose bool) {
 	flag.Parse()
 	log.SetFlags(0)
 
-	err := env.Init(verbose)
+	ret, err := env.Init(verbose)
 	if err != nil {
 		common.HandleEnvError(err)
+	} else {
+		common.HandlePullBaseImageResult(ret)
 	}
 
 	go func() {
