@@ -8,7 +8,7 @@ import (
 // Server contains the server configuration information
 var Server = map[string]string{
 	"host": "localhost",
-	"port": "8080",
+	"port": "30080",
 }
 
 // Client contains the local and remote paths to fetch cached images
