@@ -23,8 +23,8 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 | Java          | Supported     | fx            |
 | PHP           | Supported     | [@chlins](https://github.com/chlins)|
 | Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
-| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
 | D             | Supported     | [@andre2007](https://github.com/andre2007)|
+| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
 
 Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
@@ -136,7 +136,36 @@ $ fx --version                                  show current version of f(x)
 
 #### How to write your function
 
-functions example with Go, Ruby, Python, Node, PHP, Java, Julia.
+functions example with Node, Ruby, Python, PHP, Go, Java, Julia.
+
+* Node/JavaScript
+```
+module.exports = (input) => {
+    return parseInt(input.a, 10) + parseInt(input.b, 10)
+}
+```
+
+
+* Ruby
+```
+def fx(input)
+    return input['a'] + input['b']
+end
+```
+
+* Python
+```
+def fx(input):
+    return input['a'] + input['b']
+```
+
+* PHP
+```
+<?php
+    function Fx($input) {
+        return $input["a"]+$input["b"];
+    }
+```
 
 * Go
 ```
@@ -159,13 +188,6 @@ func Fx(input *Input) (output *Output) {
 }
 ```
 
-* Ruby
-```
-def fx(input)
-    return input['a'] + input['b']
-end
-```
-
 * Java
 ```
 package fx;
@@ -179,27 +201,6 @@ public class Fx {
         return Integer.parseInt(a) + Integer.parseInt(b);
     }
 }
-```
-
-* Python
-```
-def fx(input):
-    return input['a'] + input['b']
-```
-
-* Node
-```
-module.exports = (input) => {
-    return parseInt(input.a, 10) + parseInt(input.b, 10)
-}
-```
-
-* PHP
-```
-<?php
-    function Fx($input) {
-        return $input["a"]+$input["b"];
-    }
 ```
 
 * Julia
