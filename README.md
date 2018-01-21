@@ -24,6 +24,7 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 | PHP           | Supported     | [@chlins](https://github.com/chlins)|
 | Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
+| D             | Supported     | [@andre2007](https://github.com/andre2007)|
 
 Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
