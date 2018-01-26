@@ -112,7 +112,7 @@ fx up ./examples/functions/func.js
 ```
 
 the function defined in *examples/functions/func.js* is quite simple, it calculates the sum of two numbers then returns:
-```
+```js
 module.exports = (input) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
@@ -139,7 +139,7 @@ $ fx --version                                  show current version of f(x)
 functions example with Node, Ruby, Python, PHP, Go, Java, Julia.
 
 * Node/JavaScript
-```
+```js
 module.exports = (input) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
@@ -147,20 +147,20 @@ module.exports = (input) => {
 
 
 * Ruby
-```
+```ruby
 def fx(input)
     return input['a'] + input['b']
 end
 ```
 
 * Python
-```
+```py
 def fx(input):
     return input['a'] + input['b']
 ```
 
 * PHP
-```
+```php
 <?php
     function Fx($input) {
         return $input["a"]+$input["b"];
@@ -168,7 +168,7 @@ def fx(input):
 ```
 
 * Go
-```
+```go
 package main
 
 type Input struct {
@@ -189,7 +189,7 @@ func Fx(input *Input) (output *Output) {
 ```
 
 * Java
-```
+```java
 package fx;
 
 import org.json.JSONObject;
@@ -204,7 +204,7 @@ public class Fx {
 ```
 
 * Julia
-```
+```julia
 struct Input
     a::Number
     b::Number
