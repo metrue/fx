@@ -60,6 +60,9 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/andre2007" target="_blank">
             <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/1451047?s=50&v=4" width="50">
         </a>
+        <a href="https://github.com/steventhanna" target="_blank">
+            <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/2541678?s=50&v=4" width="50">
+        </a>
     </tr>
   </tbody>
 </table>
