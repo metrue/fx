@@ -1,50 +1,45 @@
+defaults: &defaults
+  docker:
+    - image: circleci/golang:1.10
+  working_directory: /go/src/github.com/metrue/fx
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: /go/src/github.com/metrue/fx
+
+setup_remote_docker: &setup_remote_docker
+  setup_remote_docker:
+      docker_layer_caching: true
+
 version: 2
-machine:
-    services:
-        - docker
-dependencies:
-    override:
-        - sudo add-apt-repository ppa:masterminds/glide -y
-        - sudo apt-get update
-        - sudo apt-get install glide -y
 jobs:
-  build:
-    docker:
-      - image: circleci/golang:1.8
-
-    working_directory: /go/src/github.com/metrue/fx
-
+  test:
+    <<: *defaults
     steps:
       - checkout
-
-      - setup_remote_docker
-
       - run:
           name: Install Dep
           command: |
               go get github.com/golang/dep
               cd $GOPATH/src/github.com/golang/dep
               go install ./...
-
       - run:
           name: Build and Install
           command: |
               make install-deps
               make build
-
       - run:
           name: Unit Test
           command: |
               ./bin/coverage.sh
               bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-
       - run:
           name: Integration Test
           command: |
               ./bin/test_cli.sh
 
-deployment:
-    production:
-    branch: master
-    commands:
-        - echo "Not Ready Yet"
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - test
