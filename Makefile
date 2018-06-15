@@ -9,8 +9,6 @@ install-deps:
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 	go get -u github.com/jteeuwen/go-bindata/...
-	# TODO move to dep
-	go get  github.com/olekukonko/tablewriter
 
 	mkdir -p ./tmp
 	git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
