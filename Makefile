@@ -9,8 +9,6 @@ install-deps:
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 	go get -u github.com/jteeuwen/go-bindata/...
-	# TODO move to dep
-	go get  github.com/olekukonko/tablewriter
 
 	mkdir -p ./tmp
 	git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
@@ -34,6 +32,8 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
+test-cli:
+	./bin/test_cli.sh
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate
