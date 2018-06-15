@@ -32,6 +32,8 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
+test-cli:
+	./bin/test_cli.sh
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate

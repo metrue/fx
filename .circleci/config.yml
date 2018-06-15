@@ -34,9 +34,8 @@ jobs:
               ./bin/coverage.sh
               bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
       - run:
-          name: Integration Test
-          command: |
-              ./bin/test_cli.sh
+          name: Test CLI
+          command: make test-cli
 
 workflows:
   version: 2
