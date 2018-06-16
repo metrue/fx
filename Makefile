@@ -10,7 +10,6 @@ install-deps:
 	go get -u github.com/docker/docker/api
 	go get -u github.com/docker/docker/client
 	go get -u github.com/docker/go-connections
-	go get -u github.com/golang/protobuf
 	go get -u github.com/grpc-ecosystem/grpc-gateway
 	go get -u github.com/jhoonb/archivex
 	go get -u github.com/olekukonko/tablewriter
