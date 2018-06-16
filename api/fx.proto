@@ -5,73 +5,73 @@ package api;
 import "google/api/annotations.proto";
 
 message FunctionMeta {
-	string Lang    = 1;
-	string Path    = 2;
-	string Content = 3;
+  string Lang    = 1;
+  string Path    = 2;
+  string Content = 3;
 }
 
 message UpRequest {
-    repeated FunctionMeta Functions = 1;
+  repeated FunctionMeta Functions = 1;
 }
 
 message DownRequest {
-    repeated string ID = 1;
+  repeated string ID = 1;
 }
 
 message ListRequest {
-    repeated string ID = 1;
+  repeated string ID = 1;
 }
 
 message UpMsgMeta {
-    string FunctionID 	  = 1;
-    string FunctionSource = 2;
-	string LocalAddress   = 3;
-	string RemoteAddress  = 4;
-	string Error 		  = 5;
+  string FunctionID     = 1;
+  string FunctionSource = 2;
+  string LocalAddress   = 3;
+  string RemoteAddress  = 4;
+  string Error          = 5;
 }
 
 message UpResponse {
-    repeated UpMsgMeta Instances = 1;
+  repeated UpMsgMeta Instances = 1;
 }
 
 message DownMsgMeta {
-	string ContainerId     = 1;
-	string ContainerStatus = 2;
+  string ContainerId     = 1;
+  string ContainerStatus = 2;
 	string ImageStatus     = 3;
-	string Error 		   = 4;	
+  string Error 		   		  = 4;
 }
 
 message DownResponse {
-    repeated DownMsgMeta Instances = 1;
+  repeated DownMsgMeta Instances = 1;
 }
 
 message ListItem {
-    string FunctionID = 1;
-    string State = 2;
-    string ServiceURL = 3;
+  string FunctionID = 1;
+  string State = 2;
+  string ServiceURL = 3;
 }
 
 message ListResponse {
-    repeated ListItem Instances = 1;
+  repeated ListItem Instances = 1;
 }
 
 service FxService {
   rpc Up (UpRequest) returns (UpResponse) {
     option (google.api.http) = {
-        post: "/v1/up"
-        body: "*"
+      post: "/v1/up"
+      body: "*"
     };
   }
   rpc Down (DownRequest) returns (DownResponse) {
     option (google.api.http) = {
-        post: "/v1/down"
-        body: "*"
+      post: "/v1/down"
+      body: "*"
     };
   }
   rpc List (ListRequest) returns (ListResponse) {
     option (google.api.http) = {
-        post: "/v1/list"
-        body: "*"
+      post: "/v1/list"
+      body: "*"
     };
   }
 }
