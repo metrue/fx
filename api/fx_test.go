@@ -21,16 +21,6 @@ func setup() {
 	}
 }
 
-func teardown() {
-	cmd := exec.Command("./clean.sh")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func TestNewClient(t *testing.T) {
 	endpoint := ":5050"
 	_, _, err := NewClient(endpoint)
@@ -44,8 +34,4 @@ func TestMain(m *testing.M) {
 	}
 
 	m.Run()
-
-	if !testing.Short() {
-		teardown()
-	}
 }
