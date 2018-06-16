@@ -3,21 +3,7 @@ DIST_DIR=./dist
 
 install-deps:
 	# install protobuf and grpc
-	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u google.golang.org/grpc
-	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
-	go get -u github.com/docker/docker/api
-	go get -u github.com/docker/docker/client
-	go get -u github.com/docker/go-connections
-	go get -u github.com/grpc-ecosystem/grpc-gateway
-	go get -u github.com/jhoonb/archivex
 	go get -u github.com/olekukonko/tablewriter
-	go get -u github.com/phayes/freeport
-	go get -u github.com/pkg/errors
-	go get -u github.com/rs/xid
-	go get -u golang.org/x/net
-	go get -u google.golang.org/genproto
 	go get -u github.com/jteeuwen/go-bindata/...
 
 	# mkdir -p ./tmp
