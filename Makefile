@@ -11,6 +11,7 @@ install-deps:
 
 	# install protoc
 	./scripts/install_protoc.sh third_party
+	ls -al third_party
 
 	# install the other dependencies
 	# @dep ensure
