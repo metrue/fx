@@ -10,7 +10,7 @@ install-deps:
 	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
 
 	# install protoc
-	./scripts/install_protoc.sh third_party
+	./scripts/install_protoc.sh third_party/protoc
 	ls -al third_party
 	cd third_party/bin && pwd && ls -al .
 
