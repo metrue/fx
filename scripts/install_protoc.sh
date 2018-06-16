@@ -17,6 +17,13 @@ install_protoc() {
     ./bin/protoc --version
 }
 
+install_protoc_plugins() {
+	go get -u github.com/golang/protobuf/proto
+	go get -u github.com/golang/protobuf/protoc-gen-go
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+}
+
 if has "${dest_dir}/bin/protoc"; then
     protoc --version
 else
@@ -30,3 +37,5 @@ else
         echo 'Sorry, this script works on Linux/Mac now. Please, Create a PR to provide Windows support!'
     fi
 fi
+
+install_protoc_plugins
