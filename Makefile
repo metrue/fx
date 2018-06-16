@@ -13,7 +13,7 @@ install-deps:
 	./scripts/install_protoc.sh third_party/protoc
 generate:
 	# generate gRPC related code
-	cd api && ./gen.sh
+	cd api; pwd; ls -al googleapis/ && ./gen.sh
 	# bundle assert into binary
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
