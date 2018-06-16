@@ -10,11 +10,11 @@ install-deps:
 	# go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 	go get -u github.com/jteeuwen/go-bindata/...
 
-	mkdir -p ./tmp
-	git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
+	# mkdir -p ./tmp
+	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
 
 	# install protoc
-	./bin/install_protoc.sh
+	./bin/install_protoc.sh third_party
 
 	# install the other dependencies
 	@dep ensure

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package api;
 
-import "google/api/annotations.proto";
+import "googleapis/google/api/annotations.proto";
 
 message FunctionMeta {
   string Lang    = 1;

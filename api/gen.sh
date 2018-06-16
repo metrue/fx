@@ -4,8 +4,8 @@ HERE=$( cd "$( dirname "${0}" )" && pwd )
 ROOT=$( cd ${HERE}/.. && pwd )
 PROTOSRC="./fx.proto"
 
-protoc_bin="${ROOT}/tmp/protoc/bin/protoc"
-protoc_include="${ROOT}/tmp/protoc/include"
+protoc_bin="${ROOT}/third_party/protoc/bin/protoc"
+protoc_include="${ROOT}/third_party/protoc/include"
 
 # generate the gRPC code
 ${protoc_bin} -I/usr/local/include \

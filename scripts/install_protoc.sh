@@ -3,7 +3,7 @@
 HERE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ROOT=$( cd ${HERE}/.. && pwd )
 
-dest_dir="${ROOT}/tmp/protoc"
+dest_dir="${1:-${HERE}}"
 
 has() {
   type "$1" > /dev/null 2>&1

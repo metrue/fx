@@ -3,6 +3,7 @@ package api_test
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"log"
 	"os/exec"
 	"testing"
@@ -34,9 +35,11 @@ func teardown() {
 func TestNewClient(t *testing.T) {
 	endpoint := ":5050"
 	client, conn, err := NewClient(endpoint)
-	assert.Equal(t, client, nil)
-	assert.Equal(t, conn, nil)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err, nil)
+	fmt.Println("++")
+	fmt.Println(grpc)
+	fmt.Println("++")
+	// assert.Equal(t, conn, grpc.ClientConn)
 }
 
 func TestMain(m *testing.M) {
