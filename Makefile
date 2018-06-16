@@ -3,24 +3,21 @@ DIST_DIR=./dist
 
 install-deps:
 	# install protobuf and grpc
+	go get -u github.com/olekukonko/tablewriter
+	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/golang/protobuf/proto
 	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u google.golang.org/grpc
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
-	go get -u github.com/jteeuwen/go-bindata/...
 
-	mkdir -p ./tmp
-	git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
+	# mkdir -p ./tmp
+	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
 
 	# install protoc
-	./bin/install_protoc.sh
-
-	# install the other dependencies
-	@dep ensure
+	./scripts/install_protoc.sh third_party/protoc
 generate:
 	# generate gRPC related code
-	go generate ./api/fx.go
+	cd api; pwd; ls -al googleapis/google/api/http.proto && ls -al google/api/http.proto && ./gen.sh
 	# bundle assert into binary
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
@@ -32,8 +29,10 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
-test-cli:
-	./bin/test_cli.sh
+test-unit: generate
+	./scripts/coverage.sh
+integration-test: generate
+	./scripts/test_cli.sh
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate
