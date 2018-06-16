@@ -14,7 +14,7 @@ install-deps:
 	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
 
 	# install protoc
-	./bin/install_protoc.sh third_party
+	./scripts/install_protoc.sh third_party
 
 	# install the other dependencies
 	@dep ensure
@@ -33,9 +33,9 @@ clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
 test-unit: generate
-	./bin/coverage.sh
+	./scripts/coverage.sh
 integration-test: generate
-	./bin/test_cli.sh
+	./scripts/test_cli.sh
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate
