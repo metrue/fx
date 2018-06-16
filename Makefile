@@ -32,7 +32,9 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
-test-cli: generate
+test-unit: generate
+	./bin/coverage.sh
+integration-test: generate
 	./bin/test_cli.sh
 zip:
 	zip -r images.zip images/
