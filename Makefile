@@ -5,7 +5,8 @@ install-deps:
 	# install protobuf and grpc
 	go get -u github.com/olekukonko/tablewriter
 	go get -u github.com/jteeuwen/go-bindata/...
-	go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+	go get -u github.com/golang/protobuf/proto
+	go get -u github.com/golang/protobuf/protoc-gen-go
 
 	# mkdir -p ./tmp
 	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
