@@ -7,7 +7,8 @@ install-deps:
 	go get -u google.golang.org/grpc
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
-	go get -u github.com/docker/docker
+	go get -u github.com/docker/docker/api
+	go get -u github.com/docker/docker/client
 	go get -u github.com/docker/go-connections
 	go get -u github.com/golang/protobuf
 	go get -u github.com/grpc-ecosystem/grpc-gateway
