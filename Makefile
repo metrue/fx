@@ -7,8 +7,8 @@ install-deps:
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/golang/protobuf/proto
 	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u github.com/golang/protobuf/protoc-gen-grpc-gateway
-	go get -u github.com/golang/protobuf/protoc-gen-swagger
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 
 	# mkdir -p ./tmp
 	# git clone --depth 1 https://github.com/googleapis/googleapis.git tmp/googleapis
