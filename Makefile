@@ -20,7 +20,7 @@ install-deps:
 	@dep ensure
 generate:
 	# generate gRPC related code
-	go generate ./api/fx.go
+	cd api && ./gen.sh
 	# bundle assert into binary
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
@@ -32,7 +32,7 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
-test-cli:
+test-cli: generate
 	./bin/test_cli.sh
 zip:
 	zip -r images.zip images/
