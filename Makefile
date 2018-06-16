@@ -11,11 +11,6 @@ install-deps:
 
 	# install protoc
 	./scripts/install_protoc.sh third_party/protoc
-	ls -al third_party
-	cd third_party/bin && pwd && ls -al .
-
-	# install the other dependencies
-	# @dep ensure
 generate:
 	# generate gRPC related code
 	cd api && ./gen.sh
