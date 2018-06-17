@@ -11,17 +11,21 @@ import (
 	"github.com/metrue/fx/env"
 )
 
-// Start parses input and launches the fx server in a blocking process
-func Start(verbose bool) {
-	flag.Parse()
-	log.SetFlags(0)
-
+func pullBaseImage() {
 	ret, err := env.Init(verbose)
 	if err != nil {
 		common.HandleEnvError(err)
 	} else {
 		common.HandlePullBaseImageResult(ret)
 	}
+}
+
+// Start parses input and launches the fx server in a blocking process
+func Start(verbose bool) error {
+	flag.Parse()
+	log.SetFlags(0)
+
+	go pullBaseImage()
 
 	go func() {
 		err := service.Start(config.GrpcEndpoint)
@@ -33,8 +37,5 @@ func Start(verbose bool) {
 	addr := fmt.Sprintf("%s:%s", config.Server["host"], config.Server["port"])
 	log.Printf("fx serves on %s", addr)
 	// log.Fatal(http.ListenAndServe(addr, nil))
-	err = Run(config.GrpcEndpoint, addr)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return Run(config.GrpcEndpoint, addr)
 }
