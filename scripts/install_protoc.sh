@@ -25,7 +25,7 @@ install_protoc_plugins() {
 }
 
 if has "${dest_dir}/bin/protoc"; then
-    protoc --version
+    ${dest_dir}/bin/protoc --version
 else
     if [ "$(uname)" == "Darwin" ]; then
         url="https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-osx-x86_64.zip"
