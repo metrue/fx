@@ -2,6 +2,7 @@ OUTPUT_DIR=./build
 DIST_DIR=./dist
 
 install-deps:
+	git submodule update --init --recursive
 	go get -u github.com/olekukonko/tablewriter
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u golang.org/x/sys
