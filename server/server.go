@@ -11,7 +11,7 @@ import (
 	"github.com/metrue/fx/env"
 )
 
-func pullBaseImage() {
+func pullBaseImage(verbose bool) {
 	ret, err := env.Init(verbose)
 	if err != nil {
 		common.HandleEnvError(err)
@@ -25,7 +25,7 @@ func Start(verbose bool) error {
 	flag.Parse()
 	log.SetFlags(0)
 
-	go pullBaseImage()
+	go pullBaseImage(verbose)
 
 	go func() {
 		err := service.Start(config.GrpcEndpoint)
