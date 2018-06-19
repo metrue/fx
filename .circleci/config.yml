@@ -17,20 +17,13 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - *setup_remote_docker
       - run:
-          name: Checkout Submodule
-          command: git submodule update --init --recursive
+          name: Install Deps
+          command: make install-deps
       - run:
-          name: Install Dep
-          command: |
-              go get github.com/golang/dep
-              cd $GOPATH/src/github.com/golang/dep
-              go install ./...
-      - run:
-          name: Build and Install
-          command: |
-              make install-deps
-              make build
+          name: Build
+          command: make build
       - run:
           name: Unit Test
           command: |
