@@ -110,7 +110,7 @@ func assetsDockerfilesFxDDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/Dockerfile", size: 108, mode: os.FileMode(420), modTime: time.Unix(1513444918, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/Dockerfile", size: 108, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -130,7 +130,7 @@ func assetsDockerfilesFxDAppD() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/app.d", size: 375, mode: os.FileMode(420), modTime: time.Unix(1513444918, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/app.d", size: 375, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -150,7 +150,7 @@ func assetsDockerfilesFxDArsdCgiD() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/arsd/cgi.d", size: 125311, mode: os.FileMode(420), modTime: time.Unix(1513444918, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/arsd/cgi.d", size: 125311, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -170,7 +170,7 @@ func assetsDockerfilesFxDFxD() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/fx.d", size: 105, mode: os.FileMode(420), modTime: time.Unix(1513444918, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/d/fx.d", size: 105, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -190,7 +190,7 @@ func assetsDockerfilesFxGoDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/Dockerfile", size: 78, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/Dockerfile", size: 78, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -210,7 +210,7 @@ func assetsDockerfilesFxGoAppGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/app.go", size: 439, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/app.go", size: 439, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -230,7 +230,7 @@ func assetsDockerfilesFxGoFxGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/fx.go", size: 189, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/go/fx.go", size: 189, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -250,7 +250,7 @@ func assetsDockerfilesFxJavaDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/Dockerfile", size: 223, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/Dockerfile", size: 223, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -270,7 +270,7 @@ func assetsDockerfilesFxJavaPomXml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/pom.xml", size: 1877, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/pom.xml", size: 1877, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -290,7 +290,7 @@ func assetsDockerfilesFxJavaSrcMainJavaFxFxJava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/src/main/java/fx/Fx.java", size: 260, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/src/main/java/fx/Fx.java", size: 260, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -310,7 +310,7 @@ func assetsDockerfilesFxJavaSrcMainJavaFxAppJava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/src/main/java/fx/app.java", size: 363, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/java/src/main/java/fx/app.java", size: 363, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -330,7 +330,7 @@ func assetsDockerfilesFxJuliaDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/Dockerfile", size: 174, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/Dockerfile", size: 174, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -350,7 +350,7 @@ func assetsDockerfilesFxJuliaRequire() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/REQUIRE", size: 36, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/REQUIRE", size: 36, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -370,7 +370,7 @@ func assetsDockerfilesFxJuliaAppJl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/app.jl", size: 357, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/app.jl", size: 357, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -390,7 +390,7 @@ func assetsDockerfilesFxJuliaDepsJl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/deps.jl", size: 108, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/deps.jl", size: 108, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -410,7 +410,7 @@ func assetsDockerfilesFxJuliaFxJl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/fx.jl", size: 108, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/julia/fx.jl", size: 108, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -430,7 +430,7 @@ func assetsDockerfilesFxNodeDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/Dockerfile", size: 70, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/Dockerfile", size: 70, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -450,7 +450,7 @@ func assetsDockerfilesFxNodeAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/app.js", size: 251, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/app.js", size: 251, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -470,7 +470,7 @@ func assetsDockerfilesFxNodeFxJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/fx.js", size: 61, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/node/fx.js", size: 61, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -490,7 +490,7 @@ func assetsDockerfilesFxPhpDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/Dockerfile", size: 62, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/Dockerfile", size: 62, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -510,7 +510,7 @@ func assetsDockerfilesFxPhpFxPhp() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/fx.php", size: 78, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/fx.php", size: 78, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -530,7 +530,7 @@ func assetsDockerfilesFxPhpIndexPhp() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/index.php", size: 143, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/php/index.php", size: 143, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -550,7 +550,7 @@ func assetsDockerfilesFxPythonDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/Dockerfile", size: 82, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/Dockerfile", size: 82, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -570,7 +570,7 @@ func assetsDockerfilesFxPythonAppPy() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/app.py", size: 209, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/app.py", size: 209, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -590,7 +590,7 @@ func assetsDockerfilesFxPythonFxPy() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/fx.py", size: 32, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/python/fx.py", size: 32, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -610,7 +610,7 @@ func assetsDockerfilesFxRubyDockerfile() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/Dockerfile", size: 99, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/Dockerfile", size: 99, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -630,7 +630,7 @@ func assetsDockerfilesFxRubyAppRb() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/app.rb", size: 218, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/app.rb", size: 218, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -650,7 +650,7 @@ func assetsDockerfilesFxRubyFxRb() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/fx.rb", size: 46, mode: os.FileMode(420), modTime: time.Unix(1513434497, 0)}
+	info := bindataFileInfo{name: "assets/dockerfiles/fx/ruby/fx.rb", size: 46, mode: os.FileMode(420), modTime: time.Unix(1527060853, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
