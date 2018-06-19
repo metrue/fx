@@ -5,8 +5,8 @@ install-deps:
 	git submodule update --init --recursive
 	go get -u github.com/olekukonko/tablewriter
 	go get -u github.com/jteeuwen/go-bindata/...
-	go get -u golang.org/x/sys
-	go get -u golang.org/x/text
+	go get -u golang.org/x/sys/...
+	go get -u golang.org/x/text/...
 	go get -u google.golang.org/grpc
 	# install protoc and plugins
 	./scripts/install_protoc.sh third_party/protoc
