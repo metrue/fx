@@ -24,7 +24,7 @@ release:
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
-test-unit: generate
+unit-test: generate
 	./scripts/coverage.sh
 integration-test: generate
 	./scripts/test_cli.sh

@@ -27,11 +27,11 @@ jobs:
       - run:
           name: Unit Test
           command: |
-              make test-unit
+              make unit-test
               bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
       - run:
-          name: Test CLI
-          command: make test-cli
+          name: Integration Test
+          command: make integration-test
 
 workflows:
   version: 2
