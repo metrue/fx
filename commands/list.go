@@ -2,7 +2,7 @@ package commands
 
 import (
 	"context"
-	"os"
+	"fmt"
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
@@ -11,27 +11,16 @@ import (
 )
 
 // List lists all running function services
-func List() {
-	option := "list"
-	nArgs := len(os.Args)
-	args, flagSet := common.SetupFlags(option)
-	if nArgs < 2 {
-		common.FlagsAndExit(flagSet)
-	}
-	functions, _ := common.ParseArgs(
-		option,
-		os.Args[2:],
-		args,
-		flagSet,
-	)
-
+func List(address string, functions []string) error {
 	client, conn, err := api.NewClient(config.GrpcEndpoint)
 	if err != nil {
-		err = errors.Wrap(err, "New client failed")
 		common.HandleError(err)
+		return errors.Wrap(err, "New client failed")
 	}
 
 	defer conn.Close()
+
+	fmt.Println(address, functions)
 
 	ctx := context.Background()
 	req := &api.ListRequest{
@@ -39,9 +28,10 @@ func List() {
 	}
 	res, err := client.List(ctx, req)
 	if err != nil {
-		err = errors.Wrap(err, "List deployed functions failed")
 		common.HandleError(err)
+		return errors.Wrap(err, "List deployed functions failed")
 	}
 
 	common.HandleListResult(res.Instances)
+	return nil
 }

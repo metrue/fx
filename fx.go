@@ -70,9 +70,20 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"l"},
 			Usage:   "list deployed services",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "fx server host, default is localhost",
+				},
+			},
 			Action: func(c *cli.Context) error {
 				fmt.Println("list: ", c.Args().First())
-				return nil
+				host := c.String("host")
+				if host == "" {
+					host = fmt.Sprintf("localhost%s", config.GrpcEndpoint)
+				}
+				functions := c.Args()
+				return commands.List(host, functions)
 			},
 		},
 	}
