@@ -47,12 +47,23 @@ func main() {
 			},
 		},
 		{
-			Name:    "down",
-			Aliases: []string{"d"},
-			Usage:   "destroy a function or a group of functions",
+			Name:      "down",
+			Aliases:   []string{"d"},
+			Usage:     "destroy a function or a group of functions",
+			ArgsUsage: "[id1, id2, ...]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "fx server host, default is localhost",
+				},
+			},
 			Action: func(c *cli.Context) error {
-				fmt.Println("down: ", c.Args().First())
-				return nil
+				host := c.String("host")
+				if host == "" {
+					host = fmt.Sprintf("localhost%s", config.GrpcEndpoint)
+				}
+				functions := c.Args()
+				return commands.Down(host, functions)
 			},
 		},
 		{
