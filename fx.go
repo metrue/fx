@@ -21,9 +21,7 @@ func main() {
 			Aliases: []string{"s"},
 			Usage:   "manage fx server",
 			Action: func(c *cli.Context) error {
-				fmt.Println("serve: ", c.Args().First())
-				server.Start(verbose)
-				return nil
+				return server.Start(true)
 			},
 		},
 		{
