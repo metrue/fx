@@ -9,6 +9,7 @@ install-deps:
 	go get -u golang.org/x/text/...
 	go get -u google.golang.org/grpc
 	go get -u github.com/urfave/cli
+	go get github.com/goreleaser/goreleaser
 	# install protoc and plugins
 	./scripts/install_protoc.sh third_party/protoc
 generate:
@@ -18,10 +19,10 @@ generate:
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
-cross:
+cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
-release:
-	goreleaser --skip-validate
+release: generate
+	./scripts/release.sh
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
