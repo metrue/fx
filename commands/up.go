@@ -2,9 +2,7 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
@@ -13,31 +11,13 @@ import (
 )
 
 // Up starts the functions specified in flags
-func Up() {
-	option := "up"
-	nArgs := len(os.Args)
-	args, flagSet := common.SetupFlags(option)
-	if nArgs == 2 {
-		common.FlagsAndExit(flagSet)
-	}
-	functions, address := common.ParseArgs(
-		option,
-		os.Args[2:],
-		args,
-		flagSet,
-	)
-
-	fmt.Println("Deploy starting...")
-
-	channel := make(chan bool)
-	defer close(channel)
-
+func Up(address string, functions []string) error {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			err = errors.Wrap(err, "Read function content falied")
 			common.HandleError(err)
+			return errors.Wrap(err, "Read function content falied")
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -50,8 +30,8 @@ func Up() {
 
 	client, conn, err := api.NewClient(address)
 	if err != nil {
-		err = errors.Wrap(err, "New gRPC Client failed")
 		common.HandleError(err)
+		return errors.Wrap(err, "New gRPC Client failed")
 	}
 
 	defer conn.Close()
@@ -62,9 +42,11 @@ func Up() {
 	}
 	res, err := client.Up(ctx, req)
 	if err != nil {
-		err = errors.Wrap(err, "up function failed")
 		common.HandleError(err)
+		return errors.Wrap(err, "up function failed")
 	}
 
 	common.HandleUpResult(res.Instances)
+
+	return nil
 }

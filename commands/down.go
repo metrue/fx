@@ -2,30 +2,17 @@ package commands
 
 import (
 	"context"
-	"os"
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
 )
 
 // Down invoke the removal of one or more functions
-func Down() {
-	option := "down"
-	nArgs := len(os.Args)
-	args, flagSet := common.SetupFlags(option)
-	if nArgs == 2 {
-		common.FlagsAndExit(flagSet)
-	}
-	functions, address := common.ParseArgs(
-		option,
-		os.Args[2:],
-		args,
-		flagSet,
-	)
-
+func Down(address string, functions []string) error {
 	client, conn, err := api.NewClient(address)
 	if err != nil {
 		common.HandleError(err)
+		return err
 	}
 
 	defer conn.Close()
@@ -38,7 +25,9 @@ func Down() {
 
 	if err != nil {
 		common.HandleError(err)
+		return err
 	}
 
 	common.HandleDownResult(res.Instances)
+	return nil
 }
