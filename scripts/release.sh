@@ -12,5 +12,5 @@ if [[ ${branch} == "production" ]];then
   version=$(cat version.txt)
 fi
 
-git tag -a version -m "auto release"
+git tag -a ${version} -m "auto release"
 goreleaser --skip-validate
