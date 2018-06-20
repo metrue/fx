@@ -21,7 +21,7 @@ build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
 cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
-release:
+release: generate
 	goreleaser --skip-validate
 clean:
 	rm -rf ${OUTPUT_DIR}
