@@ -43,6 +43,17 @@ jobs:
       - run:
           name: Release
           command: make release
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - *setup_remote_docker
+      - run:
+          name: Install Deps
+          command: make install-deps
+      - run:
+          name: Release
+          command: make release
 
 workflows:
   version: 2
@@ -57,3 +68,10 @@ workflows:
               only:
                 - master
                 - /^.*--autodeploy$/
+      - release:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - production
