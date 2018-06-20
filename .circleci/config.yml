@@ -32,9 +32,31 @@ jobs:
       - run:
           name: Integration Test
           command: make integration-test
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - *setup_remote_docker
+      - run:
+          name: Install Deps
+          command: make install-deps
+      - run:
+          name: Build
+          command: make cross
+      - run:
+          name: Release
+          command: make release
 
 workflows:
   version: 2
   workflow:
     jobs:
       - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - /^.*--autodeploy$/

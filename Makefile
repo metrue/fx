@@ -9,6 +9,7 @@ install-deps:
 	go get -u golang.org/x/text/...
 	go get -u google.golang.org/grpc
 	go get -u github.com/urfave/cli
+	go get github.com/goreleaser/goreleaser
 	# install protoc and plugins
 	./scripts/install_protoc.sh third_party/protoc
 generate:
