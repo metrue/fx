@@ -19,7 +19,7 @@ generate:
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
-cross:
+cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
 release:
 	goreleaser --skip-validate
