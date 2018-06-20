@@ -22,7 +22,7 @@ build: generate
 cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
 release: generate
-	goreleaser --skip-validate
+	./scripts/release.sh
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
