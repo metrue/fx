@@ -1,10 +1,10 @@
 package env
 
 import (
+	"errors"
 	"fmt"
 
-	docker "github.com/metrue/fx/docker-api"
-	"github.com/pkg/errors"
+	docker "github.com/metrue/fx/pkg/docker"
 )
 
 type PullTask struct {
@@ -57,13 +57,10 @@ func PullBaseDockerImage(verbose bool) []PullTask {
 }
 
 // Init creates the server
-func Init(verbose bool) (ret []PullTask, err error) {
-	err = docker.Info()
-	if err != nil {
-		err = errors.Wrap(err, "docker info")
-	} else {
-		ret = PullBaseDockerImage(verbose)
+func Init(verbose bool) error {
+	if !docker.IsRunning() {
+		return errors.New("docker is not running on your host")
 	}
-
-	return ret, err
+	PullBaseDockerImage(verbose)
+	return nil
 }

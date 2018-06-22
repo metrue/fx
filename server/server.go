@@ -12,11 +12,9 @@ import (
 )
 
 func pullBaseImage(verbose bool) {
-	ret, err := env.Init(verbose)
+	err := env.Init(verbose)
 	if err != nil {
 		common.HandleEnvError(err)
-	} else {
-		common.HandlePullBaseImageResult(ret)
 	}
 }
 

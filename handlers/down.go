@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/docker-api"
+	"github.com/metrue/fx/pkg/docker"
 	"github.com/pkg/errors"
 )
 

@@ -9,7 +9,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/jhoonb/archivex"
-	"github.com/pkg/errors"
 
 	"context"
 	"fmt"
@@ -22,36 +21,26 @@ type dockerInfo struct {
 	Stream string `json:"stream"`
 }
 
-var docekClient *client.Client
+var dockerClient *client.Client
 
-func getClient() (*client.Client, error) {
-	if docekClient != nil {
-		return docekClient, nil
+func init() {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
 	}
-	var err error
-	docekClient, err = client.NewEnvClient()
-	return docekClient, err
+	dockerClient = cli
 }
 
-func Info() error {
-	cli, err := getClient()
-	if err != nil {
-		return errors.Wrap(err, "Create Docker client failed")
-	}
+func IsRunning() bool {
 	ctx := context.Background()
-	_, err = cli.Info(ctx)
-	return err
+	_, err := dockerClient.Info(ctx)
+	return err == nil
 }
 
 // Build builds a docker image from the image directory
 func Build(name string, dir string) error {
-	cli, err := getClient()
-	if err != nil {
-		return err
-	}
-
 	tar := new(archivex.TarFile)
-	err = tar.Create(dir)
+	err := tar.Create(dir)
 	if err != nil {
 		return err
 	}
@@ -75,7 +64,7 @@ func Build(name string, dir string) error {
 		Tags:       []string{name},
 		Labels:     map[string]string{"belong-to": "fx"},
 	}
-	buildResponse, buildErr := cli.ImageBuild(context.Background(), dockerBuildContext, buildOptions)
+	buildResponse, buildErr := dockerClient.ImageBuild(context.Background(), dockerBuildContext, buildOptions)
 	if buildErr != nil {
 		return buildErr
 	}
@@ -88,7 +77,6 @@ func Build(name string, dir string) error {
 		if err != nil {
 			return err
 		}
-		// fmt.Printf(info.Stream)
 	}
 
 	return nil
@@ -96,13 +84,8 @@ func Build(name string, dir string) error {
 
 // Pull image from hub.docker.com
 func Pull(name string, verbose bool) error {
-	cli, err := getClient()
-	if err != nil {
-		return err
-	}
-
 	ctx := context.Background()
-	r, pullErr := cli.ImagePull(ctx, name, types.ImagePullOptions{})
+	r, pullErr := dockerClient.ImagePull(ctx, name, types.ImagePullOptions{})
 	if pullErr != nil {
 		return pullErr
 	}
@@ -116,11 +99,6 @@ func Pull(name string, verbose bool) error {
 
 // Deploy spins up a new container
 func Deploy(name string, dir string, port string) (*container.ContainerCreateCreatedBody, error) {
-	cli, err := getClient()
-	if err != nil {
-		return nil, err
-	}
-
 	ctx := context.Background()
 	imageName := name
 	containerConfig := &container.Config{
@@ -141,12 +119,12 @@ func Deploy(name string, dir string, port string) (*container.ContainerCreateCre
 		},
 	}
 
-	resp, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "")
+	resp, err := dockerClient.ContainerCreate(ctx, containerConfig, hostConfig, nil, "")
 	if err != nil {
 		return nil, err
 	}
 
-	if err = cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err = dockerClient.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
 
@@ -156,30 +134,18 @@ func Deploy(name string, dir string, port string) (*container.ContainerCreateCre
 
 // Stop interrupts a running container
 func Stop(containerID string) (err error) {
-	cli, err := getClient()
-	if err != nil {
-		return err
-	}
 	timeout := time.Duration(1) * time.Second
-	err = cli.ContainerStop(context.Background(), containerID, &timeout)
+	err = dockerClient.ContainerStop(context.Background(), containerID, &timeout)
 	return err
 }
 
 // Remove interrupts and remove a running container
 func Remove(containerID string) (err error) {
-	cli, err := getClient()
-	if err != nil {
-		return err
-	}
-	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
+	return dockerClient.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
 }
 
 //ImageRemove remove docker image by imageID
 func ImageRemove(imageID string) (err error) {
-	cli, err := getClient()
-	if err != nil {
-		return err
-	}
-	_, err = cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
+	_, err = dockerClient.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{Force: true})
 	return err
 }
