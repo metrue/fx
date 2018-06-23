@@ -66,13 +66,15 @@ func Start(verbose bool) error {
 		go PullBaseDockerImage(true)
 	}
 
+	grpcEndpoint := fmt.Sprintf("0.0.0.0:%d", config.GRPC_PORT)
+	httpEndpoint := fmt.Sprintf("0.0.0.0:%d", config.HTTP_PORT)
 	go func() {
-		err := service.Start(config.GetGrpcEndpoint())
+		err := service.Start(grpcEndpoint)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	log.Printf("fx serves on %s", config.GetHttpServerAddr())
-	return Run(config.GetGrpcEndpoint(), config.GetHttpServerAddr())
+	log.Printf("fx serves on %d", config.HTTP_PORT)
+	return Run(grpcEndpoint, httpEndpoint)
 }
