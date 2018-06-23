@@ -1,31 +1,70 @@
 package server
 
 import (
-	"flag"
 	"fmt"
 	"log"
 
 	"github.com/metrue/fx/api/service"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/env"
+	"github.com/metrue/fx/pkg/docker"
 )
 
-func pullBaseImage(verbose bool) {
-	ret, err := env.Init(verbose)
-	if err != nil {
-		common.HandleEnvError(err)
-	} else {
-		common.HandlePullBaseImageResult(ret)
+type PullTask struct {
+	ImageName string
+	Err       error
+}
+
+func newPullTask(imageName string, result error) PullTask {
+	return PullTask{
+		ImageName: imageName,
+		Err:       result,
 	}
+}
+
+//PullBaseDockerImage fetch base images from the registry
+func PullBaseDockerImage(verbose bool) []PullTask {
+	baseImages := []string{
+		"metrue/fx-java-base",
+		"metrue/fx-julia-base",
+		"metrue/fx-python-base",
+		"metrue/fx-node-base",
+		"metrue/fx-d-base",
+	}
+
+	count := len(baseImages)
+	results := make(chan PullTask, count)
+
+	task := func(image string, verbose bool) error {
+		return docker.Pull(image, verbose)
+	}
+
+	fmt.Println("fx is pulling some basic resources")
+	for _, image := range baseImages {
+		go func(img string) {
+			err := task(img, verbose)
+			results <- newPullTask(img, err)
+		}(image)
+	}
+
+	var pullResutls []PullTask
+	for result := range results {
+		pullResutls = append(pullResutls, result)
+
+		if len(pullResutls) == count {
+			close(results)
+		}
+	}
+
+	return pullResutls
 }
 
 // Start parses input and launches the fx server in a blocking process
 func Start(verbose bool) error {
-	flag.Parse()
-	log.SetFlags(0)
-
-	go pullBaseImage(verbose)
+	if !docker.IsRunning() {
+		panic("make sure docker is running on your host")
+	} else {
+		go PullBaseDockerImage(true)
+	}
 
 	go func() {
 		err := service.Start(config.GrpcEndpoint)

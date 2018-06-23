@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/docker-api"
 	"github.com/metrue/fx/image"
-	"github.com/metrue/fx/utils"
+	"github.com/metrue/fx/pkg/docker"
+	"github.com/metrue/fx/pkg/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )
@@ -36,7 +36,7 @@ func Up(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
 
 	var guid = xid.New().String()
 	var dir = path.Join(os.TempDir(), "fx-", guid)
-	defer cleanup(dir)
+	// defer cleanup(dir)
 
 	var name = guid
 	err = image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
