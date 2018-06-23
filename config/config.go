@@ -16,9 +16,11 @@ type FxConfig struct {
 }
 
 var CONFIG = path.Join(os.Getenv("HOME"), ".fx/config.json")
+var HTTP_PORT = 30080
+var GRPC_PORT = 50000
 var DEFAULT_CONFIG = &FxConfig{
-	httpServerAddr: "localhost:30080",
-	grpcEndpoint:   "localhost:5000",
+	httpServerAddr: fmt.Sprintf("localhost:%d", HTTP_PORT),
+	grpcEndpoint:   fmt.Sprintf("localhost:%d", GRPC_PORT),
 }
 
 func GetConfig() *FxConfig {
