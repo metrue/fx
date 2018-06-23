@@ -6,7 +6,7 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
-	"github.com/metrue/fx/utils"
+	"github.com/metrue/fx/pkg/utils"
 	"github.com/pkg/errors"
 )
 

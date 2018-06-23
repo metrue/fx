@@ -10,7 +10,7 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/image"
 	"github.com/metrue/fx/pkg/docker"
-	"github.com/metrue/fx/utils"
+	"github.com/metrue/fx/pkg/utils"
 	"github.com/phayes/freeport"
 	"github.com/rs/xid"
 )

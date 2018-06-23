@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/metrue/fx/common"
-	"github.com/metrue/fx/utils"
+	"github.com/metrue/fx/pkg/utils"
 )
 
 var funcNames = map[string]string{
