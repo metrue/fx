@@ -2,19 +2,23 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+)
+
+var (
+	NewClientError    = errors.New("Could create a client")
+	DownFunctionError = errors.New("Could not down function")
 )
 
 // Down invoke the removal of one or more functions
 func Down(address string, functions []string) error {
 	client, conn, err := api.NewClient(address)
 	if err != nil {
-		common.HandleError(err)
-		return err
+		return NewClientError
 	}
-
 	defer conn.Close()
 
 	ctx := context.Background()
@@ -22,10 +26,8 @@ func Down(address string, functions []string) error {
 		ID: functions,
 	}
 	res, err := client.Down(ctx, req)
-
 	if err != nil {
-		common.HandleError(err)
-		return err
+		return DownFunctionError
 	}
 
 	common.HandleDownResult(res.Instances)

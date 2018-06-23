@@ -10,14 +10,18 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	ReadSourceError = errors.New("Could not read function source")
+	UpFunctionError = errors.New("Could not up function")
+)
+
 // Up starts the functions specified in flags
 func Up(address string, functions []string) error {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			common.HandleError(err)
-			return errors.Wrap(err, "Read function content falied")
+			return ReadSourceError
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -30,8 +34,7 @@ func Up(address string, functions []string) error {
 
 	client, conn, err := api.NewClient(address)
 	if err != nil {
-		common.HandleError(err)
-		return errors.Wrap(err, "New gRPC Client failed")
+		return NewClientError
 	}
 
 	defer conn.Close()
@@ -42,11 +45,9 @@ func Up(address string, functions []string) error {
 	}
 	res, err := client.Up(ctx, req)
 	if err != nil {
-		common.HandleError(err)
-		return errors.Wrap(err, "up function failed")
+		return UpFunctionError
 	}
 
 	common.HandleUpResult(res.Instances)
-
 	return nil
 }

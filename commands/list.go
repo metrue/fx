@@ -12,8 +12,7 @@ import (
 func List(address string, functions []string) error {
 	client, conn, err := api.NewClient(address)
 	if err != nil {
-		common.HandleError(err)
-		return errors.Wrap(err, "New client failed")
+		return NewClientError
 	}
 	defer conn.Close()
 
@@ -24,8 +23,7 @@ func List(address string, functions []string) error {
 
 	res, err := client.List(ctx, req)
 	if err != nil {
-		common.HandleError(err)
-		return errors.Wrap(err, "List deployed functions failed")
+		return errors.New("Could not list functions")
 	}
 
 	common.HandleListResult(res.Instances)
