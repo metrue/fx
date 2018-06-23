@@ -67,14 +67,12 @@ func Start(verbose bool) error {
 	}
 
 	go func() {
-		err := service.Start(config.GrpcEndpoint)
+		err := service.Start(config.GetGrpcEndpoint())
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	addr := fmt.Sprintf("%s:%s", config.Server["host"], config.Server["port"])
-	log.Printf("fx serves on %s", addr)
-	// log.Fatal(http.ListenAndServe(addr, nil))
-	return Run(config.GrpcEndpoint, addr)
+	log.Printf("fx serves on %s", config.GetHttpServerAddr())
+	return Run(config.GetGrpcEndpoint(), config.GetHttpServerAddr())
 }

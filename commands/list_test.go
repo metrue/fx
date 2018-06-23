@@ -12,5 +12,5 @@ func TestList(t *testing.T) {
 	functions := []string{"*"}
 
 	err := List(addr, functions)
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 }

@@ -19,16 +19,14 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:    "serve",
-			Aliases: []string{"s"},
-			Usage:   "manage fx server",
+			Name:  "serve",
+			Usage: "manage fx server",
 			Action: func(c *cli.Context) error {
 				return server.Start(true)
 			},
 		},
 		{
 			Name:      "up",
-			Aliases:   []string{"u"},
 			Usage:     "deploy a function or a group of functions",
 			ArgsUsage: "[func.go func.js func.py func.rb ...]",
 			Flags: []cli.Flag{
@@ -40,7 +38,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				host := c.String("host")
 				if host == "" {
-					host = fmt.Sprintf("localhost%s", config.GrpcEndpoint)
+					host = config.GetGrpcEndpoint()
 				}
 				functionSources := c.Args()
 				return commands.Up(host, functionSources)
@@ -48,7 +46,6 @@ func main() {
 		},
 		{
 			Name:      "down",
-			Aliases:   []string{"d"},
 			Usage:     "destroy a function or a group of functions",
 			ArgsUsage: "[id1, id2, ...]",
 			Flags: []cli.Flag{
@@ -60,16 +57,15 @@ func main() {
 			Action: func(c *cli.Context) error {
 				host := c.String("host")
 				if host == "" {
-					host = fmt.Sprintf("localhost%s", config.GrpcEndpoint)
+					host = config.GetGrpcEndpoint()
 				}
 				functions := c.Args()
 				return commands.Down(host, functions)
 			},
 		},
 		{
-			Name:    "list",
-			Aliases: []string{"l"},
-			Usage:   "list deployed services",
+			Name:  "list",
+			Usage: "list deployed services",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "host, H",
@@ -80,10 +76,17 @@ func main() {
 				fmt.Println("list: ", c.Args().First())
 				host := c.String("host")
 				if host == "" {
-					host = fmt.Sprintf("localhost%s", config.GrpcEndpoint)
+					host = config.GetGrpcEndpoint()
 				}
 				functions := c.Args()
 				return commands.List(host, functions)
+			},
+		},
+		{
+			Name:  "use",
+			Usage: "set target deploy server address, default is localhost",
+			Action: func(c *cli.Context) error {
+				return commands.Use(c.Args().First())
 			},
 		},
 	}
