@@ -12,27 +12,21 @@ func TestGet(t *testing.T) {
 
 	c := GetConfig()
 	assert.NotNil(t, c)
-	assert.Equal(t, c.HttpServerAddr, "localhost:30080")
-	assert.Equal(t, c.GrpcEndpoint, "localhost:5000")
+	assert.Equal(t, GetHttpServerAddr(), "localhost:30080")
+	assert.Equal(t, GetGrpcEndpoint(), "localhost:5000")
 }
 
-func TestSave(t *testing.T) {
+func TestSetHost(t *testing.T) {
 	CONFIG = "/tmp/fx.config.json"
 
 	c := GetConfig()
-	assert.Equal(t, c.HttpServerAddr, "localhost:30080")
-	assert.Equal(t, c.GrpcEndpoint, "localhost:5000")
+	assert.Equal(t, GetHttpServerAddr(), "localhost:30080")
+	assert.Equal(t, GetGrpcEndpoint(), "localhost:5000")
 
-	c.HttpServerAddr = "123.123.123.123:1234"
-	c.GrpcEndpoint = "321.321.321.321:4321"
-
-	err := c.Save()
+	err := c.SetHost("124.124.124.124")
 	assert.Nil(t, err)
-
-	newConfig := GetConfig()
-
-	assert.Equal(t, newConfig.HttpServerAddr, "123.123.123.123:1234")
-	assert.Equal(t, newConfig.GrpcEndpoint, "321.321.321.321:4321")
+	assert.Equal(t, "124.124.124.124:30080", GetHttpServerAddr())
+	assert.Equal(t, "124.124.124.124:5000", GetGrpcEndpoint())
 }
 
 func cleanup() {
@@ -45,5 +39,5 @@ func TestMain(m *testing.M) {
 
 	m.Run()
 
-	cleanup()
+	// cleanup()
 }

@@ -12,11 +12,10 @@ import (
 func TestUse(t *testing.T) {
 	config.CONFIG = "/tmp/fx.json"
 
-	addr := "a.b.c.d:124"
+	addr := "a.b.c.d"
 	err := Use(addr)
 	assert.Nil(t, err)
 
-	newConf := config.GetConfig()
-	assert.Equal(t, newConf.HttpServerAddr, "a.b.c.d:124")
-	assert.Equal(t, newConf.GrpcEndpoint, "a.b.c.d:124")
+	assert.Equal(t, config.GetHttpServerAddr(), "a.b.c.d:30080")
+	assert.Equal(t, config.GetGrpcEndpoint(), "a.b.c.d:5000")
 }
