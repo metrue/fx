@@ -6,6 +6,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	RemoveContainerError = errors.New("Failed to remove container")
+	RemoveImageError     = errors.New("Failed to remove image")
+)
+
 // Down stops the processes designated by a function
 func Down(containerID string, image string) (*api.DownMsgMeta, error) {
 	res := &api.DownMsgMeta{
@@ -16,15 +21,13 @@ func Down(containerID string, image string) (*api.DownMsgMeta, error) {
 
 	err := docker.Remove(containerID)
 	if err != nil {
-		err = errors.Wrap(err, "Failed to remove container")
-		return res, err
+		return res, RemoveContainerError
 	}
 
 	res.ContainerStatus = "stopped"
 	err = docker.ImageRemove(image)
 	if err != nil {
-		err = errors.Wrap(err, "[down.go] Failed to remove image")
-		return res, err
+		return res, RemoveImageError
 	}
 
 	return res, nil
