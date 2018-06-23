@@ -79,16 +79,16 @@ brew install fx
 
 * Linux/Unix
 
-To install fx, you can use the [install script](https://github.com/metrue/fx/blob/master/bin/install.sh) using cURL:
+To install fx, you can use the [install script](https://github.com/metrue/fx/blob/master/scripts/install.sh) using cURL:
 
 ```
-curl -o- https://raw.githubusercontent.com/metrue/fx/master/bin/install.sh | bash
+curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
 or Wget:
 
 ```
-wget -qO- https://raw.githubusercontent.com/metrue/fx/master/bin/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
 fx will be installed into /usr/local/bin, if fx not found after installation, you may need to checkout if `/usr/local/bin/fx` exists.
