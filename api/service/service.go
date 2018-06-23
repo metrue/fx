@@ -55,3 +55,9 @@ func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse,
 func (f *fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
 	return List(msg)
 }
+
+func (f *fx) Ping(ctx context.Context, msg *api.PingRequest) (*api.PingResponse, error) {
+	return &api.PingResponse{
+		Status: "pong",
+	}, nil
+}
