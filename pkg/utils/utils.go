@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -175,6 +176,19 @@ func EnsurerDir(dir string) (err error) {
 	if _, statError := os.Stat(dir); os.IsNotExist(statError) {
 		mkError := os.MkdirAll(dir, os.ModePerm)
 		return mkError
+	}
+	return nil
+}
+
+func EnsureFile(fullpath string) error {
+	dir := path.Dir(fullpath)
+	err := EnsurerDir(dir)
+	if err != nil {
+		return err
+	}
+	_, err = os.OpenFile(fullpath, os.O_RDONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return err
 	}
 	return nil
 }
