@@ -1,4 +1,4 @@
-package service_test
+package api_test
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	"time"
 
 	"github.com/metrue/fx/api"
-	. "github.com/metrue/fx/api/service"
+	"github.com/metrue/fx/pkg/client"
+	. "github.com/metrue/fx/pkg/server"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 )
 
-const grpcEndpoint = "localhost:5001"
-
-var client api.FxServiceClient
+var grpcEndpoint = "localhost:5001"
+var cli api.FxServiceClient
 
 func startServer() {
 	go func() {
@@ -37,7 +37,7 @@ func stopServer(conn *grpc.ClientConn) {
 func TestPingService(t *testing.T) {
 	ctx := context.Background()
 	req := &api.PingRequest{}
-	res, err := client.Ping(ctx, req)
+	res, err := cli.Ping(ctx, req)
 	assert.Nil(t, err)
 	assert.Equal(t, res, &api.PingResponse{Status: "pong"})
 }
@@ -45,7 +45,7 @@ func TestPingService(t *testing.T) {
 func TestListService(t *testing.T) {
 	ctx := context.Background()
 	req := &api.ListRequest{}
-	_, err := client.List(ctx, req)
+	_, err := cli.List(ctx, req)
 	assert.Nil(t, err)
 }
 
@@ -60,13 +60,12 @@ func TestDownService(t *testing.T) {
 func TestMain(m *testing.M) {
 	startServer()
 
-	cli, conn, err := api.NewClient(grpcEndpoint)
+	c, conn, err := client.NewClient(grpcEndpoint)
 	if err != nil {
 		panic(err)
 	}
-	client = cli
+	cli = c
 	defer stopServer(conn)
 
 	os.Exit(m.Run())
-
 }

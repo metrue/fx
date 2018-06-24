@@ -1,0 +1,61 @@
+package api
+
+import (
+	"context"
+	"errors"
+	"net"
+
+	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/api/service"
+
+	"google.golang.org/grpc"
+)
+
+var server *grpc.Server
+
+type fx struct{}
+
+func newFxService() api.FxServiceServer {
+	return new(fx)
+}
+
+//Start the gRPC server
+func Start(uri string) error {
+	if uri == "" {
+		return errors.New("gRPC uri not provided")
+	}
+
+	listen, err := net.Listen("tcp", uri)
+	if err != nil {
+		return err
+	}
+	server = grpc.NewServer()
+	api.RegisterFxServiceServer(server, newFxService())
+
+	return server.Serve(listen)
+}
+
+//Stop the gRPC server
+func Stop() {
+	if server == nil {
+		return
+	}
+	server.Stop()
+	server = nil
+}
+
+func (f *fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
+	return service.Up(ctx, msg)
+}
+
+func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse, error) {
+	return service.Down(ctx, msg)
+}
+
+func (f *fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
+	return service.List(ctx, msg)
+}
+
+func (f *fx) Ping(ctx context.Context, msg *api.PingRequest) (*api.PingResponse, error) {
+	return service.Ping(ctx, msg)
+}
