@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/metrue/fx/api"
+	. "github.com/metrue/fx/api/service"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 )
