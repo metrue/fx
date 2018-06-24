@@ -12,7 +12,7 @@ import (
 func List(address string, functions []string) error {
 	client, conn, err := client.NewClient(address)
 	if err != nil {
-		return NewClientError
+		return err
 	}
 	defer conn.Close()
 

@@ -20,7 +20,7 @@ var server *Fx
 func startServer() {
 	server = NewFxServiceServer(grpcEndpoint)
 	go func() {
-		err := server.Start(grpcEndpoint)
+		err := server.Start()
 		if err != nil {
 			panic(err)
 		}

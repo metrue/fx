@@ -29,7 +29,7 @@ func NewFxServiceServer(uri string) *Fx {
 	return s
 }
 
-func (f *Fx) Start(uri string) error {
+func (f *Fx) Start() error {
 	return f.server.Serve(f.listen)
 }
 

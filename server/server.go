@@ -69,7 +69,8 @@ func Start(verbose bool) error {
 	grpcEndpoint := fmt.Sprintf("0.0.0.0:%d", config.GRPC_PORT)
 	httpEndpoint := fmt.Sprintf("0.0.0.0:%d", config.HTTP_PORT)
 	go func() {
-		err := server.Start(grpcEndpoint)
+		s := server.NewFxServiceServer(grpcEndpoint)
+		err := s.Start()
 		if err != nil {
 			log.Fatal(err)
 		}
