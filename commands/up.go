@@ -6,6 +6,7 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/pkg/client"
 	"github.com/metrue/fx/pkg/utils"
 	"github.com/pkg/errors"
 )
@@ -32,7 +33,7 @@ func Up(address string, functions []string) error {
 		funcList = append(funcList, funcMeta)
 	}
 
-	client, conn, err := api.NewClient(address)
+	client, conn, err := client.NewClient(address)
 	if err != nil {
 		return NewClientError
 	}

@@ -1,11 +1,12 @@
-package api
+package client
 
 import (
+	"github.com/metrue/fx/api"
 	"google.golang.org/grpc"
 )
 
 //NewClient return a new gRPC client with default settings
-func NewClient(grpcEndpoint string) (FxServiceClient, *grpc.ClientConn, error) {
+func NewClient(grpcEndpoint string) (api.FxServiceClient, *grpc.ClientConn, error) {
 	var opts []grpc.DialOption
 
 	//TODO review options
@@ -16,6 +17,6 @@ func NewClient(grpcEndpoint string) (FxServiceClient, *grpc.ClientConn, error) {
 		return nil, nil, err
 	}
 
-	client := NewFxServiceClient(conn)
+	client := api.NewFxServiceClient(conn)
 	return client, conn, nil
 }

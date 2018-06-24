@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/metrue/fx/api/service"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/pkg/docker"
+	"github.com/metrue/fx/pkg/server"
 )
 
 type PullTask struct {
@@ -69,7 +69,7 @@ func Start(verbose bool) error {
 	grpcEndpoint := fmt.Sprintf("0.0.0.0:%d", config.GRPC_PORT)
 	httpEndpoint := fmt.Sprintf("0.0.0.0:%d", config.HTTP_PORT)
 	go func() {
-		err := service.Start(grpcEndpoint)
+		err := server.Start(grpcEndpoint)
 		if err != nil {
 			log.Fatal(err)
 		}

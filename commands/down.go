@@ -6,6 +6,7 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/pkg/client"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 
 // Down invoke the removal of one or more functions
 func Down(address string, functions []string) error {
-	client, conn, err := api.NewClient(address)
+	client, conn, err := client.NewClient(address)
 	if err != nil {
 		return NewClientError
 	}
