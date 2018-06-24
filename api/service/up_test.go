@@ -1,4 +1,4 @@
-package handlers_test
+package service_test
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/metrue/fx/api"
-	. "github.com/metrue/fx/handlers"
+	. "github.com/metrue/fx/api/service"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +24,7 @@ func TestUp(t *testing.T) {
 }
 		`,
 	}
-	ret, err := Up(meta)
+	ret, err := DoUp(meta)
 	assert.Nil(t, nil, err)
 
 	time.Sleep(5 * time.Second)

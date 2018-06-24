@@ -15,6 +15,22 @@
     "application/json"
   ],
   "paths": {
+    "/ping": {
+      "get": {
+        "operationId": "Ping",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiPingResponse"
+            }
+          }
+        },
+        "tags": [
+          "FxService"
+        ]
+      }
+    },
     "/v1/down": {
       "post": {
         "operationId": "Down",
@@ -181,6 +197,14 @@
           "items": {
             "$ref": "#/definitions/apiListItem"
           }
+        }
+      }
+    },
+    "apiPingResponse": {
+      "type": "object",
+      "properties": {
+        "Status": {
+          "type": "string"
         }
       }
     },
