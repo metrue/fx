@@ -17,5 +17,5 @@ func TestUse(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, config.GetHttpServerAddr(), "a.b.c.d:30080")
-	assert.Equal(t, config.GetGrpcEndpoint(), "a.b.c.d:5000")
+	assert.Equal(t, config.GetGrpcEndpoint(), "a.b.c.d:50000")
 }

@@ -11,16 +11,16 @@ import (
 )
 
 type FxConfig struct {
-	httpServerAddr string `json:"http"`
-	grpcEndpoint   string `json:"grpc"`
+	Http string `json:"http"`
+	Grpc string `json:"grpc"`
 }
 
 var CONFIG = path.Join(os.Getenv("HOME"), ".fx/config.json")
 var HTTP_PORT = 30080
 var GRPC_PORT = 50000
 var DEFAULT_CONFIG = &FxConfig{
-	httpServerAddr: fmt.Sprintf("localhost:%d", HTTP_PORT),
-	grpcEndpoint:   fmt.Sprintf("localhost:%d", GRPC_PORT),
+	Http: fmt.Sprintf("localhost:%d", HTTP_PORT),
+	Grpc: fmt.Sprintf("localhost:%d", GRPC_PORT),
 }
 
 func GetConfig() *FxConfig {
@@ -38,7 +38,7 @@ func GetConfig() *FxConfig {
 	var c FxConfig
 	json.Unmarshal(raw, &c)
 
-	if len(c.httpServerAddr) > 0 && len(c.grpcEndpoint) > 0 {
+	if len(c.Http) > 0 && len(c.Grpc) > 0 {
 		return &c
 	}
 
@@ -69,18 +69,22 @@ func (c *FxConfig) save() error {
 }
 
 func (c *FxConfig) SetHost(addr string) error {
-	c.httpServerAddr = fmt.Sprintf("%s:30080", addr)
-	c.grpcEndpoint = fmt.Sprintf("%s:5000", addr)
+	c.Http = fmt.Sprintf("%s:%d", addr, HTTP_PORT)
+	c.Grpc = fmt.Sprintf("%s:%d", addr, GRPC_PORT)
 
-	return c.save()
+	err := c.save()
+	if err != nil {
+		panic(err)
+	}
+	return err
 }
 
 func GetGrpcEndpoint() string {
 	c := GetConfig()
-	return c.grpcEndpoint
+	return c.Grpc
 }
 
 func GetHttpServerAddr() string {
 	c := GetConfig()
-	return c.httpServerAddr
+	return c.Http
 }

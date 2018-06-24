@@ -12,8 +12,9 @@ func TestGet(t *testing.T) {
 
 	c := GetConfig()
 	assert.NotNil(t, c)
+
 	assert.Equal(t, GetHttpServerAddr(), "localhost:30080")
-	assert.Equal(t, GetGrpcEndpoint(), "localhost:5000")
+	assert.Equal(t, GetGrpcEndpoint(), "localhost:50000")
 }
 
 func TestSetHost(t *testing.T) {
@@ -21,12 +22,12 @@ func TestSetHost(t *testing.T) {
 
 	c := GetConfig()
 	assert.Equal(t, GetHttpServerAddr(), "localhost:30080")
-	assert.Equal(t, GetGrpcEndpoint(), "localhost:5000")
+	assert.Equal(t, GetGrpcEndpoint(), "localhost:50000")
 
 	err := c.SetHost("124.124.124.124")
 	assert.Nil(t, err)
 	assert.Equal(t, "124.124.124.124:30080", GetHttpServerAddr())
-	assert.Equal(t, "124.124.124.124:5000", GetGrpcEndpoint())
+	assert.Equal(t, "124.124.124.124:50000", GetGrpcEndpoint())
 }
 
 func cleanup() {
