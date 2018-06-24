@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -73,7 +72,6 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				fmt.Println("list: ", c.Args().First())
 				host := c.String("host")
 				if host == "" {
 					host = config.GetGrpcEndpoint()
@@ -87,6 +85,17 @@ func main() {
 			Usage: "set target deploy server address, default is localhost",
 			Action: func(c *cli.Context) error {
 				return commands.Use(c.Args().First())
+			},
+		},
+		{
+			Name:  "status",
+			Usage: "show fx status",
+			Action: func(c *cli.Context) error {
+				host := c.String("host")
+				if host == "" {
+					host = config.GetGrpcEndpoint()
+				}
+				return commands.Status(host)
 			},
 		},
 	}
