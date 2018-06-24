@@ -45,19 +45,17 @@ func Stop() {
 }
 
 func (f *fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
-	return Up(msg)
+	return Up(ctx, msg)
 }
 
 func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse, error) {
-	return Down(msg)
+	return Down(ctx, msg)
 }
 
 func (f *fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
-	return List(msg)
+	return List(ctx, msg)
 }
 
 func (f *fx) Ping(ctx context.Context, msg *api.PingRequest) (*api.PingResponse, error) {
-	return &api.PingResponse{
-		Status: "pong",
-	}, nil
+	return Ping(ctx, msg)
 }

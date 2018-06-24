@@ -31,7 +31,7 @@ func containsFunction(client api.FxServiceClient, functionIDs ...string) (bool, 
 
 func TestDownAll(t *testing.T) {
 
-	runServer(t)
+	startServer()
 
 	client, conn, err := api.NewClient(grpcEndpoint)
 	defer stopServer(conn)

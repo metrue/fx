@@ -2,20 +2,24 @@ package service
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/metrue/fx/api"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 )
 
 const grpcEndpoint = "localhost:5001"
 
-func runServer(t *testing.T) {
+var client api.FxServiceClient
+
+func startServer() {
 	go func() {
 		err := Start(grpcEndpoint)
 		if err != nil {
-			t.Fatal(err)
+			panic(err)
 		}
 	}()
 	//wait for the service to start
@@ -29,21 +33,39 @@ func stopServer(conn *grpc.ClientConn) {
 	time.Sleep((time.Millisecond * 2000))
 }
 
-func TestServer(t *testing.T) {
+func TestPingService(t *testing.T) {
+	ctx := context.Background()
+	req := &api.PingRequest{}
+	res, err := client.Ping(ctx, req)
+	assert.Nil(t, err)
+	assert.Equal(t, res, &api.PingResponse{Status: "pong"})
+}
 
-	runServer(t)
-
-	client, conn, err := api.NewClient(grpcEndpoint)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer stopServer(conn)
-
+func TestListService(t *testing.T) {
 	ctx := context.Background()
 	req := &api.ListRequest{}
-	_, err = client.List(ctx, req)
+	_, err := client.List(ctx, req)
+	assert.Nil(t, err)
+}
+
+func TestUpService(t *testing.T) {
+	assert.Nil(t, nil)
+}
+
+func TestDownService(t *testing.T) {
+	assert.Nil(t, nil)
+}
+
+func TestMain(m *testing.M) {
+	startServer()
+
+	cli, conn, err := api.NewClient(grpcEndpoint)
 	if err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
+	client = cli
+	defer stopServer(conn)
+
+	os.Exit(m.Run())
 
 }

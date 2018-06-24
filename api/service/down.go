@@ -1,10 +1,40 @@
 package service
 
 import (
+	"context"
+	"errors"
+
 	"github.com/docker/docker/api/types"
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/handlers"
+	"github.com/metrue/fx/pkg/docker"
 )
+
+var (
+	RemoveContainerError = errors.New("Failed to remove container")
+	RemoveImageError     = errors.New("Failed to remove image")
+)
+
+// Down stops the processes designated by a function
+func DoDown(containerID string, image string) (*api.DownMsgMeta, error) {
+	res := &api.DownMsgMeta{
+		ContainerId:     containerID,
+		ContainerStatus: "",
+		ImageStatus:     "removed",
+	}
+
+	err := docker.Remove(containerID)
+	if err != nil {
+		return res, RemoveContainerError
+	}
+
+	res.ContainerStatus = "stopped"
+	err = docker.ImageRemove(image)
+	if err != nil {
+		return res, RemoveImageError
+	}
+
+	return res, nil
+}
 
 //downTask wrap a DownMsgMeta and an error from its processing
 type downTask struct {
@@ -21,7 +51,7 @@ func newDownTask(val *api.DownMsgMeta, err error) downTask {
 }
 
 //Down handle function removal requests
-func Down(req *api.DownRequest) (*api.DownResponse, error) {
+func Down(ctx context.Context, req *api.DownRequest) (*api.DownResponse, error) {
 
 	// handle fx down *
 	var ids []string
@@ -31,7 +61,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 		}
 	}
 
-	containers, err := handlers.List(ids...)
+	containers, err := DoList(ids...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +75,7 @@ func Down(req *api.DownRequest) (*api.DownResponse, error) {
 
 	for _, c := range containers {
 		go func(container types.Container) {
-			results <- newDownTask(handlers.Down(container.ID[:10], container.Image))
+			results <- newDownTask(DoDown(container.ID[:10], container.Image))
 		}(c)
 	}
 
