@@ -9,17 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDown(t *testing.T) {
-	addr := "localhost:23451"
-	functions := []string{"id-should-not-exist"}
-
+func TestStatus(t *testing.T) {
+	addr := "localhost:23453"
 	s := server.NewFxServiceServer(addr)
 	go func() {
 		s.Start()
 	}()
 	time.Sleep(2 * time.Second)
 
-	err := Down(addr, functions)
+	err := Status(addr)
 	assert.Nil(t, err)
 
 	s.Stop()
