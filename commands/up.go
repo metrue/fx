@@ -6,22 +6,16 @@ import (
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/pkg/client"
 	"github.com/metrue/fx/pkg/utils"
-	"github.com/pkg/errors"
 )
 
-var (
-	ReadSourceError = errors.New("Could not read function source")
-	UpFunctionError = errors.New("Could not up function")
-)
-
-// Up starts the functions specified in flags
 func Up(address string, functions []string) error {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			return ReadSourceError
+			return err
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -32,9 +26,9 @@ func Up(address string, functions []string) error {
 		funcList = append(funcList, funcMeta)
 	}
 
-	client, conn, err := api.NewClient(address)
+	client, conn, err := client.NewClient(address)
 	if err != nil {
-		return NewClientError
+		return err
 	}
 
 	defer conn.Close()
@@ -45,7 +39,7 @@ func Up(address string, functions []string) error {
 	}
 	res, err := client.Up(ctx, req)
 	if err != nil {
-		return UpFunctionError
+		return err
 	}
 
 	common.HandleUpResult(res.Instances)

@@ -55,7 +55,20 @@ message ListResponse {
   repeated ListItem Instances = 1;
 }
 
+
+message PingRequest {}
+
+message PingResponse {
+  string Status = 1;
+}
+
 service FxService {
+  rpc Ping(PingRequest) returns (PingResponse) {
+    option (google.api.http) = {
+      get: "/ping"
+    };
+  }
+
   rpc Up (UpRequest) returns (UpResponse) {
     option (google.api.http) = {
       post: "/v1/up"

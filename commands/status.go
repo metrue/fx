@@ -2,14 +2,13 @@ package commands
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
 )
 
-// List lists all running function services
-func List(address string, functions []string) error {
+func Status(address string) error {
 	client, conn, err := client.NewClient(address)
 	if err != nil {
 		return err
@@ -17,15 +16,19 @@ func List(address string, functions []string) error {
 	defer conn.Close()
 
 	ctx := context.Background()
-	req := &api.ListRequest{
-		ID: functions,
-	}
-
-	res, err := client.List(ctx, req)
+	req := &api.PingRequest{}
+	_, err = client.Ping(ctx, req)
 	if err != nil {
 		return err
 	}
 
-	common.HandleListResult(res.Instances)
+	info := fmt.Sprintf(`
+---
+status: ok ):
+fx server: %s
+---
+	`, address)
+	fmt.Println(info)
+
 	return nil
 }
