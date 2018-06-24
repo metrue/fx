@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"net"
 
 	"github.com/metrue/fx/api"
@@ -11,51 +10,49 @@ import (
 	"google.golang.org/grpc"
 )
 
-var server *grpc.Server
-
-type fx struct{}
-
-func newFxService() api.FxServiceServer {
-	return new(fx)
+type Fx struct {
+	server *grpc.Server
+	listen net.Listener
 }
 
-//Start the gRPC server
-func Start(uri string) error {
-	if uri == "" {
-		return errors.New("gRPC uri not provided")
-	}
-
+func NewFxServiceServer(uri string) *Fx {
 	listen, err := net.Listen("tcp", uri)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	server = grpc.NewServer()
-	api.RegisterFxServiceServer(server, newFxService())
-
-	return server.Serve(listen)
+	server := grpc.NewServer()
+	s := &Fx{
+		server: server,
+		listen: listen,
+	}
+	api.RegisterFxServiceServer(server, s)
+	return s
 }
 
-//Stop the gRPC server
-func Stop() {
-	if server == nil {
+func (f *Fx) Start(uri string) error {
+	return f.server.Serve(f.listen)
+}
+
+func (f *Fx) Stop() {
+	if f.server == nil {
 		return
 	}
-	server.Stop()
-	server = nil
+	f.server.Stop()
+	f.server = nil
 }
 
-func (f *fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
+func (f *Fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
 	return service.Up(ctx, msg)
 }
 
-func (f *fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse, error) {
+func (f *Fx) Down(ctx context.Context, msg *api.DownRequest) (*api.DownResponse, error) {
 	return service.Down(ctx, msg)
 }
 
-func (f *fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
+func (f *Fx) List(ctx context.Context, msg *api.ListRequest) (*api.ListResponse, error) {
 	return service.List(ctx, msg)
 }
 
-func (f *fx) Ping(ctx context.Context, msg *api.PingRequest) (*api.PingResponse, error) {
+func (f *Fx) Ping(ctx context.Context, msg *api.PingRequest) (*api.PingResponse, error) {
 	return service.Ping(ctx, msg)
 }

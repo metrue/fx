@@ -15,10 +15,12 @@ import (
 
 var grpcEndpoint = "localhost:5001"
 var cli api.FxServiceClient
+var server *Fx
 
 func startServer() {
+	server = NewFxServiceServer(grpcEndpoint)
 	go func() {
-		err := Start(grpcEndpoint)
+		err := server.Start(grpcEndpoint)
 		if err != nil {
 			panic(err)
 		}
@@ -29,7 +31,7 @@ func startServer() {
 
 func stopServer(conn *grpc.ClientConn) {
 	conn.Close()
-	Stop()
+	server.Stop()
 	//wait for the service to start
 	time.Sleep((time.Millisecond * 2000))
 }
