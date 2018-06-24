@@ -41,14 +41,13 @@ func DoList(containerIds ...string) ([]types.Container, error) {
 
 //List handles a functions listing request
 func List(ctx context.Context, req *api.ListRequest) (*api.ListResponse, error) {
-
 	containers, err := DoList(req.ID...)
 	if err != nil {
 		return nil, err
 	}
+
 	var list []*api.ListItem
 	for _, container := range containers {
-
 		var serviceURL string
 		if len(container.Ports) > 0 {
 			serviceURL = fmt.Sprintf("%s:%d", container.Ports[0].IP, container.Ports[0].PublicPort)
