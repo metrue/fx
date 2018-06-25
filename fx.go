@@ -14,12 +14,12 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "make function as a service"
-	app.Version = "0.0.8"
+	app.Version = "0.0.81"
 
 	app.Commands = []cli.Command{
 		{
 			Name:  "serve",
-			Usage: "manage fx server",
+			Usage: "start fx server on current host",
 			Action: func(c *cli.Context) error {
 				return server.Start(true)
 			},
