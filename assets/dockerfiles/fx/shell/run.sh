@@ -3,7 +3,7 @@
 code=$1
 lang=$2
 
-echo "${code}" > fxScript
+echo "${code}" | base64 -d > fxScript
 
 BIN="node"
 case "${lang}" in
