@@ -8,4 +8,6 @@ RUN apt-get install --yes nodejs
 RUN apt-get install --yes build-essential
 RUN apt-get install -y nodejs ruby python perl
 
-CMD ["run.sh"]
+ADD run.sh .
+
+ENTRYPOINT ["./run.sh"]

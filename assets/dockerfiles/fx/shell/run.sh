@@ -1,12 +1,12 @@
 #!/bin/bash
 
-script=$1
+code=$1
+lang=$2
 
-filename=$(basename -- "$script")
-extension="${filename##*.}"
+echo "${code}" > fxScript
 
 BIN="node"
-case "${extension}" in
+case "${lang}" in
   js)
     BIN="nodejs"
     ;;
@@ -25,4 +25,4 @@ case "${extension}" in
     ;;
 esac
 
-${BIN} ${script}
+${BIN} fxScript
