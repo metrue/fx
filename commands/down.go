@@ -8,10 +8,10 @@ import (
 	"github.com/metrue/fx/pkg/client"
 )
 
-func Down(address string, functions []string) error {
+func InvokeDownRequest(address string, functions []string) (*api.DownResponse, error) {
 	client, conn, err := client.NewClient(address)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -21,9 +21,17 @@ func Down(address string, functions []string) error {
 	}
 	res, err := client.Down(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	return res, nil
+}
+
+func Down(address string, functions []string) error {
+	res, err := InvokeDownRequest(address, functions)
+	if err != nil {
+		return err
+	}
 	common.HandleDownResult(res.Instances)
 	return nil
 }
