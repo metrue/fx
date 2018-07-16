@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/metrue/fx/api"
@@ -10,12 +11,12 @@ import (
 	"github.com/metrue/fx/pkg/utils"
 )
 
-func Up(address string, functions []string) error {
+func Up(address string, functions []string) (string, string, error) {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			return err
+			return "", "", err
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -23,12 +24,13 @@ func Up(address string, functions []string) error {
 			Path:    function,
 			Content: string(data),
 		}
+		fmt.Println(funcMeta)
 		funcList = append(funcList, funcMeta)
 	}
 
 	client, conn, err := client.NewClient(address)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
 	defer conn.Close()
@@ -39,9 +41,11 @@ func Up(address string, functions []string) error {
 	}
 	res, err := client.Up(ctx, req)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
 	common.HandleUpResult(res.Instances)
-	return nil
+	ret := res.Instances[0]
+	// TODO should reture a request-able Adress
+	return ret.FunctionID, ret.LocalAddress, nil
 }
