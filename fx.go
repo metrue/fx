@@ -6,6 +6,7 @@ import (
 
 	"github.com/metrue/fx/commands"
 	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/pkg/utils"
 	"github.com/metrue/fx/server"
 	"github.com/urfave/cli"
 )
@@ -94,8 +95,9 @@ func main() {
 				if host == "" {
 					host = config.GetGrpcEndpoint()
 				}
+				params := utils.PairsToParams(c.Args()[1:])
 				functions := c.Args()[0]
-				return commands.Call(host, functions, map[string]interface{}{})
+				return commands.Call(host, functions, params)
 			},
 		},
 		{

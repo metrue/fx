@@ -16,7 +16,7 @@ type CallOutput struct {
 	Message string `json:"message"`
 }
 
-func Call(address string, function string, params map[string]interface{}) error {
+func Call(address string, function string, params map[string]string) error {
 	res, err := InvokeUpRequest(address, []string{function})
 	if err != nil {
 		common.HandleCallResult(CallOutput{Error: err.Error()})
