@@ -10,12 +10,12 @@ import (
 	"github.com/metrue/fx/pkg/utils"
 )
 
-func Up(address string, functions []string) error {
+func InvokeUpRequest(address string, functions []string) (*api.UpResponse, error) {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -26,22 +26,30 @@ func Up(address string, functions []string) error {
 		funcList = append(funcList, funcMeta)
 	}
 
-	client, conn, err := client.NewClient(address)
-	if err != nil {
-		return err
-	}
-
-	defer conn.Close()
-
-	ctx := context.Background()
 	req := &api.UpRequest{
 		Functions: funcList,
 	}
+
+	client, conn, err := client.NewClient(address)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	ctx := context.Background()
 	res, err := client.Up(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func Up(address string, functions []string) error {
+	res, err := InvokeUpRequest(address, functions)
 	if err != nil {
 		return err
 	}
-
 	common.HandleUpResult(res.Instances)
+
 	return nil
 }

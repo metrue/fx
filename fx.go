@@ -6,6 +6,7 @@ import (
 
 	"github.com/metrue/fx/commands"
 	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/pkg/utils"
 	"github.com/metrue/fx/server"
 	"github.com/urfave/cli"
 )
@@ -14,7 +15,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "make function as a service"
-	app.Version = "0.0.81"
+	app.Version = "0.1.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -78,6 +79,25 @@ func main() {
 				}
 				functions := c.Args()
 				return commands.List(host, functions)
+			},
+		},
+		{
+			Name:  "call",
+			Usage: "run a function instantly",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "fx server host, default is localhost",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				host := c.String("host")
+				if host == "" {
+					host = config.GetGrpcEndpoint()
+				}
+				params := utils.PairsToParams(c.Args()[1:])
+				functions := c.Args()[0]
+				return commands.Call(host, functions, params)
 			},
 		},
 		{
