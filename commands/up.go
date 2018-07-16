@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/metrue/fx/api"
@@ -11,12 +10,12 @@ import (
 	"github.com/metrue/fx/pkg/utils"
 )
 
-func Up(address string, functions []string) (string, string, error) {
+func InvokeUpRequest(address string, functions []string) (*api.UpResponse, error) {
 	var funcList []*api.FunctionMeta
 	for _, function := range functions {
 		data, err := ioutil.ReadFile(function)
 		if err != nil {
-			return "", "", err
+			return nil, err
 		}
 
 		funcMeta := &api.FunctionMeta{
@@ -24,28 +23,33 @@ func Up(address string, functions []string) (string, string, error) {
 			Path:    function,
 			Content: string(data),
 		}
-		fmt.Println(funcMeta)
 		funcList = append(funcList, funcMeta)
+	}
+
+	req := &api.UpRequest{
+		Functions: funcList,
 	}
 
 	client, conn, err := client.NewClient(address)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
-
 	defer conn.Close()
 
 	ctx := context.Background()
-	req := &api.UpRequest{
-		Functions: funcList,
-	}
 	res, err := client.Up(ctx, req)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
+	return res, nil
+}
 
+func Up(address string, functions []string) error {
+	res, err := InvokeUpRequest(address, functions)
+	if err != nil {
+		return err
+	}
 	common.HandleUpResult(res.Instances)
-	ret := res.Instances[0]
-	// TODO should reture a request-able Adress
-	return ret.FunctionID, ret.LocalAddress, nil
+
+	return nil
 }

@@ -81,6 +81,24 @@ func main() {
 			},
 		},
 		{
+			Name:  "call",
+			Usage: "run a function instantly",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "fx server host, default is localhost",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				host := c.String("host")
+				if host == "" {
+					host = config.GetGrpcEndpoint()
+				}
+				functions := c.Args()[0]
+				return commands.Call(host, functions, map[string]interface{}{})
+			},
+		},
+		{
 			Name:  "use",
 			Usage: "set target deploy server address, default is localhost",
 			Action: func(c *cli.Context) error {
