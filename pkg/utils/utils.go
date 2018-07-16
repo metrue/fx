@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // Download a resource from URL to given path
@@ -299,4 +300,16 @@ func GetLangFromFileName(fileName string) (lang string) {
 		".d":    "d",
 	}
 	return extLangMap[filepath.Ext(fileName)]
+}
+
+// PairsToParams make "a=1, b=2" to be {"a": "1", "b": "2"}
+func PairsToParams(pairs []string) map[string]string {
+	params := map[string]string{}
+	for _, pair := range pairs {
+		subs := strings.Split(pair, "=")
+		if len(subs) == 2 {
+			params[subs[0]] = subs[1]
+		}
+	}
+	return params
 }

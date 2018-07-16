@@ -1,6 +1,9 @@
 package common
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/metrue/fx/api"
@@ -42,4 +45,12 @@ func HandleListResult(containers []*api.ListItem) {
 			container.ServiceURL})
 	}
 	table.Render()
+}
+
+func HandleCallResult(res interface{}) {
+	msg, err := json.Marshal(res)
+	if err != nil {
+		log.Fatalf("Could not make %v to json string", err)
+	}
+	fmt.Println(string(msg))
 }
