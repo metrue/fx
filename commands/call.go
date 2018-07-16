@@ -29,7 +29,7 @@ func Call(address string, function string, params map[string]string) error {
 		})
 		return nil
 	}
-	defer Down(address, []string{res.Instances[0].FunctionID})
+	defer InvokeUpRequest(address, []string{res.Instances[0].FunctionID})
 
 	body, err := json.Marshal(params)
 	if err != nil {
