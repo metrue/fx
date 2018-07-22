@@ -11,7 +11,6 @@ import (
 	"github.com/jhoonb/archivex"
 
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"time"
@@ -128,7 +127,6 @@ func Deploy(name string, dir string, port string) (*container.ContainerCreateCre
 		return nil, err
 	}
 
-	fmt.Printf("Deployed to container %s\n", resp.ID)
 	return &resp, err
 }
 
