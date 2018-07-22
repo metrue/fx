@@ -51,7 +51,7 @@ func DoUp(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
 
 	var guid = xid.New().String()
 	var dir = path.Join(os.TempDir(), "fx-", guid)
-	// defer cleanup(dir)
+	defer cleanup(dir)
 
 	var name = guid
 	err = image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))

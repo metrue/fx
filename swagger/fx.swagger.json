@@ -31,6 +31,32 @@
         ]
       }
     },
+    "/v1/call": {
+      "post": {
+        "operationId": "Call",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiCallResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCallRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FxService"
+        ]
+      }
+    },
     "/v1/down": {
       "post": {
         "operationId": "Down",
@@ -111,6 +137,34 @@
     }
   },
   "definitions": {
+    "apiCallRequest": {
+      "type": "object",
+      "properties": {
+        "Lang": {
+          "type": "string"
+        },
+        "Path": {
+          "type": "string"
+        },
+        "Content": {
+          "type": "string"
+        },
+        "Params": {
+          "type": "string"
+        }
+      }
+    },
+    "apiCallResponse": {
+      "type": "object",
+      "properties": {
+        "Error": {
+          "type": "string"
+        },
+        "Data": {
+          "type": "string"
+        }
+      }
+    },
     "apiDownMsgMeta": {
       "type": "object",
       "properties": {
