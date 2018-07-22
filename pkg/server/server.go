@@ -41,6 +41,10 @@ func (f *Fx) Stop() {
 	f.server = nil
 }
 
+func (f *Fx) Call(ctx context.Context, msg *api.CallRequest) (*api.CallResponse, error) {
+	return service.Call(ctx, msg)
+}
+
 func (f *Fx) Up(ctx context.Context, msg *api.UpRequest) (*api.UpResponse, error) {
 	return service.Up(ctx, msg)
 }

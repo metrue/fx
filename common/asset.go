@@ -28,10 +28,6 @@
 // assets/dockerfiles/fx/ruby/Dockerfile
 // assets/dockerfiles/fx/ruby/app.rb
 // assets/dockerfiles/fx/ruby/fx.rb
-// assets/dockerfiles/fx/shell/Dockerfile
-// assets/dockerfiles/fx/shell/a.js
-// assets/dockerfiles/fx/shell/a.sh
-// assets/dockerfiles/fx/shell/run.sh
 // DO NOT EDIT!
 
 package common
@@ -659,86 +655,6 @@ func assetsDockerfilesFxRubyFxRb() (*asset, error) {
 	return a, nil
 }
 
-var _assetsDockerfilesFxShellDockerfile = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x7c\xce\x41\x4b\x03\x31\x10\x05\xe0\x7b\x7e\xc5\xa3\x9e\x93\x55\xe8\xa9\x37\xa1\x0a\x3d\xb8\x95\xa5\x1e\x44\x3c\x64\x37\x83\x9b\x12\x93\x90\x99\x39\x2c\xf8\xe3\xa5\xb5\x17\xa1\xf4\x36\xf0\xcd\x9b\x79\xcf\xc3\xfe\x05\x3a\x6a\x16\xdd\x3c\xac\xdd\xfd\xda\x98\x3b\xec\x32\x8b\x4f\x09\x7d\x09\xe4\x8e\x6c\x86\xb7\x1e\xbe\x8a\xfd\x22\x81\xd6\xe0\x85\x60\xed\x42\xff\x21\x5e\x42\x67\xc1\xa4\x2d\x9d\xf9\x34\xc0\x5a\x8e\x89\xb2\xc0\xda\x54\x26\x2f\xb1\x64\xcc\x22\x95\x37\x5d\x17\x68\x74\xb9\x04\xe2\xa2\x6d\x22\x37\x95\xef\x8e\x49\xb4\xe2\x07\xa3\xe7\x19\xf6\xc6\x97\x53\xee\x78\xab\xc6\xa8\x31\x05\x4b\xcc\x94\x25\xfa\x74\x7d\x73\xb9\xdc\x41\xd3\x71\x41\x5d\x64\x2e\x19\x95\x5a\x32\xe6\x71\xbb\x45\xd3\xec\x78\x86\x33\xe6\xa9\x3f\x0c\xef\xaf\xfb\x5d\x7f\xc0\xc7\xca\x75\x7f\xb0\xfa\x34\xbf\x01\x00\x00\xff\xff\x89\x13\x19\xdd\x45\x01\x00\x00")
-
-func assetsDockerfilesFxShellDockerfileBytes() ([]byte, error) {
-	return bindataRead(
-		_assetsDockerfilesFxShellDockerfile,
-		"assets/dockerfiles/fx/shell/Dockerfile",
-	)
-}
-
-func assetsDockerfilesFxShellDockerfile() (*asset, error) {
-	bytes, err := assetsDockerfilesFxShellDockerfileBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/shell/Dockerfile", size: 325, mode: os.FileMode(420), modTime: time.Unix(1531710410, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _assetsDockerfilesFxShellAJs = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x4a\xce\xcf\x2b\xce\xcf\x49\xd5\xcb\xc9\x4f\xd7\x50\xca\x48\xcd\xc9\xc9\x57\x28\xcf\x2f\xca\x49\x51\xd2\xe4\x02\x04\x00\x00\xff\xff\x20\x75\x98\xe7\x1b\x00\x00\x00")
-
-func assetsDockerfilesFxShellAJsBytes() ([]byte, error) {
-	return bindataRead(
-		_assetsDockerfilesFxShellAJs,
-		"assets/dockerfiles/fx/shell/a.js",
-	)
-}
-
-func assetsDockerfilesFxShellAJs() (*asset, error) {
-	bytes, err := assetsDockerfilesFxShellAJsBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/shell/a.js", size: 27, mode: os.FileMode(420), modTime: time.Unix(1531710410, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _assetsDockerfilesFxShellASh = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x24\xc7\xb1\xce\xc2\x20\x10\x00\xe0\xfd\x7f\x8a\xcb\x4d\x6d\xf2\xb7\xec\x7d\x04\x07\x1d\x5c\x6f\xb1\x70\x05\xf4\x00\x03\x47\x62\x63\x7c\x77\x13\x3b\x7e\xae\xd8\x07\x57\xa8\x3d\xc3\x14\x15\x12\x6b\xed\x6c\xb6\xd7\xd4\x02\x8b\x4c\xeb\xad\x31\xa0\x2d\xb9\x15\xe1\x59\x8a\x1f\x4e\xd7\xcb\x79\x6e\x5a\x63\xf6\x71\xdb\x87\x37\x10\x6a\x54\x61\xc2\x05\x08\x2d\xe1\x3f\xe1\x5a\xdc\x7e\xd8\xfd\xdc\xab\x1c\x0c\xaa\xcf\xc5\x98\x14\xb3\x0f\x3c\x27\x26\xfc\x8c\x23\xc2\xbd\xfd\x7d\x03\x00\x00\xff\xff\x60\xbc\x78\x84\x88\x00\x00\x00")
-
-func assetsDockerfilesFxShellAShBytes() ([]byte, error) {
-	return bindataRead(
-		_assetsDockerfilesFxShellASh,
-		"assets/dockerfiles/fx/shell/a.sh",
-	)
-}
-
-func assetsDockerfilesFxShellASh() (*asset, error) {
-	bytes, err := assetsDockerfilesFxShellAShBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/shell/a.sh", size: 136, mode: os.FileMode(420), modTime: time.Unix(1531465625, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
-var _assetsDockerfilesFxShellRunSh = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x4c\xcf\x41\x4b\xc4\x30\x10\x05\xe0\xfb\xfc\x8a\x67\xcc\x45\x41\x96\x15\xf1\xb2\xd4\xc3\xde\xf6\xd2\x8b\xbf\x20\x49\x47\x9b\x52\x92\x90\x49\xa1\xa5\xf6\xbf\x4b\x2d\x6a\xae\xf3\xcd\x7b\xf0\xee\xef\x4e\xd6\x87\x93\x35\xd2\x13\xb9\xd8\x71\xa3\xcf\x34\x9a\xf0\xd9\xe8\x67\x22\x76\x7d\x84\xd2\xeb\x0e\x9b\xc2\x17\xac\x11\x7e\x7d\xc1\x53\x87\x37\x7c\xcc\xef\x2e\xfb\x54\x88\xae\xb7\xb6\x51\x21\x76\xac\xc8\x19\xe1\x3d\xb1\x57\x6c\x0a\x3e\x10\x30\xc8\x03\x01\xc0\xdf\xdb\x20\xea\xe7\x70\xb9\x10\x90\x6d\xa5\x79\xb2\x4b\x65\x69\xa9\x2c\x2d\xa5\x8f\xa1\xd6\xb1\x56\xce\x63\x65\x8f\x07\x1d\x03\xda\x58\x20\x53\x4a\x31\x17\xe4\x29\x40\xaf\x3c\x17\x0e\xe2\x63\xd8\xb0\x70\x39\x72\x3c\xfb\x82\xf3\x6f\x05\x8b\x71\x44\x7a\xbd\xde\xda\xed\x7f\xea\x77\x00\x00\x00\xff\xff\x0d\x42\xe6\xdb\x2f\x01\x00\x00")
-
-func assetsDockerfilesFxShellRunShBytes() ([]byte, error) {
-	return bindataRead(
-		_assetsDockerfilesFxShellRunSh,
-		"assets/dockerfiles/fx/shell/run.sh",
-	)
-}
-
-func assetsDockerfilesFxShellRunSh() (*asset, error) {
-	bytes, err := assetsDockerfilesFxShellRunShBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "assets/dockerfiles/fx/shell/run.sh", size: 303, mode: os.FileMode(493), modTime: time.Unix(1531710410, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -819,10 +735,6 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/dockerfiles/fx/ruby/Dockerfile": assetsDockerfilesFxRubyDockerfile,
 	"assets/dockerfiles/fx/ruby/app.rb": assetsDockerfilesFxRubyAppRb,
 	"assets/dockerfiles/fx/ruby/fx.rb": assetsDockerfilesFxRubyFxRb,
-	"assets/dockerfiles/fx/shell/Dockerfile": assetsDockerfilesFxShellDockerfile,
-	"assets/dockerfiles/fx/shell/a.js": assetsDockerfilesFxShellAJs,
-	"assets/dockerfiles/fx/shell/a.sh": assetsDockerfilesFxShellASh,
-	"assets/dockerfiles/fx/shell/run.sh": assetsDockerfilesFxShellRunSh,
 }
 
 // AssetDir returns the file names below a certain
@@ -921,12 +833,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 					"Dockerfile": &bintree{assetsDockerfilesFxRubyDockerfile, map[string]*bintree{}},
 					"app.rb": &bintree{assetsDockerfilesFxRubyAppRb, map[string]*bintree{}},
 					"fx.rb": &bintree{assetsDockerfilesFxRubyFxRb, map[string]*bintree{}},
-				}},
-				"shell": &bintree{nil, map[string]*bintree{
-					"Dockerfile": &bintree{assetsDockerfilesFxShellDockerfile, map[string]*bintree{}},
-					"a.js": &bintree{assetsDockerfilesFxShellAJs, map[string]*bintree{}},
-					"a.sh": &bintree{assetsDockerfilesFxShellASh, map[string]*bintree{}},
-					"run.sh": &bintree{assetsDockerfilesFxShellRunSh, map[string]*bintree{}},
 				}},
 			}},
 		}},
