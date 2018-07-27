@@ -10,9 +10,7 @@ Poor man's function as a service.
 ![](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
 
-### Introduction
-
-fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages, you can refer to the [doc](https://github.com/metrue/fx/blob/master/NEW_LANGUAGE_SUPPORT.md) to make fx support the language not listed bellow.
+fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages, you can refer to the [doc](https://github.com/metrue/fx/blob/master/NEW_LANGUAGE_SUPPORT.md) to make fx support the language not listed bellow. Installation, Usage and Contribution, see [wiki](https://github.com/metrue/fx/wiki)
 
 | Language      | Status        | Contributor   |
 | ------------- |:-------------:|:-------------:|
@@ -66,5 +64,3 @@ Thank you to all the people who already contributed to fx!
     </tr>
   </tbody>
 </table>
-
-Installation, Usage and Contribution, see [wiki](https://github.com/metrue/fx/wiki)
