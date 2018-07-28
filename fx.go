@@ -15,7 +15,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "make function as a service"
-	app.Version = "0.2.0"
+	app.Version = "0.2.1"
 
 	app.Commands = []cli.Command{
 		{
