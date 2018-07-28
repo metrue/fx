@@ -39,7 +39,7 @@ func Call(address string, function string, params map[string]string) error {
 
 	time.Sleep(time.Second * 2)
 
-	url := fmt.Sprintf("http://%s", res.Instances[0].LocalAddress)
+	url := fmt.Sprintf("http://%s", res.Instances[0].RemoteAddress)
 	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		common.HandleCallResult(CallOutput{Error: err.Error()})
