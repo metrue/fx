@@ -10,7 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/apex/log"
 	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/pkg/docker"
 	"github.com/metrue/fx/pkg/utils"
 )
 
@@ -25,6 +27,12 @@ func Call(ctx context.Context, req *api.CallRequest) (*api.CallResponse, error) 
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		err := docker.Remove(upRes.FunctionID)
+		if err != nil {
+			log.Errorf("Could not stop container: %v", err)
+		}
+	}()
 
 	time.Sleep(time.Second * 2)
 
