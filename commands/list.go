@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
+	"github.com/metrue/fx/pkg/utils"
 )
 
 // List lists all running function services
@@ -26,6 +26,5 @@ func List(address string, functions []string) error {
 		return err
 	}
 
-	common.HandleListResult(res.Instances)
-	return nil
+	return utils.OutputJSON(res)
 }

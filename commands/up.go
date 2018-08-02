@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
 	"github.com/metrue/fx/pkg/utils"
 )
@@ -48,7 +47,7 @@ func Up(address string, functions []string) error {
 	if err != nil {
 		return err
 	}
-	common.HandleUpResult(res.Instances)
+	utils.OutputJSON(res)
 
 	return nil
 }

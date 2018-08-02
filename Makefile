@@ -12,24 +12,38 @@ install-deps:
 	go get github.com/goreleaser/goreleaser
 	# install protoc and plugins
 	./scripts/install_protoc.sh third_party/protoc
+
 generate:
 	# generate gRPC related code
 	cd api && ./gen.sh
 	# bundle assert into binary
 	go-bindata -pkg common -o common/asset.go ./assets/dockerfiles/fx/...
+
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
+
 cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
+
 release: generate
 	./scripts/release.sh
+
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
+
 unit-test: generate
 	./scripts/coverage.sh
-integration-test: generate
+
+cli-test: generate
 	./scripts/test_cli.sh
+
+http_test: generate
+	./scripts/http_test.sh
+
+grpc_test: generate
+	echo "TODO"
+
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate

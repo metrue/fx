@@ -2,10 +2,10 @@ package commands
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/pkg/client"
+	"github.com/metrue/fx/pkg/utils"
 )
 
 func Status(address string) error {
@@ -21,14 +21,8 @@ func Status(address string) error {
 	if err != nil {
 		return err
 	}
-
-	info := fmt.Sprintf(`
----
-status: ok ):
-fx server: %s
----
-	`, address)
-	fmt.Println(info)
-
-	return nil
+	return utils.OutputJSON(map[string]string{
+		"status": "ok",
+		"server": address,
+	})
 }

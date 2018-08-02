@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
+	"github.com/metrue/fx/pkg/utils"
 )
 
 func InvokeDownRequest(address string, functions []string) (*api.DownResponse, error) {
@@ -32,6 +32,5 @@ func Down(address string, functions []string) error {
 	if err != nil {
 		return err
 	}
-	common.HandleDownResult(res.Instances)
-	return nil
+	return utils.OutputJSON(res)
 }

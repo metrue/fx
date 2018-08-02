@@ -3,14 +3,12 @@
 set -e
 
 # start fx server
-./build/fx serve > server_output 2>&1 &
-sleep 20 # waiting fx server to pulling resource done
+# ./build/fx serve > server_output 2>&1 &
+# sleep 20 # waiting fx server to pulling resource done
 
-./build/fx up examples/functions/func.js
-./build/fx up examples/functions/func.rb
-./build/fx up examples/functions/func.py
-./build/fx up examples/functions/func.go
-./build/fx up examples/functions/func.php
-./build/fx up examples/functions/func.jl
-./build/fx up examples/functions/func.java
-./build/fx up examples/functions/func.d
+for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'; do
+  ./build/fx up examples/functions/func.${lang} | jq '.Instances' | grep FunctionID
+  ./build/fx call examples/functions/func.js a=1 b=2 | jq '.Data' | grep 3
+  ./build/fx list | jq '.Instances' | grep FunctionID
+  ./build/fx down '*' | jq '.Instances' | grep ContainerId
+done

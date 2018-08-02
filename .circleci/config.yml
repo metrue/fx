@@ -11,6 +11,56 @@ setup_remote_docker: &setup_remote_docker
   setup_remote_docker:
       docker_layer_caching: true
 
+install_httpie: &install_httpie
+  run:
+    name: install httpie
+    command: |
+      apt-get update && apt-get install httpie
+
+install_jq: &install_jq
+  run:
+    name: install jq
+    command: |
+      apt-get update && apt-get install jq
+
+install_dependencies: &install_dependencies
+  run:
+    name: install dependencies
+    command: make install-deps
+
+build_binary: &build_binary
+  run:
+    name: build binary
+    command: make build
+
+unit_test: &unit_test
+  run:
+    name: unit test
+    command: |
+      make unit-test
+      bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+cli_test: &cli_test
+  run:
+    name: cli test
+    command: make cli-test
+
+http_test: &http_test
+  run:
+    name: http test
+    command: make http-test
+
+grpc_test: &grpc_test
+  run:
+    name: grpc test
+    command: make grpc-test
+
+start_fx_server:
+  run:
+    name: start fx server
+    command: |
+      ./build/fx serve > server_output 2>&1 &
+      sleep 20
+
 version: 2
 jobs:
   test:
@@ -18,28 +68,21 @@ jobs:
     steps:
       - checkout
       - *setup_remote_docker
-      - run:
-          name: Install Deps
-          command: make install-deps
-      - run:
-          name: Build
-          command: make build
-      - run:
-          name: Unit Test
-          command: |
-              make unit-test
-              bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-      - run:
-          name: Integration Test
-          command: make integration-test
+      - *install_httpie
+      - *install_jq
+      - *install_dependencies
+      - *build_binary
+      - *unit_test
+      - *start_fx_server
+      - *cli_test
+      - *http_test
+      - *grpc_test
   deploy:
     <<: *defaults
     steps:
       - checkout
       - *setup_remote_docker
-      - run:
-          name: Install Deps
-          command: make install-deps
+      - *install_dependencies
       - run:
           name: Release
           command: make release
@@ -48,9 +91,7 @@ jobs:
     steps:
       - checkout
       - *setup_remote_docker
-      - run:
-          name: Install Deps
-          command: make install-deps
+      - *install_dependencies
       - run:
           name: Release
           command: make release
