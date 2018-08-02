@@ -51,6 +51,22 @@ func TestListService(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestCallService(t *testing.T) {
+	ctx := context.Background()
+	req := &api.CallRequest{
+		Lang: "node",
+		Path: "./func.js",
+		Content: `module.exports = function (input) {
+	return parseInt(input.a, 10) + parseInt(input.b, 10)
+}
+		`,
+		Params: "a=1 b=4",
+	}
+	res, err := cli.Call(ctx, req)
+	assert.Nil(t, err)
+	assert.Equal(t, "5", res.Data)
+}
+
 func TestUpService(t *testing.T) {
 	assert.Nil(t, nil)
 }
