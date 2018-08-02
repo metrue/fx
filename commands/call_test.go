@@ -39,10 +39,7 @@ module.exports = (input) => {
 	err = ioutil.WriteFile(tmpfn, content, 0666)
 	assert.Nil(t, err)
 
-	params := map[string]string{
-		"a": "1",
-		"b": "1",
-	}
+	params := "a=1 b=1"
 	err = Call(addr, tmpfn, params)
 	assert.Nil(t, err)
 

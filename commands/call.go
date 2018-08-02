@@ -1,14 +1,14 @@
 package commands
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"io/ioutil"
-	"net/http"
-	"time"
 
+	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/common"
+	"github.com/metrue/fx/pkg/client"
+	"github.com/metrue/fx/pkg/utils"
 )
 
 type CallOutput struct {
@@ -16,49 +16,41 @@ type CallOutput struct {
 	Message string `json:"message"`
 }
 
-func Call(address string, function string, params map[string]string) error {
-	res, err := InvokeUpRequest(address, []string{function})
+func InvokeCallRequest(address string, function string, params string) (*api.CallResponse, error) {
+	data, err := ioutil.ReadFile(function)
+	if err != nil {
+		return nil, err
+	}
+
+	req := &api.CallRequest{
+		Lang:    utils.GetLangFromFileName(function),
+		Path:    function,
+		Content: string(data),
+		Params:  params,
+	}
+
+	client, conn, err := client.NewClient(address)
+	if err != nil {
+		fmt.Println(client, conn, err)
+		return nil, err
+	}
+	defer conn.Close()
+
+	ctx := context.Background()
+	res, err := client.Call(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func Call(address string, function string, params string) error {
+	res, err := InvokeCallRequest(address, function, params)
 	if err != nil {
 		common.HandleCallResult(CallOutput{Error: err.Error()})
 		return nil
 	}
 
-	if len(res.Instances) != 1 {
-		common.HandleCallResult(CallOutput{
-			Error: fmt.Sprintf("could not up function: %s", function),
-		})
-		return nil
-	}
-	defer InvokeUpRequest(address, []string{res.Instances[0].FunctionID})
-
-	body, err := json.Marshal(params)
-	if err != nil {
-		common.HandleCallResult(CallOutput{Error: err.Error()})
-		return nil
-	}
-
-	time.Sleep(time.Second * 2)
-
-	url := fmt.Sprintf("http://%s", res.Instances[0].RemoteAddress)
-	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
-	if err != nil {
-		common.HandleCallResult(CallOutput{Error: err.Error()})
-		return nil
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		common.HandleCallResult(CallOutput{Error: err.Error()})
-		return err
-	}
-
-	buf, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		common.HandleCallResult(CallOutput{Error: err.Error()})
-	} else {
-		common.HandleCallResult(CallOutput{Message: string(buf)})
-	}
-
+	common.HandleCallResult(res)
 	return nil
 }
