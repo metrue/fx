@@ -25,10 +25,9 @@ func HandleDownResult(downs []*api.DownMsgMeta) {
 
 func HandleUpResult(ups []*api.UpMsgMeta) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"src", "local url", "external url"})
+	table.SetHeader([]string{"local url", "external url"})
 	for _, up := range ups {
 		table.Append([]string{
-			up.FunctionSource,
 			up.LocalAddress,
 			up.RemoteAddress})
 	}

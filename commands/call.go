@@ -24,7 +24,6 @@ func InvokeCallRequest(address string, function string, params string) (*api.Cal
 
 	req := &api.CallRequest{
 		Lang:    utils.GetLangFromFileName(function),
-		Path:    function,
 		Content: string(data),
 		Params:  params,
 	}

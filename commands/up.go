@@ -20,7 +20,6 @@ func InvokeUpRequest(address string, functions []string) (*api.UpResponse, error
 
 		funcMeta := &api.FunctionMeta{
 			Lang:    utils.GetLangFromFileName(function),
-			Path:    function,
 			Content: string(data),
 		}
 		funcList = append(funcList, funcMeta)

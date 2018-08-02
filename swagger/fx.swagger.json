@@ -143,9 +143,6 @@
         "Lang": {
           "type": "string"
         },
-        "Path": {
-          "type": "string"
-        },
         "Content": {
           "type": "string"
         },
@@ -210,9 +207,6 @@
         "Lang": {
           "type": "string"
         },
-        "Path": {
-          "type": "string"
-        },
         "Content": {
           "type": "string"
         }
@@ -266,9 +260,6 @@
       "type": "object",
       "properties": {
         "FunctionID": {
-          "type": "string"
-        },
-        "FunctionSource": {
           "type": "string"
         },
         "LocalAddress": {
