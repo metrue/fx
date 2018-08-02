@@ -54,7 +54,7 @@ grpc_test: &grpc_test
     name: grpc test
     command: make grpc-test
 
-start_fx_server:
+start_fx_server: &start_fx_server
   run:
     name: start fx server
     command: |
