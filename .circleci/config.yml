@@ -54,13 +54,6 @@ grpc_test: &grpc_test
     name: grpc test
     command: make grpc-test
 
-start_fx_server: &start_fx_server
-  run:
-    name: start fx server
-    command: |
-      ./build/fx serve > server_output 2>&1 &
-      sleep 20
-
 version: 2
 jobs:
   test:
@@ -73,7 +66,6 @@ jobs:
       - *install_dependencies
       - *build_binary
       - *unit_test
-      - *start_fx_server
       - *cli_test
       - *http_test
       - *grpc_test
