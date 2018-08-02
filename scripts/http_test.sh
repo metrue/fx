@@ -9,13 +9,13 @@ sleep 20 # waiting fx server to pulling resource done
 base_url='http://127.0.0.1:30080/v1'
 
 # up
-echo '{"Functions":[{"Content": "module.exports = (input) => {return parseInt(input.a, 10) + parseInt(input.b, 10)}", "Lang": "node"}]}' | http post ${base_url}/up | grep FunctionID
+echo '{"Functions":[{"Content": "module.exports = (input) => {return parseInt(input.a, 10) + parseInt(input.b, 10)}", "Lang": "node"}]}' | http post ${base_url}/up
 
 # call
-http post ${base_url}/call Content='module.exports = (input) => {return parseInt(input.a, 10) + parseInt(input.b, 10)}' Params='a=1 b=2' Lang=node | jq '.Data' | grep 3
+http post ${base_url}/call Content='module.exports = (input) => {return parseInt(input.a, 10) + parseInt(input.b, 10)}' Params='a=1 b=2' Lang=node | jq '.Data'
 
 # list
-http post http://127.0.0.1:30080/v1/list | jq '.Instances' | grep FunctionID
+http post http://127.0.0.1:30080/v1/list | jq '.Instances'
 
 # done
-echo '{"ID":["*"]}' | http post ${base_url}/down | jq '.Instances' | grep ContainerId
+echo '{"ID":["*"]}' | http post ${base_url}/down | jq '.Instances'
