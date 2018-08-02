@@ -41,9 +41,8 @@ func cleanup(dir string) {
 	}
 }
 
-// Up spins up a new function
+// DoUp spins up a new function
 func DoUp(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
-
 	port, err := freeport.GetFreePort()
 	if err != nil {
 		return nil, err
@@ -73,10 +72,9 @@ func DoUp(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
 	remoteAddr := fmt.Sprintf("%s:%s", utils.GetHostIP().String(), strconv.Itoa(port))
 
 	res := &api.UpMsgMeta{
-		FunctionID:     containerInfo.ID[:10],
-		FunctionSource: string(funcMeta.Path),
-		LocalAddress:   localAddr,
-		RemoteAddress:  remoteAddr,
+		FunctionID:    containerInfo.ID[:10],
+		LocalAddress:  localAddr,
+		RemoteAddress: remoteAddr,
 	}
 
 	return res, nil

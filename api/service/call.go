@@ -19,7 +19,6 @@ import (
 func Call(ctx context.Context, req *api.CallRequest) (*api.CallResponse, error) {
 	funcMeta := api.FunctionMeta{
 		Lang:    req.Lang,
-		Path:    req.Path,
 		Content: req.Content,
 	}
 

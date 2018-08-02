@@ -27,3 +27,11 @@ func TestPairsToParams(t *testing.T) {
 	params := PairsToParams(pairs)
 	assert.Equal(t, map[string]string{"a": "1", "b": "2"}, params)
 }
+
+func TestOutputJSON(t *testing.T) {
+	obj := map[string]string{
+		"name": "minghe",
+	}
+	err := OutputJSON(obj)
+	assert.Nil(t, err)
+}

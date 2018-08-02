@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
 	"github.com/metrue/fx/pkg/utils"
 )
@@ -20,7 +19,6 @@ func InvokeUpRequest(address string, functions []string) (*api.UpResponse, error
 
 		funcMeta := &api.FunctionMeta{
 			Lang:    utils.GetLangFromFileName(function),
-			Path:    function,
 			Content: string(data),
 		}
 		funcList = append(funcList, funcMeta)
@@ -49,7 +47,7 @@ func Up(address string, functions []string) error {
 	if err != nil {
 		return err
 	}
-	common.HandleUpResult(res.Instances)
+	utils.OutputJSON(res)
 
 	return nil
 }

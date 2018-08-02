@@ -18,7 +18,6 @@ import (
 func TestUp(t *testing.T) {
 	meta := api.FunctionMeta{
 		Lang: "node",
-		Path: "./func.js",
 		Content: `module.exports = function (input) {
 	return input.a + input.b
 }

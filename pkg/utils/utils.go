@@ -3,6 +3,7 @@ package utils
 import (
 	"archive/tar"
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -312,4 +313,14 @@ func PairsToParams(pairs []string) map[string]string {
 		}
 	}
 	return params
+}
+
+func OutputJSON(v interface{}) error {
+	bytes, err := json.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("Could marshal %v : %v", v, err)
+	}
+	fmt.Println(string(bytes))
+
+	return nil
 }

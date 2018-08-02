@@ -6,15 +6,13 @@ import "googleapis/google/api/annotations.proto";
 
 message FunctionMeta {
   string Lang    = 1;
-  string Path    = 2;
-  string Content = 3;
+  string Content = 2;
 }
 
 message CallRequest {
   string Lang = 1;
-  string Path = 2;
-  string Content = 3;
-  string Params = 4;
+  string Content = 2;
+  string Params = 3;
 }
 
 message CallResponse {
@@ -36,10 +34,9 @@ message ListRequest {
 
 message UpMsgMeta {
   string FunctionID     = 1;
-  string FunctionSource = 2;
-  string LocalAddress   = 3;
-  string RemoteAddress  = 4;
-  string Error          = 5;
+  string LocalAddress   = 2;
+  string RemoteAddress  = 3;
+  string Error          = 4;
 }
 
 message UpResponse {

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/common"
 	"github.com/metrue/fx/pkg/client"
 	"github.com/metrue/fx/pkg/utils"
 )
@@ -24,7 +23,6 @@ func InvokeCallRequest(address string, function string, params string) (*api.Cal
 
 	req := &api.CallRequest{
 		Lang:    utils.GetLangFromFileName(function),
-		Path:    function,
 		Content: string(data),
 		Params:  params,
 	}
@@ -47,10 +45,8 @@ func InvokeCallRequest(address string, function string, params string) (*api.Cal
 func Call(address string, function string, params string) error {
 	res, err := InvokeCallRequest(address, function, params)
 	if err != nil {
-		common.HandleCallResult(CallOutput{Error: err.Error()})
 		return nil
 	}
 
-	common.HandleCallResult(res)
-	return nil
+	return utils.OutputJSON(res)
 }

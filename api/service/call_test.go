@@ -11,7 +11,6 @@ import (
 func TestCall(t *testing.T) {
 	req := &api.CallRequest{
 		Lang: "node",
-		Path: "./func.js",
 		Content: `module.exports = function (input) {
 	return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
