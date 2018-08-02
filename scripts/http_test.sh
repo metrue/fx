@@ -3,8 +3,8 @@
 set -e
 
 # start fx server
-# ./build/fx serve > server_output 2>&1 &
-# sleep 20 # waiting fx server to pulling resource done
+./build/fx serve > server_output 2>&1 &
+sleep 20 # waiting fx server to pulling resource done
 
 base_url='http://127.0.0.1:30080/v1'
 
