@@ -15,13 +15,13 @@ install_httpie: &install_httpie
   run:
     name: install httpie
     command: |
-      apt-get update && apt-get install httpie
+      sudo apt-get -y update && sudo apt-get -y install httpie
 
 install_jq: &install_jq
   run:
     name: install jq
     command: |
-      apt-get update && apt-get install jq
+      sudo apt-get update && sudo apt-get -y install jq
 
 install_dependencies: &install_dependencies
   run:
