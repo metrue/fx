@@ -38,10 +38,10 @@ unit-test: generate
 cli-test: generate
 	./scripts/test_cli.sh
 
-http_test: generate
+http-test: generate
 	./scripts/http_test.sh
 
-grpc_test: generate
+grpc-test: generate
 	echo "TODO"
 
 zip:
