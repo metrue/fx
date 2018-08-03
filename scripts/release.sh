@@ -7,9 +7,14 @@ git config --global user.name "Minghe Huang"
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 commit=$(git rev-parse --short HEAD)
-version=${branch}-${commit}
-if [[ ${branch} == "production" ]];then
-  version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
+version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
+if [[ ${branch} == "master" ]];then
+  version=${version}-alpha.${commit}
+  echo "alpha release $version"
+elif [[ ${branch} == "production" ]];then
+  echo "official release $version"
+else
+  exit 0
 fi
 
 git tag -a ${version} -m "auto release"

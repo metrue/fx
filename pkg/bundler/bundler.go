@@ -1,4 +1,4 @@
-package image
+package bundler
 
 import (
 	"io/ioutil"
@@ -79,8 +79,8 @@ func isFxFuncSource(lang string, name string) (ret bool) {
 	return nameWithoutExt == "fx" || nameWithoutExt == "Fx" // Fx is for Java
 }
 
-//Get Prepare a container base image and insert the function body
-func Get(dir string, lang string, body []byte) (err error) {
+//Bundle Prepare a container base image and insert the function body
+func Bundle(dir string, lang string, body []byte) (err error) {
 	names := assetsMap[lang]
 	err = nil
 	for _, name := range names {

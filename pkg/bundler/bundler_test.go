@@ -1,4 +1,4 @@
-package image
+package bundler
 
 import (
 	"io/ioutil"
@@ -7,9 +7,9 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
+func TestBundle(t *testing.T) {
 	targetDir, _ := ioutil.TempDir("", "image_test")
-	Get(targetDir, "go", []byte("import \"fmt\""))
+	Bundle(targetDir, "go", []byte("import \"fmt\""))
 
 	files, _ := ioutil.ReadDir(targetDir)
 	if len(files) != 3 {

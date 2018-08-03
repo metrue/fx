@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/image"
+	"github.com/metrue/fx/pkg/bundler"
 	"github.com/metrue/fx/pkg/docker"
 	"github.com/metrue/fx/pkg/utils"
 	"github.com/phayes/freeport"
@@ -48,12 +48,11 @@ func DoUp(funcMeta api.FunctionMeta) (*api.UpMsgMeta, error) {
 		return nil, err
 	}
 
-	var guid = xid.New().String()
-	var dir = path.Join(os.TempDir(), "fx-", guid)
+	name := xid.New().String()
+	dir := path.Join(os.TempDir(), "fx-", name)
 	defer cleanup(dir)
 
-	var name = guid
-	err = image.Get(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
+	err = bundler.Bundle(dir, string(funcMeta.Lang), []byte(funcMeta.Content))
 	if err != nil {
 		return nil, err
 	}
