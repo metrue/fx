@@ -9,7 +9,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 commit=$(git rev-parse --short HEAD)
 version=${branch}-${commit}
 if [[ ${branch} == "production" ]];then
-  version=$(cat version.txt)
+  version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
 fi
 
 git tag -a ${version} -m "auto release"
