@@ -1,7 +1,7 @@
-FROM rust:1.23.0
+FROM shepmaster/rust-nightly
 
 WORKDIR /usr/src/myapp
 COPY . .
-RUN cargo install
+RUN cargo build
 EXPOSE 3000
 CMD ["cargo", "run"]
