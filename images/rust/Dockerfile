@@ -1,7 +1,7 @@
-FROM shepmaster/rust-nightly
+FROM liuchong/rustup
 
 WORKDIR /usr/src/myapp
 COPY . .
-RUN cargo build
+RUN cp ./config ~/.cargo/ && rustup default nightly && cargo build
 EXPOSE 3000
 CMD ["cargo", "run"]
