@@ -1,165 +1,81 @@
 package server
 
 import (
-	"flag"
 	"fmt"
 	"log"
-	"net/http"
-	"strings"
 
 	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/server/env"
-	"github.com/metrue/fx/server/handlers"
-
-	"github.com/gorilla/websocket"
+	"github.com/metrue/fx/pkg/docker"
+	"github.com/metrue/fx/pkg/server"
 )
 
-var upgrader = websocket.Upgrader{} // use default options
-
-func health(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "I am OK, %s!", r.URL.Path[1:])
+type PullTask struct {
+	ImageName string
+	Err       error
 }
 
-func up(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade: ", err)
-	}
-
-	log.Println("to up")
-	defer c.Close()
-
-	_, lang, err := c.ReadMessage()
-	if err != nil {
-		log.Printf("read error: %s", err.Error())
-		return
-	}
-
-	mt, body, err := c.ReadMessage()
-	if err != nil {
-		log.Printf("read error: %s", err.Error())
-		return
-	}
-
-	handlers.Up(lang, body, c, mt)
-
-	for {
-		_, msg, err := c.ReadMessage()
-		if err != nil {
-			log.Printf("read error: %s", err.Error())
-			return
-		}
-		log.Println("read:", msg)
+func newPullTask(imageName string, result error) PullTask {
+	return PullTask{
+		ImageName: imageName,
+		Err:       result,
 	}
 }
 
-func list(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("Error during upgrade: %s", err.Error())
-	}
-	defer c.Close()
-
-	mt, _, err := c.ReadMessage()
-	if err != nil {
-		log.Println("read: ", err)
-		return
+//PullBaseDockerImage fetch base images from the registry
+func PullBaseDockerImage(verbose bool) []PullTask {
+	baseImages := []string{
+		"metrue/fx-java-base",
+		"metrue/fx-julia-base",
+		"metrue/fx-python-base",
+		"metrue/fx-node-base",
+		"metrue/fx-d-base",
 	}
 
-	containers := handlers.List()
+	count := len(baseImages)
+	results := make(chan PullTask, count)
 
-	msg := "Function ID" + "\t" + "Service URL"
-	err = c.WriteMessage(mt, []byte(msg))
-	if err != nil {
-		log.Println("write: ", err)
+	task := func(image string, verbose bool) error {
+		return docker.Pull(image, verbose)
 	}
 
-	for _, container := range containers {
-		msg = fmt.Sprintf("%s\t%s:%d", container.ID[:10], container.Ports[0].IP, container.Ports[0].PublicPort)
-		err = c.WriteMessage(mt, []byte(msg))
-		if err != nil {
-			log.Println("write: ", err)
+	fmt.Println("fx is pulling some basic resources")
+	for _, image := range baseImages {
+		go func(img string) {
+			err := task(img, verbose)
+			results <- newPullTask(img, err)
+		}(image)
+	}
+
+	var pullResutls []PullTask
+	for result := range results {
+		pullResutls = append(pullResutls, result)
+
+		if len(pullResutls) == count {
+			close(results)
 		}
 	}
 
-	closeConn(c, "0")
-}
-
-func down(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("upgrade: %s", err.Error())
-	}
-	defer c.Close()
-
-	doneCh := make(chan bool)
-	msgCh := make(chan string)
-
-	mt, message, err := c.ReadMessage()
-	if err != nil {
-		log.Println("read: ", err)
-	}
-
-	var ids []string
-	if string(message) == "*" {
-		fmt.Println("end all")
-		containers := handlers.List()
-		ids = make([]string, len(containers))
-		for i, container := range containers {
-			ids[i] = container.ID[:10]
-		}
-	} else {
-		fmt.Println("end list")
-		ids = strings.Split(string(message), " ")
-	}
-
-	for _, id := range ids {
-		go handlers.Down(id, msgCh, doneCh)
-	}
-
-	numSuccess := 0
-	numFail := 0
-	for {
-		select {
-		case newDone := <-doneCh:
-			if newDone {
-				numSuccess++
-			} else {
-				numFail++
-			}
-
-			if numSuccess+numFail == len(ids) {
-				res := fmt.Sprintf("Succed: %d", numSuccess)
-				c.WriteMessage(mt, []byte(res))
-				res = fmt.Sprintf("Failed: %d", numFail)
-				c.WriteMessage(mt, []byte(res))
-				closeConn(c, "0")
-				return
-			}
-		case newMsg := <-msgCh:
-			c.WriteMessage(mt, []byte(newMsg))
-		}
-	}
-}
-
-func closeConn(c *websocket.Conn, msg string) {
-	byteMsg := websocket.FormatCloseMessage(1000, msg)
-	c.WriteMessage(websocket.CloseMessage, byteMsg)
+	return pullResutls
 }
 
 // Start parses input and launches the fx server in a blocking process
-func Start() {
-	flag.Parse()
-	log.SetFlags(0)
+func Start(verbose bool) error {
+	if !docker.IsRunning() {
+		panic("make sure docker is running on your host")
+	} else {
+		go PullBaseDockerImage(true)
+	}
 
-	env.Init()
+	grpcEndpoint := fmt.Sprintf("0.0.0.0:%d", config.GRPC_PORT)
+	httpEndpoint := fmt.Sprintf("0.0.0.0:%d", config.HTTP_PORT)
+	go func() {
+		s := server.NewFxServiceServer(grpcEndpoint)
+		err := s.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 
-	http.HandleFunc("/health", health)
-	http.HandleFunc("/up", up)
-	http.HandleFunc("/down", down)
-	http.HandleFunc("/list", list)
-
-	addr := fmt.Sprintf("%s:%s", config.Server["host"], config.Server["port"])
-	log.Printf("fx serves on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Printf("fx serves on %d", config.HTTP_PORT)
+	return Run(grpcEndpoint, httpEndpoint)
 }

@@ -3,4 +3,10 @@ vendor/
 dist/
 build/
 *.pyc
-fx
+*.swp
+/fx
+/tmp
+/api/google
+/api/fx.pb.gw.go
+/api/fx.pb.go
+/coverage.txt
