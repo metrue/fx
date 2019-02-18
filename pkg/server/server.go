@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/api/service"
+	"github.com/metrue/fx/service"
 
 	"google.golang.org/grpc"
 )

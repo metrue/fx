@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/metrue/fx/api"
-	. "github.com/metrue/fx/api/service"
+	. "github.com/metrue/fx/service"
 	"github.com/stretchr/testify/assert"
 )
 
