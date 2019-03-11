@@ -288,7 +288,7 @@ func GetHostIP() (ip net.IP) {
 	return localAddr.IP
 }
 
-// get programming language from file name extension
+// GetLangFromFileName gets programming language from file name extension
 func GetLangFromFileName(fileName string) (lang string) {
 	extLangMap := map[string]string{
 		".js":   "node",
