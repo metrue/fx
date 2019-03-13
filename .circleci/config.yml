@@ -2,7 +2,7 @@ defaults: &defaults
   machine: true
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-  working_directory: /home/circleci/.go_workspace/src/github.com/golang/dep
+  working_directory: /home/circleci/.go_workspace/src/github.com/metrue/fx
 
 
 install_dep: &install_packr
