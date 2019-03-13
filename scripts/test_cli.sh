@@ -8,7 +8,8 @@ sleep 20 # waiting fx server to pulling resource done
 
 service='fx-service-abc'
 
-for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'; do
+# 'js', 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'
+for lang in 'js' 'go'; do
   ./build/fx up --name ${service}_${lang} examples/functions/func.${lang} # | grep 'info Run Service:'
   ./build/fx call examples/functions/func.${lang} a=1 b=2 # | grep '3'
   ./build/fx list # | jq ''
