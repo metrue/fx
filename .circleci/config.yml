@@ -2,7 +2,7 @@ defaults: &defaults
   machine: true
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-    GOPATH: "/home/$CIRCLE_PROJECT_USERNAME/.go_workspace"
+    GOPATH: "/home/$CIRCLE_PROJECT_USERNAME/${CIRCLE_PROJECT_REPONAME}"
 
 
 install_dep: &install_packr
