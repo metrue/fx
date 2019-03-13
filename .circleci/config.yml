@@ -6,10 +6,6 @@ attach_workspace: &attach_workspace
   attach_workspace:
     at: /go/src/github.com/metrue/fx
 
-setup_remote_docker: &setup_remote_docker
-  setup_remote_docker:
-      docker_layer_caching: true
-
 install_dep: &install_packr
   run:
     name: Install packr
@@ -68,7 +64,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
       - *install_httpie
       - *install_jq
       - *install_packr
@@ -82,7 +77,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
       - *install_dependencies
       - run:
           name: Release
@@ -91,7 +85,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
       - *install_dependencies
       - run:
           name: Release
