@@ -1,6 +1,5 @@
 defaults: &defaults
-  docker:
-    - image: circleci/golang:1.10
+  machine: true
   working_directory: /go/src/github.com/metrue/fx
 
 attach_workspace: &attach_workspace
