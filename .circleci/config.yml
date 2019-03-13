@@ -1,10 +1,7 @@
 defaults: &defaults
   machine: true
-  working_directory: /go/src/github.com/metrue/fx
-
-attach_workspace: &attach_workspace
-  attach_workspace:
-    at: /go/src/github.com/metrue/fx
+  environment:
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
 
 install_dep: &install_packr
   run:
