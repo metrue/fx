@@ -14,6 +14,9 @@ install_dep: &install_dep
     name: Install dep
     command: |
       go get github.com/golang/dep
+      echo "---"
+      echo "${GOPATH}"
+      echo "---"
       cd ${GOPATH}/src/github.com/golang/dep
       go install ./...
 
