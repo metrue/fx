@@ -1,10 +1,9 @@
-package utils_test
+package utils
 
 import (
 	"os"
 	"testing"
 
-	. "github.com/metrue/fx/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
