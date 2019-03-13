@@ -21,6 +21,7 @@ clean:
 	rm -rf ${DIST_DIR}
 
 unit-test: generate
+	./scripts/pre.sh
 	./scripts/coverage.sh
 
 cli-test: generate
