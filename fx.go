@@ -5,11 +5,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/metrue/fx/commands"
-	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/server"
+	"github.com/gobuffalo/packr"
+	"github.com/google/uuid"
+	engine "github.com/metrue/fx/api"
 	"github.com/urfave/cli"
 )
+
+var api *engine.API
+
+func init() {
+	box := packr.NewBox("./api/images")
+	api = engine.NewWithDockerRemoteAPI("127.0.0.1:1234", box)
+}
 
 func main() {
 	app := cli.NewApp()
@@ -19,10 +26,10 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "serve",
-			Usage: "start fx server on current host",
+			Name:  "init",
+			Usage: "initialize fx running enviroment",
 			Action: func(c *cli.Context) error {
-				return server.Start(true)
+				return api.Init()
 			},
 		},
 		{
@@ -31,54 +38,31 @@ func main() {
 			ArgsUsage: "[func.go func.js func.py func.rb ...]",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
+					Name:  "name, n",
+					Usage: "service name",
 				},
 			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
+				name := c.String("name")
+				if name == "" {
+					name = uuid.New().String()
 				}
-				functionSources := c.Args()
-				return commands.Up(host, functionSources)
+				return api.Up(name, c.Args().First())
 			},
 		},
 		{
 			Name:      "down",
-			Usage:     "destroy a function or a group of functions",
-			ArgsUsage: "[id1, id2, ...]",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
-				},
-			},
+			Usage:     "destroy a service",
+			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				functions := c.Args()
-				return commands.Down(host, functions)
+				return api.Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
-				},
-			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				functions := c.Args()
-				return commands.List(host, functions)
+				return api.List(c.Args().First())
 			},
 		},
 		{
@@ -91,31 +75,8 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
 				params := strings.Join(c.Args()[1:], " ")
-				functions := c.Args()[0]
-				return commands.Call(host, functions, params)
-			},
-		},
-		{
-			Name:  "use",
-			Usage: "set target deploy server address, default is localhost",
-			Action: func(c *cli.Context) error {
-				return commands.Use(c.Args().First())
-			},
-		},
-		{
-			Name:  "status",
-			Usage: "show fx status",
-			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				return commands.Status(host)
+				return api.Call(c.Args().First(), params)
 			},
 		},
 	}

@@ -11,6 +11,20 @@ setup_remote_docker: &setup_remote_docker
   setup_remote_docker:
       docker_layer_caching: true
 
+install_dep: &install_packr
+  run:
+    name: Install packr
+    command: |
+      go get -u github.com/gobuffalo/packr/packr
+
+install_dep: &install_dep
+  run:
+    name: Install dep
+    command: |
+      go get github.com/golang/dep
+      cd ${GOPATH}/src/github.com/golang/dep
+      go install ./...
+
 install_httpie: &install_httpie
   run:
     name: install httpie
@@ -63,6 +77,8 @@ jobs:
       - *setup_remote_docker
       - *install_httpie
       - *install_jq
+      - *install_packr
+      - *install_dep
       - *install_dependencies
       - *build_binary
       - *unit_test
