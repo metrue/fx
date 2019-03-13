@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/packr"
-	"github.com/metrue/f/types"
+	"github.com/metrue/fx/types"
 )
 
 func TestPacker(t *testing.T) {

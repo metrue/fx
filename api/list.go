@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/apex/log"
-	"github.com/metrue/f/utils"
+	"github.com/metrue/fx/utils"
 )
 
 // List services

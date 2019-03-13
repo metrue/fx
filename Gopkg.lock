@@ -38,7 +38,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c1163a29461915bf1365edb31b1dc493ef8d4c4ca8e6f68c847c8b1cfac6d195"
+  digest = "1:0e2a96f87af56565ab9c5ad79104b84a142192fbb0a969f79b1baab26c6c50a9"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -61,7 +61,7 @@
     "errdefs",
   ]
   pruneopts = ""
-  revision = "501cb131a7b79682de2cdb83d86e20975f38702d"
+  revision = "46036c230805d55eed797c45678e5e69ef9c1386"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -84,8 +84,7 @@
   version = "v0.3.3"
 
 [[projects]]
-  branch = "master"
-  digest = "1:5c1ef2b35731f69dbb50233d7f028c549a417bdf2127d2d420eedf50ff9a24e2"
+  digest = "1:ba9a3ee3359edeeec2c6c1ddb6976db4b7ca6ad045e73b43471e32f01b5786e4"
   name = "github.com/dsnet/compress"
   packages = [
     ".",
@@ -96,7 +95,8 @@
     "internal/prefix",
   ]
   pruneopts = ""
-  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
+  revision = "da652975a8eea9fa0735aba8056747a751db0bd3"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:83e42cd058ee568f8897de6fb1ec66ba5751ab88436e8d9759824502a9fbed27"
@@ -115,12 +115,12 @@
   revision = "d04dd98aca5b9aa7ca7c36ee639a21bcc69de32a"
 
 [[projects]]
-  digest = "1:c52a9291ed6f947c392744ebc8dd3accd9f5b63feeb33f84f0f9c3938785c368"
+  digest = "1:169b0f13452aa130cad334e8398aa8358759ab96e4d045bd8b6cba3e27ccda4d"
   name = "github.com/gobuffalo/packr"
   packages = ["."]
   pruneopts = ""
-  revision = "024a2ba64e4439e1454e93624f391329cec6c0b2"
-  version = "v2.0.2"
+  revision = "5aa3f2df6770adb7f8719a43ef25c2522af176ed"
+  version = "v2.0.3"
 
 [[projects]]
   branch = "master"
@@ -163,12 +163,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:a25a2c5ae694b01713fb6cd03c3b1ac1ccc1902b9f0a922680a88ec254f968e1"
+  digest = "1:ad92aa49f34cbc3546063c7eb2cabb55ee2278b72842eda80e2a20a8a06a8d73"
   name = "github.com/google/uuid"
   packages = ["."]
   pruneopts = ""
-  revision = "9b3b1e0f5f99ae461456d768e7d301a7acdaa2d8"
-  version = "v1.1.0"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:7df5a9695a743c3e1626b28bb8741602c8c15527e1efaeaec48ab2ff9a23f74c"
@@ -177,17 +177,6 @@
   pruneopts = ""
   revision = "23d116af351c84513e1946b527c88823e476be13"
   version = "v1.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:9dda8302c65e07fe0101097d72d163cd614adc1da525eb087a6a1db5f14cdd09"
-  name = "github.com/metrue/f"
-  packages = [
-    "types",
-    "utils",
-  ]
-  pruneopts = ""
-  revision = "3eab80a803c397c805f5c049eee0447b4ae07431"
 
 [[projects]]
   digest = "1:e26c759de83ce6fe27f99082458a7ad9fcc51a95215b4f5bbacd1345b61bc6ba"
@@ -318,7 +307,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b21775e358a9f9af0a07a57ce50dfd84371f949434801b434723dd45997ba324"
+  digest = "1:e9152dabd6b276edd0f1d51598e5745dcda9411315d216863bb46b13e523300c"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -326,15 +315,15 @@
     "proxy",
   ]
   pruneopts = ""
-  revision = "afe646ca25a4a688bba916cc14caef4b53c0b856"
+  revision = "5c2c250b6a70e39b74bb544433a348a892b10530"
 
 [[projects]]
   branch = "master"
-  digest = "1:0f39f8ca1c492b3b59020cb0f95e6635d5051bf7048a32ac5f9c6bf1adae6ec8"
+  digest = "1:9c1e747af61ab955fba74a79e87d5843a5d1d504e3ef86480f76e6a4e3a49136"
   name = "golang.org/x/sys"
   packages = ["windows"]
   pruneopts = ""
-  revision = "775f8194d0f9e65c46913c7be783d3d95a29333c"
+  revision = "fead79001313d15903fb4605b4a1b781532cd93e"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -351,8 +340,6 @@
     "github.com/golang/mock/gomock",
     "github.com/google/go-querystring/query",
     "github.com/google/uuid",
-    "github.com/metrue/f/types",
-    "github.com/metrue/f/utils",
     "github.com/mholt/archiver",
     "github.com/phayes/freeport",
     "github.com/pkg/errors",
