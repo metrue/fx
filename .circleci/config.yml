@@ -2,8 +2,6 @@ defaults: &defaults
   machine: true
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-    GOPATH: "/home/$CIRCLE_PROJECT_USERNAME/${CIRCLE_PROJECT_REPONAME}"
-
 
 install_dep: &install_packr
   run:
@@ -16,10 +14,9 @@ install_dep: &install_dep
     name: Install dep
     command: |
       go get github.com/golang/dep
-      echo "---"
-      echo "${GOPATH}"
-      echo "---"
-      cd ${GOPATH}/src/github.com/golang/dep
+      ls /home/circleci/.go_workspace
+      ls /usr/local/go_workspace
+      cd /home/circleci/.go_workspace/src/github.com/golang/dep
       go install ./...
 
 install_httpie: &install_httpie
