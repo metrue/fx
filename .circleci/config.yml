@@ -64,6 +64,8 @@ http_test: &http_test
     command: make http-test
 
 version: 2
+build:
+  machine: true
 jobs:
   test:
     <<: *defaults
