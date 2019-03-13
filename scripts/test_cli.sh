@@ -10,7 +10,7 @@ service='fx-service-abc'
 
 for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'; do
   ./build/fx up --name ${service}_${lang} examples/functions/func.${lang} # | grep 'info Run Service:'
-  ./build/fx call examples/functions/func.js a=1 b=2 # | grep '3'
+  ./build/fx call examples/functions/func.${lang} a=1 b=2 # | grep '3'
   ./build/fx list # | jq ''
   ./build/fx down ${service}_${lang} # | grep "Down Service ${service}"
 done
