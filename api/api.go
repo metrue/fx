@@ -58,7 +58,7 @@ func (api *API) get(path string, qs string, v interface{}) error {
 	}
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("request failed: %d - %s", resp.StatusCode, resp.Status)
+		return fmt.Errorf("request %s failed: %d - %s", url, resp.StatusCode, resp.Status)
 	}
 
 	defer resp.Body.Close()
@@ -94,7 +94,7 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 	}
 
 	if resp.StatusCode != expectStatus {
-		return fmt.Errorf("request failed: %d - %s", resp.StatusCode, resp.Status)
+		return fmt.Errorf("request %s (%s) failed: %d - %s", url, string(body), resp.StatusCode, resp.Status)
 	}
 
 	defer resp.Body.Close()
@@ -130,6 +130,9 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 
 	for _, file := range project.Files {
 		tmpfn := filepath.Join(dir, file.Path)
+		if err := utils.EnsureFile(tmpfn); err != nil {
+			return types.Service{}, err
+		}
 		if err := ioutil.WriteFile(tmpfn, []byte(file.Body), 0666); err != nil {
 			return types.Service{}, err
 		}
