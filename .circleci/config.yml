@@ -52,11 +52,6 @@ cli_test: &cli_test
     name: cli test
     command: make cli-test
 
-http_test: &http_test
-  run:
-    name: http test
-    command: make http-test
-
 version: 2
 jobs:
   test:
@@ -71,7 +66,6 @@ jobs:
       - *build_binary
       - *unit_test
       - *cli_test
-      - *http_test
   deploy:
     <<: *defaults
     steps:
