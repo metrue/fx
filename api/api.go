@@ -34,8 +34,12 @@ type API struct {
 }
 
 // NewWithDockerRemoteAPI create a api with docker remote api
-func NewWithDockerRemoteAPI(url string, box packr.Box) *API {
-	return &API{endpoint: url, box: box}
+func NewWithDockerRemoteAPI(url string) *API {
+	box := packr.NewBox("./images")
+	return &API{
+		endpoint: url,
+		box:      box,
+	}
 }
 
 func (api *API) get(path string, qs string, v interface{}) error {

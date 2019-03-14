@@ -1,4 +1,4 @@
 package api
 
-const dockerEngineVersion = "1.37"
-const fxBaseImages = "./images"
+// DockerRemoteAPIEndpoint docker remote api
+const DockerRemoteAPIEndpoint = "127.0.0.1:1234"

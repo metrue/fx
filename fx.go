@@ -5,31 +5,29 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gobuffalo/packr"
 	"github.com/google/uuid"
-	engine "github.com/metrue/fx/api"
+	"github.com/metrue/fx/api"
 	"github.com/urfave/cli"
 )
 
-var api *engine.API
+var fx *api.API
 
 func init() {
-	box := packr.NewBox("./api/images")
-	api = engine.NewWithDockerRemoteAPI("127.0.0.1:1234", box)
+	fx = api.NewWithDockerRemoteAPI(api.DockerRemoteAPIEndpoint)
 }
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
-	app.Usage = "make function as a service"
-	app.Version = "0.2.2"
+	app.Usage = "makes function as a service"
+	app.Version = "0.3.0"
 
 	app.Commands = []cli.Command{
 		{
 			Name:  "init",
 			Usage: "initialize fx running enviroment",
 			Action: func(c *cli.Context) error {
-				return api.Init()
+				return fx.Init()
 			},
 		},
 		{
@@ -47,7 +45,7 @@ func main() {
 				if name == "" {
 					name = uuid.New().String()
 				}
-				return api.Up(name, c.Args().First())
+				return fx.Up(name, c.Args().First())
 			},
 		},
 		{
@@ -55,14 +53,14 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return api.Down(c.Args())
+				return fx.Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
-				return api.List(c.Args().First())
+				return fx.List(c.Args().First())
 			},
 		},
 		{
@@ -76,7 +74,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				params := strings.Join(c.Args()[1:], " ")
-				return api.Call(c.Args().First(), params)
+				return fx.Call(c.Args().First(), params)
 			},
 		},
 	}
