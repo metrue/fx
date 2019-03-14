@@ -1,3 +1,5 @@
+using Pkg
+
 open("/app/REQUIRE") do f
 	deps = readlines(f)
 	for d in deps
