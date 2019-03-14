@@ -70,7 +70,10 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - *install_packr
+      - *install_dep
       - *install_dependencies
+      - *build_binary
       - run:
           name: Release
           command: make release
