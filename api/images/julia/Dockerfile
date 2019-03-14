@@ -1,4 +1,4 @@
-FROM julia:latest
+FROM julia:0.7
 
 COPY . /app
 
