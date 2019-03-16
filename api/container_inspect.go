@@ -17,12 +17,7 @@ type containerInfo struct {
 func (api *API) inspect(identify string) (containerInfo, error) {
 	var info containerInfo
 
-	version, err := api.version()
-	if err != nil {
-		return info, err
-	}
-
-	path := fmt.Sprintf("/v%s/containers/%s/json", version, identify)
+	path := fmt.Sprintf("/v%s/containers/%s/json", api.version, identify)
 	type containerInfo struct {
 		ID         string                     `json:"Id"`
 		State      dockerTypes.ContainerState `json:"State"`

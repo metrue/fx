@@ -2,6 +2,7 @@ package api
 
 import (
 	"os/exec"
+	"sync"
 
 	"github.com/apex/log"
 )
@@ -28,5 +29,27 @@ func (api *API) Init() error {
 		return err
 	}
 	log.Infof("Initialize Environment: \u2713 %s", stdoutStderr)
+
+	baseImages := []string{
+		"metrue/fx-java-base",
+		"metrue/fx-julia-base",
+		"metrue/fx-python-base",
+		"metrue/fx-node-base",
+		"metrue/fx-d-base",
+	}
+
+	var wg sync.WaitGroup
+	for _, image := range baseImages {
+		wg.Add(1)
+		go func(img string) {
+			if err := api.pull(img); err != nil {
+				log.Fatalf("Pulling %s failed", img)
+			} else {
+				log.Infof("Pull %s ok", img)
+			}
+			wg.Done()
+		}(image)
+	}
+
 	return nil
 }

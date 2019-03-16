@@ -3,13 +3,11 @@ package api
 import (
 	"testing"
 
-	"github.com/gobuffalo/packr"
 	"github.com/metrue/fx/types"
 )
 
 func TestPacker(t *testing.T) {
-	box := packr.NewBox("./images")
-	api := NewWithDockerRemoteAPI("127.0.0.1:1234", box)
+	api := NewWithDockerRemoteAPI("127.0.0.1:1234")
 
 	mockSource := `
 module.exports = ({a, b}) => {

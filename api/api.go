@@ -30,15 +30,58 @@ const serviceNamePrefix = "fx_"
 // API interact with dockerd http api
 type API struct {
 	endpoint string
+	version  string
 	box      packr.Box
+}
+
+// version get version of dockerd server
+func version(endpoint string) (string, error) {
+	path := "/version"
+	url := fmt.Sprintf("%s%s", endpoint, path)
+	if !strings.HasPrefix(url, "http") {
+		url = "http://" + url
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("request %s failed: %d - %s", url, resp.StatusCode, resp.Status)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var res dockerTypes.Version
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return "", err
+	}
+	return res.APIVersion, nil
 }
 
 // NewWithDockerRemoteAPI create a api with docker remote api
 func NewWithDockerRemoteAPI(url string) *API {
+	version, err := version(url)
+	if err != nil {
+		panic(err)
+	}
 	box := packr.NewBox("./images")
 	return &API{
 		endpoint: url,
-		box:      box,
+		version:  version,
+
+		box: box,
 	}
 }
 
@@ -114,15 +157,6 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 	return nil
 }
 
-// Version get version of dockerd server
-func (api *API) version() (string, error) {
-	var res dockerTypes.Version
-	if err := api.get("/version", "", &res); err != nil {
-		return "", err
-	}
-	return res.APIVersion, nil
-}
-
 // Build build a project
 func (api *API) Build(project types.Project) (types.Service, error) {
 	dir, err := ioutil.TempDir("/tmp", "fx-build-dir")
@@ -182,12 +216,11 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 		return types.Service{}, err
 	}
 
-	version, err := api.version()
 	if err != nil {
 		return types.Service{}, err
 	}
 	path := "/build"
-	url := fmt.Sprintf("http://%s/v%s%s?%s", api.endpoint, version, path, qs.Encode())
+	url := fmt.Sprintf("http://%s/v%s%s?%s", api.endpoint, api.version, path, qs.Encode())
 	req, err := http.NewRequest("POST", url, dockerBuildContext)
 	if err != nil {
 		return types.Service{}, err
@@ -220,11 +253,6 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 
 // List list service
 func (api *API) list(name string) ([]types.Service, error) {
-	version, err := api.version()
-	if err != nil {
-		return []types.Service{}, err
-	}
-
 	if name != "" {
 		info, err := api.inspect(name)
 		if err != nil {
@@ -279,7 +307,7 @@ func (api *API) list(name string) ([]types.Service, error) {
 	}
 
 	var containers []dockerTypes.Container
-	path := fmt.Sprintf("/v%s/containers/json", version)
+	path := fmt.Sprintf("/v%s/containers/json", api.version)
 	if err := api.get(path, qs.Encode(), &containers); err != nil {
 		return []types.Service{}, err
 	}
@@ -382,11 +410,7 @@ func (api *API) Run(service *types.Service) error {
 		return err
 	}
 
-	version, err := api.version()
-	if err != nil {
-		return err
-	}
-	path := fmt.Sprintf("/v%s/containers/create?name=%s", version, service.Name)
+	path := fmt.Sprintf("/v%s/containers/create?name=%s", api.version, service.Name)
 	type containerCreateResponse struct {
 		ID       string   `json:"Id"`
 		Warnings []string `json:"Warnings"`
@@ -401,7 +425,7 @@ func (api *API) Run(service *types.Service) error {
 		return fmt.Errorf("container id is missing")
 	}
 
-	path = fmt.Sprintf("/v%s/containers/%s/start", version, res.ID)
+	path = fmt.Sprintf("/v%s/containers/%s/start", api.version, res.ID)
 	url := fmt.Sprintf("http://%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
@@ -430,11 +454,7 @@ func (api *API) Run(service *types.Service) error {
 
 // Stop a container by name
 func (api *API) Stop(name string) error {
-	version, err := api.version()
-	if err != nil {
-		return err
-	}
-	path := fmt.Sprintf("/v%s/containers/%s/stop", version, name)
+	path := fmt.Sprintf("/v%s/containers/%s/stop", api.version, name)
 	url := fmt.Sprintf("http://%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {

@@ -3,20 +3,11 @@ package api
 import (
 	"testing"
 
-	"github.com/gobuffalo/packr"
 	"github.com/metrue/fx/types"
 )
 
 func TestDockerHTTP(t *testing.T) {
-	box := packr.NewBox("./images")
-	api := NewWithDockerRemoteAPI("127.0.0.1:1234", box)
-	version, err := api.version()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if version == "" {
-		t.Fatal("version should not be empty")
-	}
+	api := NewWithDockerRemoteAPI("127.0.0.1:1234")
 
 	serviceName := "a-test-service"
 	project := types.Project{
