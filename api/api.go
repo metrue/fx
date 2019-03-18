@@ -1,14 +1,11 @@
 package api
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -19,9 +16,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/gobuffalo/packr"
 	"github.com/google/go-querystring/query"
-	"github.com/google/uuid"
 	"github.com/metrue/fx/types"
-	"github.com/metrue/fx/utils"
 	"github.com/phayes/freeport"
 )
 
@@ -119,100 +114,6 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 		return err
 	}
 	return nil
-}
-
-// Build build a project
-func (api *API) Build(project types.Project) (types.Service, error) {
-	dir, err := ioutil.TempDir("/tmp", "fx-build-dir")
-	if err != nil {
-		return types.Service{}, err
-	}
-
-	defer os.RemoveAll(dir)
-
-	for _, file := range project.Files {
-		tmpfn := filepath.Join(dir, file.Path)
-		if err := utils.EnsureFile(tmpfn); err != nil {
-			return types.Service{}, err
-		}
-		if err := ioutil.WriteFile(tmpfn, []byte(file.Body), 0666); err != nil {
-			return types.Service{}, err
-		}
-	}
-
-	tarDir, err := ioutil.TempDir("/tmp", "fx-tar")
-	if err != nil {
-		return types.Service{}, err
-	}
-
-	imageID := uuid.New().String()
-	tarFilePath := filepath.Join(tarDir, fmt.Sprintf("%s.tar", imageID))
-	if err := utils.TarDir(dir, tarFilePath); err != nil {
-		return types.Service{}, err
-	}
-
-	dockerBuildContext, err := os.Open(tarFilePath)
-	if err != nil {
-		return types.Service{}, err
-	}
-	defer dockerBuildContext.Close()
-
-	type buildQuery struct {
-		Labels     string `url:"labels"`
-		Tags       string `url:"t"`
-		Dockerfile string `url:"dockerfile"`
-	}
-
-	// Apply default labels
-	labelsJSON, _ := json.Marshal(
-		map[string]string{
-			"belong-to": "fx",
-		},
-	)
-
-	q := buildQuery{
-		Tags:       imageID,
-		Labels:     string(labelsJSON),
-		Dockerfile: "Dockerfile",
-	}
-	qs, err := query.Values(q)
-	if err != nil {
-		return types.Service{}, err
-	}
-
-	if err != nil {
-		return types.Service{}, err
-	}
-	path := "/build"
-	url := fmt.Sprintf("http://%s/v%s%s?%s", api.endpoint, api.version, path, qs.Encode())
-	req, err := http.NewRequest("POST", url, dockerBuildContext)
-	if err != nil {
-		return types.Service{}, err
-	}
-
-	req.Header.Set("Content-Type", "application/x-tar")
-	client := &http.Client{Timeout: 120 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return types.Service{}, err
-	}
-
-	defer resp.Body.Close()
-	scanner := bufio.NewScanner(resp.Body)
-
-	for scanner.Scan() {
-		// TODO Maybe need log something out
-		// fmt.Printf("%s\n", scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		return types.Service{}, err
-	}
-
-	return types.Service{
-		Name:   project.Name,
-		Status: types.ServiceStatusInit,
-		Image:  imageID,
-	}, nil
 }
 
 // List list service
