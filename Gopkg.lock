@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:a76496d5e3d2144d9f3b1f7a54e1cfcf9be07f0b0466452c690958dc5feb4b86"
-  name = "github.com/Microsoft/go-winio"
-  packages = ["."]
-  pruneopts = ""
-  revision = "1a8911d1ed007260465c3bfbbc785ac6915a0bb8"
-  version = "v0.4.12"
-
-[[projects]]
   digest = "1:317998b1359366dda9f69cdbd108c39c7b3813a69002246fac4e3548646c1620"
   name = "github.com/apex/log"
   packages = ["."]
@@ -26,38 +18,21 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:c05f1899f086e3b4613d94d9e6f7ba6f4b6587498a1aa6037c5c294b22f5a743"
-  name = "github.com/docker/distribution"
-  packages = [
-    "digestset",
-    "reference",
-  ]
-  pruneopts = ""
-  revision = "2461543d988979529609e8cb6fca9ca190dc48da"
-  version = "v2.7.1"
-
-[[projects]]
   branch = "master"
   digest = "1:0e2a96f87af56565ab9c5ad79104b84a142192fbb0a969f79b1baab26c6c50a9"
   name = "github.com/docker/docker"
   packages = [
-    "api",
     "api/types",
     "api/types/blkiodev",
     "api/types/container",
-    "api/types/events",
     "api/types/filters",
-    "api/types/image",
     "api/types/mount",
     "api/types/network",
     "api/types/registry",
     "api/types/strslice",
     "api/types/swarm",
     "api/types/swarm/runtime",
-    "api/types/time",
     "api/types/versions",
-    "api/types/volume",
-    "client",
     "errdefs",
   ]
   pruneopts = ""
@@ -66,11 +41,7 @@
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
   name = "github.com/docker/go-connections"
-  packages = [
-    "nat",
-    "sockets",
-    "tlsconfig",
-  ]
+  packages = ["nat"]
   pruneopts = ""
   revision = "7395e3f8aa162843a74ed6d48e79627d9792ac55"
   version = "v0.4.0"
@@ -171,6 +142,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:0f31ddb2589297fc1d716f45b34e34bff34e968de1aa239543274c87522e86f4"
+  name = "github.com/h2non/parth"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b4df798d65426f8c8ab5ca5f9987aec5575d26c9"
+  version = "v2.0.1"
+
+[[projects]]
   digest = "1:7df5a9695a743c3e1626b28bb8741602c8c15527e1efaeaec48ab2ff9a23f74c"
   name = "github.com/joho/godotenv"
   packages = ["."]
@@ -261,14 +240,6 @@
   version = "v1.2.2"
 
 [[projects]]
-  digest = "1:a9ac823421527eaf6566301956cc5ae6dc312f4c0746afc0aa2f23b96f6458bd"
-  name = "github.com/rs/xid"
-  packages = ["."]
-  pruneopts = ""
-  revision = "15d26544def341f036c5f8dca987a4cbe575032c"
-  version = "v1.2.1"
-
-[[projects]]
   digest = "1:381bcbeb112a51493d9d998bbba207a529c73dbb49b3fd789e48c63fac1f192c"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
@@ -306,24 +277,12 @@
   revision = "48954b6210f8d154cb5f8484d3a3e1f83489309e"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e9152dabd6b276edd0f1d51598e5745dcda9411315d216863bb46b13e523300c"
-  name = "golang.org/x/net"
-  packages = [
-    "context",
-    "internal/socks",
-    "proxy",
-  ]
+  digest = "1:5eeb4bfc6db411dbb34a6d9e5d49a9956b160d59fd004ee8f03fe53c9605c082"
+  name = "gopkg.in/h2non/gock.v1"
+  packages = ["."]
   pruneopts = ""
-  revision = "5c2c250b6a70e39b74bb544433a348a892b10530"
-
-[[projects]]
-  branch = "master"
-  digest = "1:9c1e747af61ab955fba74a79e87d5843a5d1d504e3ef86480f76e6a4e3a49136"
-  name = "golang.org/x/sys"
-  packages = ["windows"]
-  pruneopts = ""
-  revision = "fead79001313d15903fb4605b4a1b781532cd93e"
+  revision = "ba88c4862a27596539531ce469478a91bc5a0511"
+  version = "v1.0.14"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -332,9 +291,7 @@
     "github.com/apex/log",
     "github.com/docker/docker/api/types",
     "github.com/docker/docker/api/types/container",
-    "github.com/docker/docker/api/types/filters",
     "github.com/docker/docker/api/types/network",
-    "github.com/docker/docker/client",
     "github.com/docker/go-connections/nat",
     "github.com/gobuffalo/packr",
     "github.com/golang/mock/gomock",
@@ -342,11 +299,9 @@
     "github.com/google/uuid",
     "github.com/mholt/archiver",
     "github.com/phayes/freeport",
-    "github.com/pkg/errors",
-    "github.com/rs/xid",
     "github.com/stretchr/testify/assert",
     "github.com/urfave/cli",
-    "golang.org/x/net/context",
+    "gopkg.in/h2non/gock.v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
