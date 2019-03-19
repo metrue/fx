@@ -77,10 +77,6 @@ func (api *API) get(path string, qs string, v interface{}) error {
 
 func (api *API) post(path string, body []byte, expectStatus int, v interface{}) error {
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
-	if !strings.HasPrefix(url, "http") {
-		url = "http://" + url
-	}
-
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		return err
@@ -270,7 +266,7 @@ func (api *API) Run(service *types.Service) error {
 		return err
 	}
 
-	path := fmt.Sprintf("/v%s/containers/create?name=%s", api.version, service.Name)
+	path := fmt.Sprintf("/containers/create?name=%s", service.Name)
 	type containerCreateResponse struct {
 		ID       string   `json:"Id"`
 		Warnings []string `json:"Warnings"`
@@ -285,8 +281,8 @@ func (api *API) Run(service *types.Service) error {
 		return fmt.Errorf("container id is missing")
 	}
 
-	path = fmt.Sprintf("/v%s/containers/%s/start", api.version, res.ID)
-	url := fmt.Sprintf("http://%s%s", api.endpoint, path)
+	path = fmt.Sprintf("/containers/%s/start", res.ID)
+	url := fmt.Sprintf("%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return err
@@ -315,7 +311,7 @@ func (api *API) Run(service *types.Service) error {
 // Stop a container by name
 func (api *API) Stop(name string) error {
 	path := fmt.Sprintf("/containers/%s/stop", name)
-	url := fmt.Sprintf("http://%s%s", api.endpoint, path)
+	url := fmt.Sprintf("%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return err

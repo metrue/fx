@@ -7,7 +7,7 @@ import (
 )
 
 func TestDockerHTTP(t *testing.T) {
-	dockerRemoteAPI := "127.0.0.1:1234"
+	dockerRemoteAPI := "http://127.0.0.1:1234"
 	version, err := Version(dockerRemoteAPI)
 	if err != nil {
 		t.Fatal(err)
