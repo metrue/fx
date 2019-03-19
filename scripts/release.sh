@@ -11,6 +11,9 @@ version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
 if [[ ${branch} == "master" ]];then
   version=${version}-alpha.${commit}
   echo "alpha release $version"
+elif [[ "${branch}" == *--autodeploy ]];then
+  version=${version}-alpha.${commit}
+  echo "alpha release $version"
 elif [[ ${branch} == "production" ]];then
   echo "official release $version"
 else
