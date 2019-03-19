@@ -2,7 +2,6 @@ package api
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -57,21 +56,13 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	defer dockerBuildContext.Close()
 
 	type buildQuery struct {
-		Labels     string `url:"labels"`
-		Tags       string `url:"t"`
-		Dockerfile string `url:"dockerfile"`
+		Labels     string `url:"labels,omitempty"`
+		Tags       string `url:"t,omitempty"`
+		Dockerfile string `url:"dockerfile,omitempty"`
 	}
-
-	// Apply default labels
-	labelsJSON, _ := json.Marshal(
-		map[string]string{
-			"belong-to": "fx",
-		},
-	)
 
 	q := buildQuery{
 		Tags:       imageID,
-		Labels:     string(labelsJSON),
 		Dockerfile: "Dockerfile",
 	}
 	qs, err := query.Values(q)
@@ -83,7 +74,7 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 		return types.Service{}, err
 	}
 	path := "/build"
-	url := fmt.Sprintf("http://%s/v%s%s?%s", api.endpoint, api.version, path, qs.Encode())
+	url := fmt.Sprintf("%s%s?%s", api.endpoint, path, qs.Encode())
 	req, err := http.NewRequest("POST", url, dockerBuildContext)
 	if err != nil {
 		return types.Service{}, err

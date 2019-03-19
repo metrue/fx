@@ -16,7 +16,7 @@ func TestDockerAPIVersion(t *testing.T) {
 		JSON(map[string]string{
 			"ApiVersion": "0.2.1",
 		})
-	v, err := version(dockerRemoteAPI)
+	v, err := Version(dockerRemoteAPI)
 	if err != nil {
 		t.Fatal(err)
 	}

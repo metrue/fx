@@ -7,7 +7,7 @@ import (
 )
 
 func TestPacker(t *testing.T) {
-	api := NewWithDockerRemoteAPI("127.0.0.1:1234")
+	api := NewWithDockerRemoteAPI("127.0.0.1:1234", "0.2.1")
 
 	mockSource := `
 module.exports = ({a, b}) => {

@@ -11,8 +11,8 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 )
 
-// version get version of dockerd server
-func version(endpoint string) (string, error) {
+// Version get version of dockerd server
+func Version(endpoint string) (string, error) {
 	path := "/version"
 	url := fmt.Sprintf("%s%s", endpoint, path)
 	if !strings.HasPrefix(url, "http") {

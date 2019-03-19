@@ -13,7 +13,11 @@ import (
 var fx *api.API
 
 func init() {
-	fx = api.NewWithDockerRemoteAPI(api.DockerRemoteAPIEndpoint)
+	version, err := api.Version(api.DockerRemoteAPIEndpoint)
+	if err != nil {
+		panic(err)
+	}
+	fx = api.NewWithDockerRemoteAPI(api.DockerRemoteAPIEndpoint, version)
 }
 
 func main() {

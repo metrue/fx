@@ -30,17 +30,12 @@ type API struct {
 }
 
 // NewWithDockerRemoteAPI create a api with docker remote api
-func NewWithDockerRemoteAPI(url string) *API {
-	version, err := version(url)
-	if err != nil {
-		panic(err)
-	}
+func NewWithDockerRemoteAPI(url string, version string) *API {
 	box := packr.NewBox("./images")
+	endpoint := fmt.Sprintf("%s/v%s", url, version)
 	return &API{
-		endpoint: url,
-		version:  version,
-
-		box: box,
+		endpoint: endpoint,
+		box:      box,
 	}
 }
 
@@ -319,7 +314,7 @@ func (api *API) Run(service *types.Service) error {
 
 // Stop a container by name
 func (api *API) Stop(name string) error {
-	path := fmt.Sprintf("/v%s/containers/%s/stop", api.version, name)
+	path := fmt.Sprintf("/containers/%s/stop", name)
 	url := fmt.Sprintf("http://%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
