@@ -163,8 +163,7 @@ func (api *API) list(name string) ([]types.Service, error) {
 	}
 
 	var containers []dockerTypes.Container
-	path := fmt.Sprintf("/v%s/containers/json", api.version)
-	if err := api.get(path, qs.Encode(), &containers); err != nil {
+	if err := api.get("/containers/json", qs.Encode(), &containers); err != nil {
 		return []types.Service{}, err
 	}
 
