@@ -33,12 +33,21 @@ func proxyDockerSock() error {
 		return err
 	}
 
+	const containerStateCreated = "created"
+	const containerStateRestarting = "restarting"
+	const containerStateRunning = "running"
+	const containerStatePaused = "paused"
+	const containerStateExited = "exited"
+
 	state := infos[0].State.Status
-	if state == "running" {
+	if state == containerStateRestarting ||
+		state == containerStateRunning { // FIXME should wait for it ready
 		return nil
 	}
 
-	if state == "created" || state == "exited" {
+	if state == containerStateCreated ||
+		state == containerStatePaused ||
+		state == containerStateExited {
 		cmd := exec.Command(
 			"docker",
 			"start",
