@@ -10,13 +10,25 @@ import (
 // DockerRemoteAPIEndpoint docker remote api
 const DockerRemoteAPIEndpoint = "127.0.0.1:1234"
 
-// Init init a host to make fx runnable
-func Init() error {
-	// enable docker remote api
-	// docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:1234:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock
+func proxyDockerSock() error {
+	name := "docker-sock-proxy-for-fx"
 	cmd := exec.Command(
 		"docker",
+		"inspect",
+		name,
+	)
+	_, err := cmd.CombinedOutput()
+	// If already proxy, just return
+	if err == nil {
+		return nil
+	}
+
+	// enable docker remote api
+	// docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:1234:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock
+	cmd = exec.Command(
+		"docker",
 		"run",
+		"--name="+name,
 		"-d",
 		"-v",
 		"/var/run/docker.sock:/var/run/docker.sock",
@@ -26,12 +38,20 @@ func Init() error {
 		"TCP-LISTEN:1234,fork",
 		"UNIX-CONNECT:/var/run/docker.sock",
 	)
-	stdoutStderr, err := cmd.CombinedOutput()
+	_, err = cmd.CombinedOutput()
 	if err != nil {
-		log.Fatalf("Initialize Environment: %v", err)
 		return err
 	}
-	log.Infof("Initialize Environment: \u2713 %s", stdoutStderr)
+	return nil
+}
+
+// Init init a host to make fx runnable
+func Init() error {
+	if err := proxyDockerSock(); err != nil {
+		log.Fatalf("Proxy Docker Remote API Sock Failed: %v", err)
+		return err
+	}
+	log.Info("Proxy Docker Remote API Sock: \u2713")
 
 	baseImages := []string{
 		"metrue/fx-java-base",
