@@ -1,14 +1,24 @@
 package env
 
 import (
+	"encoding/json"
 	"os/exec"
 	"sync"
 
 	"github.com/apex/log"
+	dockerTypes "github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 )
 
 // DockerRemoteAPIEndpoint docker remote api
 const DockerRemoteAPIEndpoint = "127.0.0.1:1234"
+
+type containerInfo struct {
+	ID         string                     `json:"Id"`
+	State      dockerTypes.ContainerState `json:"State"`
+	Image      string                     `json:"Image"`
+	HostConfig container.HostConfig       `json:"HostConfig"`
+}
 
 func proxyDockerSock() error {
 	name := "docker-sock-proxy-for-fx"
@@ -17,9 +27,27 @@ func proxyDockerSock() error {
 		"inspect",
 		name,
 	)
-	_, err := cmd.CombinedOutput()
-	// If already proxy, just return
-	if err == nil {
+	var infos []containerInfo
+	stdoutStderr, err := cmd.CombinedOutput()
+	if err := json.Unmarshal(stdoutStderr, &infos); err != nil {
+		return err
+	}
+
+	state := infos[0].State.Status
+	if state == "running" {
+		return nil
+	}
+
+	if state == "created" || state == "exited" {
+		cmd := exec.Command(
+			"docker",
+			"start",
+			name,
+		)
+		_, err = cmd.CombinedOutput()
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 

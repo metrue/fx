@@ -18,12 +18,6 @@ func (api *API) inspect(identify string) (containerInfo, error) {
 	var info containerInfo
 
 	path := fmt.Sprintf("/containers/%s/json", identify)
-	type containerInfo struct {
-		ID         string                     `json:"Id"`
-		State      dockerTypes.ContainerState `json:"State"`
-		Image      string                     `json:"Image"`
-		HostConfig container.HostConfig       `json:"HostConfig"`
-	}
 	if err := api.get(path, "", &info); err != nil {
 		return info, err
 	}
