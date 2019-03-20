@@ -21,4 +21,4 @@ else
 fi
 
 git tag -a ${version} -m "auto release"
-goreleaser --skip-validate
+curl -sL https://git.io/goreleaser | bash -s  -- --skip-validate

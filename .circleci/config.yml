@@ -19,12 +19,6 @@ install_dep: &install_dep
       cd /home/circleci/.go_workspace/src/github.com/golang/dep
       go install ./...
 
-install_goreleaser: &install_goreleaser
-  run:
-    name: Install goreleaser
-    command: |
-      go get github.com/goreleaser/goreleaser
-
 install_httpie: &install_httpie
   run:
     name: install httpie
@@ -80,7 +74,6 @@ jobs:
       - *install_dep
       - *install_dependencies
       - *build_binary
-      - *install_goreleaser
       - run:
           name: Release
           command: make release
@@ -89,7 +82,6 @@ jobs:
     steps:
       - checkout
       - *install_dependencies
-      - *install_goreleaser
       - run:
           name: Release
           command: make release
