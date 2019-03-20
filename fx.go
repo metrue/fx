@@ -7,17 +7,19 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/env"
 	"github.com/urfave/cli"
 )
 
 var fx *api.API
 
 func init() {
-	version, err := api.Version(api.DockerRemoteAPIEndpoint)
+	endpoint := "http://" + env.DockerRemoteAPIEndpoint
+	version, err := api.Version(endpoint)
 	if err != nil {
 		panic(err)
 	}
-	fx = api.NewWithDockerRemoteAPI(api.DockerRemoteAPIEndpoint, version)
+	fx = api.NewWithDockerRemoteAPI(endpoint, version)
 }
 
 func main() {
@@ -31,7 +33,7 @@ func main() {
 			Name:  "init",
 			Usage: "initialize fx running enviroment",
 			Action: func(c *cli.Context) error {
-				return fx.Init()
+				return env.Init()
 			},
 		},
 		{
