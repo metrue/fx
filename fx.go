@@ -1,25 +1,23 @@
 package main
 
 import (
-	"log"
 	"os"
 	"strings"
 
+	"github.com/apex/log"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/env"
 	"github.com/urfave/cli"
 )
 
-var fx *api.API
-
-func init() {
+func fx() *api.API {
 	endpoint := "http://" + env.DockerRemoteAPIEndpoint
 	version, err := api.Version(endpoint)
 	if err != nil {
 		panic(err)
 	}
-	fx = api.NewWithDockerRemoteAPI(endpoint, version)
+	return api.NewWithDockerRemoteAPI(endpoint, version)
 }
 
 func main() {
@@ -33,7 +31,14 @@ func main() {
 			Name:  "init",
 			Usage: "initialize fx running enviroment",
 			Action: func(c *cli.Context) error {
-				return env.Init()
+				log.Info("Init Enviroment ....")
+				err := env.Init()
+				if err != nil {
+					log.Fatalf("Init Enviroment%v", err)
+				} else {
+					log.Info("Init Enviroment: \u2713")
+				}
+				return err
 			},
 		},
 		{
@@ -51,7 +56,7 @@ func main() {
 				if name == "" {
 					name = uuid.New().String()
 				}
-				return fx.Up(name, c.Args().First())
+				return fx().Up(name, c.Args().First())
 			},
 		},
 		{
@@ -59,14 +64,14 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return fx.Down(c.Args())
+				return fx().Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
-				return fx.List(c.Args().First())
+				return fx().List(c.Args().First())
 			},
 		},
 		{
@@ -80,13 +85,13 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				params := strings.Join(c.Args()[1:], " ")
-				return fx.Call(c.Args().First(), params)
+				return fx().Call(c.Args().First(), params)
 			},
 		},
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("fx startup with fatal: %v", err)
 	}
 }
