@@ -24,8 +24,6 @@ install_goreleaser: &install_goreleaser
     name: Install goreleaser
     command: |
       go get github.com/goreleaser/goreleaser
-      cd /home/circleci/.go_workspace/src/github.com/goreleaser/goreleaser
-      go install ./...
 
 install_httpie: &install_httpie
   run:
