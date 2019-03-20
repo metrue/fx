@@ -11,6 +11,9 @@ version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
 if [[ ${branch} == "master" ]];then
   version=${version}-alpha.${commit}
   echo "alpha release $version"
+elif [[ "${branch}" == *--autodeploy ]];then
+  version=${version}-alpha.${commit}
+  echo "alpha release $version"
 elif [[ ${branch} == "production" ]];then
   echo "official release $version"
 else
@@ -18,4 +21,4 @@ else
 fi
 
 git tag -a ${version} -m "auto release"
-goreleaser --skip-validate
+curl -sL https://git.io/goreleaser | bash -s  -- --skip-validate

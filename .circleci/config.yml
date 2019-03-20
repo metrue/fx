@@ -1,15 +1,23 @@
 defaults: &defaults
-  docker:
-    - image: circleci/golang:1.10
-  working_directory: /go/src/github.com/metrue/fx
+  machine: true
+  environment:
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+  working_directory: /home/circleci/.go_workspace/src/github.com/metrue/fx
 
-attach_workspace: &attach_workspace
-  attach_workspace:
-    at: /go/src/github.com/metrue/fx
 
-setup_remote_docker: &setup_remote_docker
-  setup_remote_docker:
-      docker_layer_caching: true
+install_dep: &install_packr
+  run:
+    name: Install packr
+    command: |
+      go get -u github.com/gobuffalo/packr/packr
+
+install_dep: &install_dep
+  run:
+    name: Install dep
+    command: |
+      go get github.com/golang/dep
+      cd /home/circleci/.go_workspace/src/github.com/golang/dep
+      go install ./...
 
 install_httpie: &install_httpie
   run:
@@ -44,37 +52,28 @@ cli_test: &cli_test
     name: cli test
     command: make cli-test
 
-http_test: &http_test
-  run:
-    name: http test
-    command: make http-test
-
-grpc_test: &grpc_test
-  run:
-    name: grpc test
-    command: make grpc-test
-
 version: 2
 jobs:
   test:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
       - *install_httpie
       - *install_jq
+      - *install_packr
+      - *install_dep
       - *install_dependencies
       - *build_binary
       - *unit_test
       - *cli_test
-      - *http_test
-      - *grpc_test
   deploy:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
+      - *install_packr
+      - *install_dep
       - *install_dependencies
+      - *build_binary
       - run:
           name: Release
           command: make release
@@ -82,7 +81,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *setup_remote_docker
       - *install_dependencies
       - run:
           name: Release

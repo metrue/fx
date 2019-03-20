@@ -1,28 +1,44 @@
 package main
 
 import (
-	"log"
 	"os"
 	"strings"
 
-	"github.com/metrue/fx/commands"
-	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/server"
+	"github.com/apex/log"
+	"github.com/google/uuid"
+	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/env"
 	"github.com/urfave/cli"
 )
+
+func fx() *api.API {
+	endpoint := "http://" + env.DockerRemoteAPIEndpoint
+	version, err := api.Version(endpoint)
+	if err != nil {
+		panic(err)
+	}
+	return api.NewWithDockerRemoteAPI(endpoint, version)
+}
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
-	app.Usage = "make function as a service"
-	app.Version = "0.2.2"
+	app.Usage = "makes function as a service"
+	app.Version = "0.3.0"
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "serve",
-			Usage: "start fx server on current host",
+			Name:  "init",
+			Usage: "initialize fx running enviroment",
 			Action: func(c *cli.Context) error {
-				return server.Start(true)
+				log.Info("Init Enviroment ....")
+				err := env.Init()
+				if err != nil {
+					log.Fatalf("Init Enviroment%v", err)
+				} else {
+					log.Info("Init Enviroment: \u2713")
+				}
+				return err
 			},
 		},
 		{
@@ -31,54 +47,31 @@ func main() {
 			ArgsUsage: "[func.go func.js func.py func.rb ...]",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
+					Name:  "name, n",
+					Usage: "service name",
 				},
 			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
+				name := c.String("name")
+				if name == "" {
+					name = uuid.New().String()
 				}
-				functionSources := c.Args()
-				return commands.Up(host, functionSources)
+				return fx().Up(name, c.Args().First())
 			},
 		},
 		{
 			Name:      "down",
-			Usage:     "destroy a function or a group of functions",
-			ArgsUsage: "[id1, id2, ...]",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
-				},
-			},
+			Usage:     "destroy a service",
+			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				functions := c.Args()
-				return commands.Down(host, functions)
+				return fx().Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
-				},
-			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				functions := c.Args()
-				return commands.List(host, functions)
+				return fx().List(c.Args().First())
 			},
 		},
 		{
@@ -91,37 +84,14 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
 				params := strings.Join(c.Args()[1:], " ")
-				functions := c.Args()[0]
-				return commands.Call(host, functions, params)
-			},
-		},
-		{
-			Name:  "use",
-			Usage: "set target deploy server address, default is localhost",
-			Action: func(c *cli.Context) error {
-				return commands.Use(c.Args().First())
-			},
-		},
-		{
-			Name:  "status",
-			Usage: "show fx status",
-			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				if host == "" {
-					host = config.GetGrpcEndpoint()
-				}
-				return commands.Status(host)
+				return fx().Call(c.Args().First(), params)
 			},
 		},
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("fx startup with fatal: %v", err)
 	}
 }
