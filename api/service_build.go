@@ -2,6 +2,7 @@ package api
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -61,8 +62,16 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 		Dockerfile string `url:"dockerfile,omitempty"`
 	}
 
+	// Apply default labels
+	labelsJSON, _ := json.Marshal(
+		map[string]string{
+			"belong-to": "fx",
+		},
+	)
+
 	q := buildQuery{
 		Tags:       imageID,
+		Labels:     string(labelsJSON),
 		Dockerfile: "Dockerfile",
 	}
 	qs, err := query.Values(q)
