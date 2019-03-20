@@ -72,9 +72,9 @@ func Init() error {
 			)
 			stdoutStderr, err := cmd.CombinedOutput()
 			if err != nil {
-				log.Fatalf("Pulling %s failed: %v", img, stdoutStderr)
+				log.Fatalf("Pulling %s failed: %v", img, string(stdoutStderr))
 			} else {
-				log.Infof("Pull %s ok", img)
+				log.Infof("%s Pulled: \u2713", img)
 			}
 			wg.Done()
 		}(image)
