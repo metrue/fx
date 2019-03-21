@@ -18,6 +18,7 @@ You can refer to the [doc](https://github.com/metrue/fx/blob/master/NEW_LANGUAGE
 | Language      | Status        | Contributor   |
 | ------------- |:-------------:|:-------------:|
 | Go            | Supported     | fx            |
+| Rust          | Supported     | @FrontMage(https://github.com/FrontMage)|
 | Node          | Supported     | fx            |
 | Python        | Supported     | fx            |
 | Ruby          | Supported     | fx            |
