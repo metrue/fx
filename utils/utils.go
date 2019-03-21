@@ -245,6 +245,7 @@ func GetLangFromFileName(fileName string) (lang string) {
 		".jl":   "julia",
 		".java": "java",
 		".d":    "d",
+		".rs":   "rust",
 	}
 	return extLangMap[filepath.Ext(fileName)]
 }
