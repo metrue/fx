@@ -149,23 +149,23 @@ fx up sum.js
 or give your service a name with `--name`
 
 ```
-fx up --name sum.js
+fx up --name service_sum sum.js
 ```
 
 if everything ok, you will get an `url` for service.
 
-### 4. Test your service
+4. Test your service
 
 then you can test your service:
 ```
-curl -X POST <url> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
+curl -X POST <service address> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
 ```
 
 ## Contribute
 
-fx use [Project](https://github.com/metrue/fx/projects) to manage the development.
+fx uses [Project](https://github.com/metrue/fx/projects) to manage the development.
 
-#### Environment Requirements
+#### Prerequisites
 
 1. Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
 2. dep: fx project uses [dep](https://github.com/golang/dep) to do the golang dependency management.
