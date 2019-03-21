@@ -90,7 +90,7 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/x-tar")
-	client := &http.Client{Timeout: 120 * time.Second}
+	client := &http.Client{Timeout: 600 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return types.Service{}, err
