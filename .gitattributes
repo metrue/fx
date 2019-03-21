@@ -1,2 +1,3 @@
 assets/* linguist-vendored
+api/assets/* linguist-vendored
 *.md linguist-documentation
