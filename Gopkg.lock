@@ -110,14 +110,6 @@
   version = "v1.2.1"
 
 [[projects]]
-  digest = "1:530233672f656641b365f8efb38ed9fba80e420baff2ce87633813ab3755ed6d"
-  name = "github.com/golang/mock"
-  packages = ["gomock"]
-  pruneopts = ""
-  revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
-  version = "v1.2.0"
-
-[[projects]]
   digest = "1:6a6322a15aa8e99bd156fbba0aae4e5d67b4bb05251d860b348a45dfdcba9cce"
   name = "github.com/golang/snappy"
   packages = ["."]
@@ -294,7 +286,6 @@
     "github.com/docker/docker/api/types/network",
     "github.com/docker/go-connections/nat",
     "github.com/gobuffalo/packr",
-    "github.com/golang/mock/gomock",
     "github.com/google/go-querystring/query",
     "github.com/google/uuid",
     "github.com/mholt/archiver",

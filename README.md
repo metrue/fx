@@ -75,20 +75,19 @@ brew install fx
 
 * Linux/Unix
 
-To install fx, you can use the [install script](https://github.com/metrue/fx/blob/master/scripts/install.sh) using cURL:
+via cURL
 
 ```
 curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
-or Wget:
+or Wget
 
 ```
 wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
-fx will be installed into /usr/local/bin, if fx not found after installation, you may need to checkout if `/usr/local/bin/fx` exists.
-sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available on `$PAHT`.
+fx will be installed into /usr/local/bin, sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available in `$PAHT`.
 
 * Window
 
@@ -123,14 +122,14 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-### 1. Initialize a host as deployment target machine
+1. Initialize fx running enviroment
 
 ```
 fx init
 ```
 It may take minutes since `fx` needs to download some basic resources
 
-### 2. Write a function
+2. Write a function
 
 You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
 
@@ -141,11 +140,18 @@ module.exports = (input) => {
 ```
 Then save it to a file `sum.js`.
 
-### 3. Deploy your function as a service
+3. Deploy your function as a service
 
 ```
-fx up ./examples/functions/func.js
+fx up sum.js
 ```
+
+or give your service a name with `--name`
+
+```
+fx up --name sum.js
+```
+
 if everything ok, you will get an `url` for service.
 
 ### 4. Test your service
