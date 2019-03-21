@@ -20,8 +20,32 @@ type containerInfo struct {
 	HostConfig container.HostConfig       `json:"HostConfig"`
 }
 
+const name = "docker-sock-proxy-for-fx"
+
+func runProxy() error {
+	// enable docker remote api
+	// docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:1234:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock
+	cmd := exec.Command(
+		"docker",
+		"run",
+		"--name="+name,
+		"-d",
+		"-v",
+		"/var/run/docker.sock:/var/run/docker.sock",
+		"-p",
+		DockerRemoteAPIEndpoint+":1234",
+		"bobrik/socat",
+		"TCP-LISTEN:1234,fork",
+		"UNIX-CONNECT:/var/run/docker.sock",
+	)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func proxyDockerSock() error {
-	name := "docker-sock-proxy-for-fx"
 	cmd := exec.Command(
 		"docker",
 		"inspect",
@@ -30,7 +54,8 @@ func proxyDockerSock() error {
 	var infos []containerInfo
 	stdoutStderr, err := cmd.CombinedOutput()
 	if err := json.Unmarshal(stdoutStderr, &infos); err != nil {
-		return err
+		// no proxy container created
+		return runProxy()
 	}
 
 	const containerStateCreated = "created"
@@ -57,27 +82,6 @@ func proxyDockerSock() error {
 		if err != nil {
 			return err
 		}
-		return nil
-	}
-
-	// enable docker remote api
-	// docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 127.0.0.1:1234:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock
-	cmd = exec.Command(
-		"docker",
-		"run",
-		"--name="+name,
-		"-d",
-		"-v",
-		"/var/run/docker.sock:/var/run/docker.sock",
-		"-p",
-		DockerRemoteAPIEndpoint+":1234",
-		"bobrik/socat",
-		"TCP-LISTEN:1234,fork",
-		"UNIX-CONNECT:/var/run/docker.sock",
-	)
-	_, err = cmd.CombinedOutput()
-	if err != nil {
-		return err
 	}
 	return nil
 }
