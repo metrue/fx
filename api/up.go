@@ -42,6 +42,7 @@ func (api *API) Up(name string, file string) error {
 		return err
 	}
 	log.Info("Run Service: \u2713")
+	log.Infof("Service (%s) is running on: %s:%d", service.Name, service.Instances[0].Host, service.Instances[0].Port)
 
 	return nil
 }
