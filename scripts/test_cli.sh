@@ -4,6 +4,7 @@ set -e
 
 service='fx-service-abc'
 
+./build/fx init
 for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd' 'rs'; do
   ./build/fx up --name ${service}_${lang} examples/functions/func.${lang} # | grep 'info Run Service:'
   # when call the service, we have to make sure input params is correct (include correct type, since some statical language like Golang, it Unmashal payload into specific type)
