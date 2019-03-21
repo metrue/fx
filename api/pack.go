@@ -11,7 +11,9 @@ import (
 func isHandler(lang string, name string) bool {
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
-	return nameWithoutExt == "fx" || nameWithoutExt == "Fx" // Fx is for Java
+	return nameWithoutExt == "fx" ||
+		nameWithoutExt == "Fx" || // Fx is for Java
+		nameWithoutExt == "mod" // mod.rs is for Rust
 }
 
 // Pack pack a single function source code to be project
