@@ -65,7 +65,6 @@ jobs:
       - *install_dependencies
       - *build_binary
       - *unit_test
-      - *cli_test
   deploy:
     <<: *defaults
     steps:
@@ -74,6 +73,10 @@ jobs:
       - *install_dep
       - *install_dependencies
       - *build_binary
+      - run:
+          name: Pull images
+          command: make pull
+      - *cli_test
       - run:
           name: Release
           command: make release

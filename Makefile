@@ -10,6 +10,9 @@ generate:
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
 
+pull:
+	./scripts/pull.sh
+
 cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
 
@@ -21,7 +24,6 @@ clean:
 	rm -rf ${DIST_DIR}
 
 unit-test: generate
-	./scripts/init.sh
 	./scripts/coverage.sh
 
 cli-test: generate
