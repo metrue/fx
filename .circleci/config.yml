@@ -58,10 +58,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *install_httpie
-      - *install_jq
-      - *install_packr
       - *install_dep
+      - *install_packr
       - *install_dependencies
       - *build_binary
       - *unit_test
@@ -69,8 +67,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *install_packr
       - *install_dep
+      - *install_packr
       - *install_dependencies
       - *build_binary
       - run:
@@ -84,6 +82,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - *install_dep
+      - *install_packr
       - *install_dependencies
       - run:
           name: Release
