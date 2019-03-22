@@ -8,8 +8,14 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
+// UpOptions options for up
+type UpOptions struct {
+	Name string
+	Port int
+}
+
 // Up up a source code of function to be a service
-func (api *API) Up(name string, file string) error {
+func (api *API) Up(file string, opt UpOptions) error {
 	src, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Fatalf("Read Source: %v", err)
@@ -23,7 +29,7 @@ func (api *API) Up(name string, file string) error {
 		Source:   string(src),
 	}
 
-	project, err := api.Pack(name, fn)
+	project, err := api.Pack(opt.Name, fn)
 	if err != nil {
 		log.Fatalf("Pack Service: %v", err)
 		return err
@@ -37,12 +43,12 @@ func (api *API) Up(name string, file string) error {
 	}
 	log.Info("Build Service: \u2713")
 
-	if err := api.Run(&service); err != nil {
+	if err := api.Run(opt.Port, &service); err != nil {
 		log.Fatalf("Run Service: %v", err)
 		return err
 	}
 	log.Info("Run Service: \u2713")
-	log.Infof("Service (%s) is running on: %s:%d", service.Name, service.Instances[0].Host, service.Instances[0].Port)
+	log.Infof("Service (%s) is running on: %s:%d", service.Name, service.Host, service.Port)
 
 	return nil
 }

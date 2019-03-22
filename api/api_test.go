@@ -66,14 +66,11 @@ module.exports = (input) => {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if service.Status != types.ServiceStatusInit {
-		t.Fatalf("should get %d but got %d", types.ServiceStatusInit, service.Status)
-	}
 	if service.Name != serviceName {
 		t.Fatalf("should get %s but got %s", serviceName, service.Name)
 	}
 
-	if err := api.Run(&service); err != nil {
+	if err := api.Run(9999, &service); err != nil {
 		t.Fatal(err)
 	}
 

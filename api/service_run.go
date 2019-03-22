@@ -10,7 +10,6 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	"github.com/metrue/fx/types"
-	"github.com/phayes/freeport"
 )
 
 type healtCheck struct {
@@ -49,12 +48,7 @@ type ContainerCreateRequestPayload struct {
 }
 
 // Run a service
-func (api *API) Run(service *types.Service) error {
-	port, err := freeport.GetFreePort()
-	if err != nil {
-		return err
-	}
-
+func (api *API) Run(port int, service *types.Service) error {
 	req := ContainerCreateRequestPayload{
 		Image:  service.Image,
 		Labels: map[string]string{},
@@ -110,13 +104,10 @@ func (api *API) Run(service *types.Service) error {
 	if err != nil {
 		return err
 	}
-	instance := types.Instance{
-		ID:    info.ID,
-		Host:  info.HostConfig.PortBindings["3000/tcp"][0].HostIP,
-		Port:  port,
-		State: info.State.Status,
-	}
-	service.Instances = append(service.Instances, instance)
+	service.ID = info.ID
+	service.Host = info.HostConfig.PortBindings["3000/tcp"][0].HostIP
+	service.Port = port
+	service.State = info.State.Status
 
 	return nil
 }

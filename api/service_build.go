@@ -108,8 +108,7 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	}
 
 	return types.Service{
-		Name:   project.Name,
-		Status: types.ServiceStatusInit,
-		Image:  imageID,
+		Name:  project.Name,
+		Image: imageID,
 	}, nil
 }

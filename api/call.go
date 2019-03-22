@@ -44,7 +44,7 @@ func (api *API) Call(file string, param string) error {
 	}
 	log.Info("Build Service: \u2713")
 
-	if err := api.Run(&service); err != nil {
+	if err := api.Run(9999, &service); err != nil {
 		log.Fatalf("Run Service: %v", err)
 		return err
 	}
@@ -59,7 +59,7 @@ func (api *API) Call(file string, param string) error {
 	// Wait 2 seconds for service startup
 	time.Sleep(time.Second * 2)
 
-	url := fmt.Sprintf("http://%s:%d", service.Instances[0].Host, service.Instances[0].Port)
+	url := fmt.Sprintf("http://%s:%d", service.Host, service.Port)
 	r, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		return err

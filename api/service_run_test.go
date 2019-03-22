@@ -41,7 +41,7 @@ func TestServiceRun(t *testing.T) {
 
 	api := NewWithDockerRemoteAPI(dockerRemoteAPI, version)
 	// FIXME
-	if err := api.Run(&service); err == nil {
+	if err := api.Run(9999, &service); err == nil {
 		t.Fatal(err)
 	}
 }
