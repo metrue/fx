@@ -1,3 +1,5 @@
-assets/* linguist-vendored
-api/assets/* linguist-vendored
+assets/**/* linguist-vendored
+api/assets/**/* linguist-vendored
+api/images/**/* linguist-vendored
+examples/**/* linguist-vendored
 *.md linguist-documentation
