@@ -117,17 +117,12 @@ func (api *API) list(name string) ([]types.Service, error) {
 		}
 		return []types.Service{
 			types.Service{
-				Name:   name,
-				Image:  info.Image,
-				Status: types.ServiceStatusRunning,
-				Instances: []types.Instance{
-					types.Instance{
-						ID:    info.ID,
-						Host:  info.HostConfig.PortBindings["3000/tcp"][0].HostIP,
-						Port:  port,
-						State: info.State.Status,
-					},
-				},
+				Name:  name,
+				Image: info.Image,
+				State: info.State.Status,
+				ID:    info.ID,
+				Host:  info.HostConfig.PortBindings["3000/tcp"][0].HostIP,
+				Port:  port,
 			},
 		}, nil
 	}
@@ -168,22 +163,13 @@ func (api *API) list(name string) ([]types.Service, error) {
 		// container name have extra forward slash
 		// https://github.com/moby/moby/issues/6705
 		if strings.HasPrefix(container.Names[0], fmt.Sprintf("/%s", name)) {
-			instance := types.Instance{
+			svs[container.Image] = types.Service{
+				Name:  name,
+				Image: container.Image,
 				ID:    container.ID,
 				Host:  container.Ports[0].IP,
 				Port:  int(container.Ports[0].PublicPort),
 				State: container.State,
-			}
-			if svs[container.Image].Instances != nil {
-				instances := append(svs[container.Image].Instances, instance)
-				svs[container.Image] = types.Service{Instances: instances}
-			} else {
-				svs[container.Image] = types.Service{
-					Name:      name,
-					Image:     container.Image,
-					Status:    types.ServiceStatusRunning,
-					Instances: []types.Instance{instance},
-				}
 			}
 		}
 	}
