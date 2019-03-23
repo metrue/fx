@@ -12,13 +12,13 @@ Poor man's function as a service.
 
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
 
-You can refer to the [doc](https://github.com/metrue/fx/blob/master/NEW_LANGUAGE_SUPPORT.md) to make fx support the language not listed above. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
+Feel free hacking fx to support the languages not listed. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
 
 | Language      | Status        | Contributor   |
 | ------------- |:-------------:|:-------------:|
 | Go            | Supported     | fx            |
-| Rust          | Supported     | @FrontMage(https://github.com/FrontMage)|
+| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)|
 | Node          | Supported     | fx            |
 | Python        | Supported     | fx            |
 | Ruby          | Supported     | fx            |
@@ -100,7 +100,6 @@ Make sure [Docker](https://docs.docker.com/engine/installation/) installed and r
 
 ```
 $ fx -h
-
 NAME:
    fx - makes function as a service
 
@@ -108,7 +107,7 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.3.0
+   0.3.2
 
 COMMANDS:
      init     initialize fx running enviroment
