@@ -12,7 +12,7 @@ Poor man's function as a service.
 
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
 
-Feel free hacking fx to support the languages not listed above. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
+Feel free hacking fx to support the languages not listed. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
 
 | Language      | Status        | Contributor   |
@@ -98,7 +98,29 @@ You can go the release page to [download](https://github.com/metrue/fx/releases)
 
 Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
 
-![fx usage](https://raw.githubusercontent.com/metrue/fx/minghe/docs/docs/fx.png")
+```
+$ fx -h
+NAME:
+   fx - makes function as a service
+
+USAGE:
+   fx [global options] command [command options] [arguments...]
+
+VERSION:
+   0.3.2
+
+COMMANDS:
+     init     initialize fx running enviroment
+     up       deploy a function or a group of functions
+     down     destroy a service
+     list     list deployed services
+     call     run a function instantly
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+```
 
 1. Initialize fx running enviroment
 
