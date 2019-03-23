@@ -98,7 +98,7 @@ You can go the release page to [download](https://github.com/metrue/fx/releases)
 
 Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
 
-<img src="https://raw.githubusercontent.com/metrue/fx/minghe/docs/docs/fx.svg?sanitize=true">
+![fx usage](https://raw.githubusercontent.com/metrue/fx/minghe/docs/docs/fx.png")
 
 1. Initialize fx running enviroment
 
