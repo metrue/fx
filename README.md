@@ -98,30 +98,7 @@ You can go the release page to [download](https://github.com/metrue/fx/releases)
 
 Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
 
-```
-$ fx -h
-
-NAME:
-   fx - makes function as a service
-
-USAGE:
-   fx [global options] command [command options] [arguments...]
-
-VERSION:
-   0.3.0
-
-COMMANDS:
-     init     initialize fx running enviroment
-     up       deploy a function or a group of functions
-     down     destroy a service
-     list     list deployed services
-     call     run a function instantly
-     help, h  Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --help, -h     show help
-   --version, -v  print the version
-```
+<img src="https://raw.githubusercontent.com/metrue/fx/minghe/docs/docs/fx.svg?sanitize=true">
 
 1. Initialize fx running enviroment
 
