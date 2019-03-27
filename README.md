@@ -71,7 +71,7 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet [me](
 
 ```
 brew tap metrue/homebrew-fx
-brew install fx
+brew install metrue/fx/fx
 ```
 
 * Linux/Unix
