@@ -4,8 +4,8 @@ const func = require('./fx');
 
 const app = new Koa();
 app.use(bodyParser());
-app.use(ctx => {
-  const msg = func(ctx.request.body);
+app.use(async (ctx) => {
+  const msg = await func(ctx.request.body, ctx);
   ctx.body = msg;
 });
 
