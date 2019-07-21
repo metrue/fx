@@ -2,22 +2,25 @@ defaults: &defaults
   machine: true
   environment:
     IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-  working_directory: /home/circleci/.go_workspace/src/github.com/metrue/fx
+    OUTPUT_DIR: "./build"
+    DIST_DIR: "./dist"
 
+install_golang: &install_golang
+  run:
+    name: install Golang 1.11
+    command: |
+      sudo add-apt-repository ppa:gophers/archive
+      sudo apt-get update
+      sudo apt-get install golang-1.11-go
+      alias go="/usr/lib/go-1.11/bin/go"
+      go version
 
-install_dep: &install_packr
+install_packr: &install_packr
   run:
     name: Install packr
     command: |
-      go get -u github.com/gobuffalo/packr/packr
-
-install_dep: &install_dep
-  run:
-    name: Install dep
-    command: |
-      go get github.com/golang/dep
-      cd /home/circleci/.go_workspace/src/github.com/golang/dep
-      go install ./...
+      /usr/lib/go-1.11/bin/go mod download
+      /usr/lib/go-1.11/bin/go get -u github.com/gobuffalo/packr/packr
 
 install_httpie: &install_httpie
   run:
@@ -31,15 +34,11 @@ install_jq: &install_jq
     command: |
       sudo apt-get update && sudo apt-get -y install jq
 
-install_dependencies: &install_dependencies
-  run:
-    name: install dependencies
-    command: make install-deps
-
 build_binary: &build_binary
   run:
     name: build binary
-    command: make build
+    command: |
+      /usr/lib/go-1.11/bin/go build -o ${OUTPUT_DIR}/fx fx.go
 
 unit_test: &unit_test
   run:
@@ -58,18 +57,16 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *install_dep
+      - *install_golang
       - *install_packr
-      - *install_dependencies
       - *build_binary
       - *unit_test
   deploy:
     <<: *defaults
     steps:
       - checkout
-      - *install_dep
+      - *install_golang
       - *install_packr
-      - *install_dependencies
       - *build_binary
       - run:
           name: Pull images
@@ -82,9 +79,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - *install_dep
+      - *install_golang
       - *install_packr
-      - *install_dependencies
       - run:
           name: Release
           command: make release

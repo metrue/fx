@@ -1,9 +1,6 @@
 OUTPUT_DIR=./build
 DIST_DIR=./dist
 
-install-deps:
-	dep ensure
-
 generate:
 	packr
 
