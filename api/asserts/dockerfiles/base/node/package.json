@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "get-port": "^3.2.0",
+    "node-fetch": "^2.6.0",
     "is-generator-function": "^1.0.6",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0"
