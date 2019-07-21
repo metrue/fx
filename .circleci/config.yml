@@ -59,8 +59,12 @@ jobs:
       - checkout
       - *install_golang
       - *install_packr
-      - *build_binary
       - *unit_test
+      - *build_binary
+      - run:
+          name: Pull images
+          command: make pull
+      - *cli_test
   deploy:
     <<: *defaults
     steps:
