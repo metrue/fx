@@ -103,6 +103,7 @@ func Init() error {
 		"metrue/fx-python-base",
 		"metrue/fx-node-base",
 		"metrue/fx-d-base",
+		"metrue/fx-go-base",
 	}
 
 	var wg sync.WaitGroup
