@@ -50,10 +50,13 @@ func proxyDockerSock() error {
 		name,
 	)
 	var infos []containerInfo
-	stdoutStderr, err := cmd.CombinedOutput()
-	if err != nil {
-		return err
-	}
+	// TODO use dockerd rest API
+	// docker inspect <name>
+	// it will returns:
+	// []
+	// Error: No such object: <name>
+	// when no such container
+	stdoutStderr, _ := cmd.CombinedOutput()
 	if err := json.Unmarshal(stdoutStderr, &infos); err != nil {
 		// no proxy container created
 		return runProxy()
@@ -79,8 +82,7 @@ func proxyDockerSock() error {
 			"start",
 			name,
 		)
-		_, err = cmd.CombinedOutput()
-		if err != nil {
+		if _, err := cmd.CombinedOutput(); err != nil {
 			return err
 		}
 	}
