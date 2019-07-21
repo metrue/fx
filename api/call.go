@@ -77,7 +77,5 @@ func (api *API) Call(file string, param string) error {
 		return err
 	}
 	log.Info("Call Service: \u2713")
-	utils.OutputJSON(string(buf))
-
-	return nil
+	return utils.OutputJSON(string(buf))
 }
