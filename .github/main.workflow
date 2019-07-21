@@ -34,7 +34,7 @@ action "build-fx-rust-image" {
 }
 
 action "push-fx-rust-image" {
-  needs = ["build-fx-node-image", "login"]
+  needs = ["build-fx-rust-image", "login"]
   uses = "actions/docker/cli@master"
   secrets = ["DOCKER_USERNAME", "DOCKER_PASSWORD"]
   args = "push metrue/fx-rust-base:latest"
