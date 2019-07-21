@@ -50,7 +50,9 @@ func Unzip(source string, target string) (err error) {
 	for _, file := range reader.File {
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
-			os.MkdirAll(path, file.Mode())
+			if err := os.MkdirAll(path, file.Mode()); err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -205,12 +207,6 @@ func IsPathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
-}
-
-func checkerror(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 // GetCurrentExecPath parses a path from running executable/go file

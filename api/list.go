@@ -14,7 +14,9 @@ func (api *API) List(name string) error {
 	}
 
 	for _, service := range services {
-		utils.OutputJSON(service)
+		if err := utils.OutputJSON(service); err != nil {
+			return err
+		}
 	}
 	return nil
 }

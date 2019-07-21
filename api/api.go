@@ -16,8 +16,6 @@ import (
 	"github.com/metrue/fx/types"
 )
 
-const serviceNamePrefix = "fx_"
-
 // API interact with dockerd http api
 type API struct {
 	endpoint string

@@ -79,9 +79,6 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 		return types.Service{}, err
 	}
 
-	if err != nil {
-		return types.Service{}, err
-	}
 	path := "/build"
 	url := fmt.Sprintf("%s%s?%s", api.endpoint, path, qs.Encode())
 	req, err := http.NewRequest("POST", url, dockerBuildContext)

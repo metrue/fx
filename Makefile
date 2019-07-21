@@ -1,6 +1,9 @@
 OUTPUT_DIR=./build
 DIST_DIR=./dist
 
+lint:
+	golangci-lint run
+
 generate:
 	packr
 

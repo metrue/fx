@@ -1,6 +1,7 @@
 workflow "build and push to dockerhub" {
   on = "push"
   resolves = [
+    "lint",
     "login",
     "build-fx-node-image",
     "push-fx-node-image",
@@ -38,6 +39,11 @@ action "push-fx-rust-image" {
   uses = "actions/docker/cli@master"
   secrets = ["DOCKER_USERNAME", "DOCKER_PASSWORD"]
   args = "push metrue/fx-rust-base:latest"
+}
+
+action "lint" {
+  uses = "actions-contrib/golangci-lint@master"
+  args = "run"
 }
 
 action "notify" {

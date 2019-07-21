@@ -3,16 +3,16 @@ package api
 import (
 	"testing"
 
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
 )
 
 func TestDockerHTTP(t *testing.T) {
-	dockerRemoteAPI := "http://127.0.0.1:1234"
-	version, err := Version(dockerRemoteAPI)
+	version, err := Version(constants.DockerRemoteAPIEndpoint)
 	if err != nil {
 		t.Fatal(err)
 	}
-	api := NewWithDockerRemoteAPI(dockerRemoteAPI, version)
+	api := NewWithDockerRemoteAPI(constants.DockerRemoteAPIEndpoint, version)
 
 	serviceName := "a-test-service"
 	project := types.Project{

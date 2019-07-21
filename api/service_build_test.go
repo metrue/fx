@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
 	gock "gopkg.in/h2non/gock.v1"
 )
@@ -86,11 +87,11 @@ module.exports = (input) => {
 func TestBuild(t *testing.T) {
 	defer gock.Off()
 
-	dockerRemoteAPI := "http://127.0.0.1:1234"
+	dockerRemoteAPI := "http://" + constants.DockerRemoteAPIEndpoint
 	version := "0.2.1"
 
 	gock.New(dockerRemoteAPI).
-		Post("/v0.2.1/build").
+		Post("/" + version + "/build").
 		AddMatcher(func(req *http.Request, ereq *gock.Request) (bool, error) {
 			return true, nil
 		}).
