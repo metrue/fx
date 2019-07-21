@@ -1,6 +1,13 @@
 workflow "build and push to dockerhub" {
   on = "push"
-  resolves = ["login","build-fx-node-image", "push-fx-node-image", "notify"]
+  resolves = [
+    "login",
+    "build-fx-node-image",
+    "push-fx-node-image",
+    "build-fx-rust-image",
+    "push-fx-rust-image",
+    "notify"
+  ]
 }
 
 action "login" {
@@ -20,8 +27,21 @@ action "push-fx-node-image" {
   args = "push metrue/fx-node-base:latest"
 }
 
+
+action "build-fx-rust-image" {
+  uses = "actions/docker/cli@master"
+  args = "build -t metrue/fx-rust-base:latest -f api/asserts/dockerfiles/base/rust/Dockerfile api/asserts/dockerfiles/base/rust"
+}
+
+action "push-fx-rust-image" {
+  needs = ["build-fx-rust-image", "login"]
+  uses = "actions/docker/cli@master"
+  secrets = ["DOCKER_USERNAME", "DOCKER_PASSWORD"]
+  args = "push metrue/fx-rust-base:latest"
+}
+
 action "notify" {
-  needs = ["push-fx-node-image"]
+  needs = ["push-fx-node-image", "push-fx-rust-image"]
   uses = "metrue/noticeme-github-action@master"
   secrets = ["NOTICE_ME_TOKEN"]
   args = ["BuildFxGitHubActionDone"]
