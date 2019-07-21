@@ -134,7 +134,7 @@ It may take minutes since `fx` needs to download some basic resources
 You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
 
 ```js
-module.exports = (input) => {
+module.exports = (input, ctx) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
 ```
@@ -167,8 +167,7 @@ fx uses [Project](https://github.com/metrue/fx/projects) to manage the developme
 
 #### Prerequisites
 
-1. Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
-2. dep: fx project uses [dep](https://github.com/golang/dep) to do the golang dependency management.
+Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
 
 
 #### Build & Test

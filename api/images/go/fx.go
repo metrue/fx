@@ -1,17 +1,9 @@
 package main
 
-type Input struct {
-	A int32
-	B int32
-}
+import "github.com/gin-gonic/gin"
 
-type Output struct {
-	Sum int32
-}
-
-func Fx(input *Input) (output *Output) {
-	output = &Output{
-		Sum: input.A + input.B,
-	}
-	return
+func fx(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"message": "hello world",
+	})
 }

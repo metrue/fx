@@ -1,5 +1,10 @@
-FROM golang:latest
+FROM metrue/fx-golang-base:latest
 
-COPY . .
+COPY . /go/src/github.com/metrue/fx
+WORKDIR /go/src/github.com/metrue/fx
+
+RUN go build -ldflags "-w -s" -o fx fx.go app.go
+
 EXPOSE 3000
-CMD ["go", "run", "app.go", "fx.go"]
+
+CMD ["./fx"]
