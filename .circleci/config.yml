@@ -15,11 +15,11 @@ install_golang: &install_golang
       alias go="/usr/lib/go-1.11/bin/go"
       go version
 
-install_packr: &install_packr
+install_deps: &install_deps
   run:
-    name: Install packr
+    name: Install deps
     command: |
-      /usr/lib/go-1.11/bin/go mod download
+      /usr/lib/go-1.11/bin/go mod vendor
       /usr/lib/go-1.11/bin/go get -u github.com/gobuffalo/packr/packr
 
 install_httpie: &install_httpie
@@ -58,7 +58,7 @@ jobs:
     steps:
       - checkout
       - *install_golang
-      - *install_packr
+      - *install_deps
       - *unit_test
       - *build_binary
       - run:
@@ -70,7 +70,7 @@ jobs:
     steps:
       - checkout
       - *install_golang
-      - *install_packr
+      - *install_deps
       - *build_binary
       - run:
           name: Pull images
@@ -84,7 +84,7 @@ jobs:
     steps:
       - checkout
       - *install_golang
-      - *install_packr
+      - *install_deps
       - *build_binary
       - run:
           name: Release
