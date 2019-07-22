@@ -1,3 +1,6 @@
+---
+env:
+  - GO111MODULE=on
 builds:
   - main: fx.go
     binary: fx
@@ -16,15 +19,15 @@ archive:
     linux: Tux
   files:
     - README.md
-brew:
-  github:
-    owner: metrue
-    name: homebrew-fx
-  commit_author:
-    name: metrue
-    email: h.minghe@gmail.com
-  folder: Formula
-  caveats: ""
-  homepage: "https://github.com/metrue/fx"
-
-  description: "fx, a simple but powerful Function as a Service build tools"
+brews:
+  -
+    github:
+      owner: metrue
+      name: homebrew-fx
+    commit_author:
+      name: metrue
+      email: h.minghe@gmail.com
+    folder: Formula
+    caveats: ""
+    homepage: "https://github.com/metrue/fx"
+    description: "fx, a simple but powerful Function as a Service build tools"

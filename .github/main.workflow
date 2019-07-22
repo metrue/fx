@@ -9,6 +9,7 @@ workflow "build and push to dockerhub" {
     "push-fx-rust-image",
     "build-fx-go-image",
     "push-fx-go-image",
+    "goreleaser",
     "notify"
   ]
 }
@@ -63,9 +64,26 @@ action "notify" {
   needs = [
     "push-fx-node-image",
     "push-fx-rust-image",
-    "push-fx-go-image"
+    "push-fx-go-image",
+    "goreleaser"
   ]
   uses = "metrue/noticeme-github-action@master"
   secrets = ["NOTICE_ME_TOKEN"]
   args = ["BuildFxGitHubActionDone"]
+}
+
+action "tag?" {
+  uses = "actions/bin/filter@master"
+  args = "tag"
+}
+
+action "goreleaser" {
+  uses = "docker://goreleaser/goreleaser"
+  secrets = [
+    "GORELEASER_GITHUB_TOKEN",
+    "DOCKER_USERNAME",
+    "DOCKER_PASSWORD",
+  ]
+  args = "release"
+  needs = ["tag?"]
 }

@@ -65,48 +65,9 @@ jobs:
           name: Pull images
           command: make pull
       - *cli_test
-  deploy:
-    <<: *defaults
-    steps:
-      - checkout
-      - *install_golang
-      - *install_deps
-      - *build_binary
-      - run:
-          name: Pull images
-          command: make pull
-      - *cli_test
-      - run:
-          name: Release
-          command: make release
-  release:
-    <<: *defaults
-    steps:
-      - checkout
-      - *install_golang
-      - *install_deps
-      - *build_binary
-      - run:
-          name: Release
-          command: make release
 
 workflows:
   version: 2
   workflow:
     jobs:
       - test
-      - deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
-                - /^.*--autodeploy$/
-      - release:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - production
