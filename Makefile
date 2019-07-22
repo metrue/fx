@@ -16,9 +16,6 @@ pull:
 cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
 
-release: generate
-	./scripts/release.sh
-
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
