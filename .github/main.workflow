@@ -74,7 +74,7 @@ workflow "Release" {
   on = "push"
   resolves = [
     "goreleaser",
-    "notify"
+    "release-notification"
   ]
 }
 
