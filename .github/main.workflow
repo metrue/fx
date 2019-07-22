@@ -94,7 +94,7 @@ action "goreleaser" {
   needs = ["tag?"]
 }
 
-action "notify" {
+action "release-notification" {
   needs = [
     "goreleaser"
   ]
