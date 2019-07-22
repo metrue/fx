@@ -85,6 +85,7 @@ jobs:
       - checkout
       - *install_golang
       - *install_packr
+      - *build_binary
       - run:
           name: Release
           command: make release
