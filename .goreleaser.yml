@@ -11,14 +11,15 @@ builds:
     goarch:
       - amd64
 # Archive customization
-archive:
-  format: tar.gz
-  replacements:
-    amd64: 64-bit
-    darwin: macOS
-    linux: Tux
-  files:
-    - README.md
+archives:
+  -
+    format: tar.gz
+    replacements:
+      amd64: 64-bit
+      darwin: macOS
+      linux: Tux
+    files:
+      - README.md
 brews:
   -
     github:
