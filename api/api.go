@@ -13,24 +13,38 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/gobuffalo/packr"
 	"github.com/google/go-querystring/query"
+	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
 )
 
 // API interact with dockerd http api
 type API struct {
 	endpoint string
-	version  string
 	box      packr.Box
+	version  string
+	cfg      config.Configer
 }
 
-// NewWithDockerRemoteAPI create a api with docker remote api
-func NewWithDockerRemoteAPI(url string, version string) *API {
-	box := packr.NewBox("./images")
-	endpoint := fmt.Sprintf("%s/v%s", url, version)
-	return &API{
-		endpoint: endpoint,
-		box:      box,
+// New an API
+func New(cfg config.Configer, box packr.Box) *API {
+	return &API{cfg: cfg, box: box}
+}
+
+// Init init api
+func (api *API) Init() error {
+	host, err := api.cfg.GetDefaultHost()
+	if err != nil {
+		return err
 	}
+	url := fmt.Sprintf("http://%s:%s", host.Host, constants.AgentPort)
+	version, err := api.Version(url)
+	if err != nil {
+		return err
+	}
+	api.version = version
+	api.endpoint = fmt.Sprintf("%s/v%s", url, version)
+	return nil
 }
 
 func (api *API) get(path string, qs string, v interface{}) error {
