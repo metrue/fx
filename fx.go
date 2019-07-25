@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/constants"
-	"github.com/metrue/fx/env"
+	"github.com/metrue/fx/provision"
 	"github.com/phayes/freeport"
 	"github.com/urfave/cli"
 )
@@ -30,17 +30,38 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "init",
-			Usage: "initialize fx running enviroment",
+			Name:  "provision",
+			Usage: "initialize a host to be a fx server",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "host name or IP address of a host",
+					Value: "127.0.0.1",
+				},
+				cli.StringFlag{
+					Name:  "user, U",
+					Usage: "user name required for SSH login",
+				},
+				cli.StringFlag{
+					Name:  "password, P",
+					Usage: "password required for SSH login",
+				},
+				cli.StringFlag{
+					Name:  "key, K",
+					Usage: "full path to public key file",
+				},
+			},
 			Action: func(c *cli.Context) error {
-				log.Info("Init Enviroment ....")
-				err := env.Init()
-				if err != nil {
-					log.Fatalf("Init Enviroment%v", err)
-				} else {
-					log.Info("Init Enviroment: \u2713")
+				host := c.String("host")
+				user := c.String("user")
+				password := c.String("password")
+				opts := provision.Options{
+					Host:     host,
+					User:     user,
+					Password: password,
 				}
-				return err
+				provisionor := provision.New(opts)
+				return provisionor.Start()
 			},
 		},
 		{
