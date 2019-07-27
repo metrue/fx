@@ -27,6 +27,7 @@ func Init(configPath string) error {
 		}
 		fd.Close()
 
+		viper.Set("host", "localhost")
 		return viper.WriteConfig()
 	}
 

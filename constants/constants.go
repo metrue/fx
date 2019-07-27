@@ -1,10 +1,12 @@
 package constants
 
-// DockerRemoteAPIEndpoint docker remote api
-const DockerRemoteAPIEndpoint = "13.124.202.227:1234"
+import (
+	"os"
+	"path"
+)
 
 // AgentPort fx server agent port
-const AgentPort = 8866
+const AgentPort = "8866"
 
 // BaseImages base images to build fx functions
 var BaseImages = []string{
@@ -15,3 +17,6 @@ var BaseImages = []string{
 	"metrue/fx-d-base",
 	"metrue/fx-go-base",
 }
+
+// ConfigPath path to config
+var ConfigPath = path.Join(os.Getenv("HOME"), ".fx")

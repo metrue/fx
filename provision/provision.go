@@ -158,7 +158,7 @@ func runProxy() error {
 		"-v",
 		"/var/run/docker.sock:/var/run/docker.sock",
 		"-p",
-		fmt.Sprintf("127.0.0.1:%d:1234", constants.AgentPort),
+		fmt.Sprintf("127.0.0.1:%s:1234", constants.AgentPort),
 		"bobrik/socat",
 		"TCP-LISTEN:1234,fork",
 		"UNIX-CONNECT:/var/run/docker.sock",

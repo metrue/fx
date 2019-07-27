@@ -1,25 +1,27 @@
 package main
 
 import (
+	"net"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/apex/log"
+	"github.com/gobuffalo/packr"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/provision"
 	"github.com/phayes/freeport"
 	"github.com/urfave/cli"
 )
 
-func fx() *api.API {
-	endpoint := "http://" + constants.DockerRemoteAPIEndpoint
-	version, err := api.Version(endpoint)
-	if err != nil {
-		panic(err)
+func init() {
+	if err := config.Init(path.Join(os.Getenv("HOME"), ".fx")); err != nil {
+		log.Fatalf("Init config failed %s", err)
+		os.Exit(1)
 	}
-	return api.NewWithDockerRemoteAPI(endpoint, version)
 }
 
 func main() {
@@ -27,6 +29,14 @@ func main() {
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
 	app.Version = "0.3.22"
+
+	endpoint := net.JoinHostPort(config.GetHost(), constants.AgentPort)
+	box := packr.NewBox("./api/images")
+	fx := api.NewWithDockerRemoteAPI(endpoint, box)
+
+	if err := fx.Health(); err != nil {
+		log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
+	}
 
 	app.Commands = []cli.Command{
 		{
@@ -91,7 +101,7 @@ func main() {
 					}
 					port = freePort
 				}
-				return fx().Up(c.Args().First(), api.UpOptions{Name: name, Port: port})
+				return fx.Up(c.Args().First(), api.UpOptions{Name: name, Port: port})
 			},
 		},
 		{
@@ -99,14 +109,14 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return fx().Down(c.Args())
+				return fx.Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
-				return fx().List(c.Args().First())
+				return fx.List(c.Args().First())
 			},
 		},
 		{
@@ -120,13 +130,12 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				params := strings.Join(c.Args()[1:], " ")
-				return fx().Call(c.Args().First(), params)
+				return fx.Call(c.Args().First(), params)
 			},
 		},
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
+	if err := app.Run(os.Args); err != nil {
 		log.Fatalf("fx startup with fatal: %v", err)
 	}
 }

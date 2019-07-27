@@ -18,17 +18,32 @@ import (
 
 // API interact with dockerd http api
 type API struct {
+	url      string
 	endpoint string
 	version  string
 	box      packr.Box
 }
 
+func (api *API) Health() error {
+	version, err := Version(api.url)
+	if err != nil {
+		return err
+	}
+	endpoint := fmt.Sprintf("%s/v%s", api.endpoint, version)
+	if !strings.HasPrefix(endpoint, "http") {
+		endpoint = "http://" + endpoint
+	}
+	api.endpoint = endpoint
+
+	return nil
+}
+
 // NewWithDockerRemoteAPI create a api with docker remote api
-func NewWithDockerRemoteAPI(url string, version string) *API {
-	box := packr.NewBox("./images")
-	endpoint := fmt.Sprintf("%s/v%s", url, version)
+func NewWithDockerRemoteAPI(url string, box packr.Box) *API {
 	return &API{
-		endpoint: endpoint,
+		url: url,
+
+		endpoint: url,
 		box:      box,
 	}
 }
