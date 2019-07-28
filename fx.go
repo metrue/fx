@@ -12,6 +12,7 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/doctor"
 	"github.com/metrue/fx/provision"
 	"github.com/phayes/freeport"
 	"github.com/urfave/cli"
@@ -34,11 +35,17 @@ func main() {
 	box := packr.NewBox("./api/images")
 	fx := api.NewWithDockerRemoteAPI(endpoint, box)
 
-	if err := fx.Health(); err != nil {
-		log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
-	}
-
 	app.Commands = []cli.Command{
+		{
+			Name:  "doctor",
+			Usage: "health check for fx",
+			Action: func(c *cli.Context) error {
+				host := c.String("host")
+				user := c.String("user")
+				password := c.String("password")
+				return doctor.New(host, user, password).Start()
+			},
+		},
 		{
 			Name:  "provision",
 			Usage: "initialize a host to be a fx server",
@@ -89,6 +96,11 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				if err := fx.Health(); err != nil {
+					log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
+					return nil
+				}
+
 				name := c.String("name")
 				if name == "" {
 					name = uuid.New().String()
@@ -109,6 +121,11 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
+				if err := fx.Health(); err != nil {
+					log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
+					return nil
+				}
+
 				return fx.Down(c.Args())
 			},
 		},
@@ -116,6 +133,11 @@ func main() {
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
+				if err := fx.Health(); err != nil {
+					log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
+					return nil
+				}
+
 				return fx.List(c.Args().First())
 			},
 		},
@@ -129,6 +151,11 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				if err := fx.Health(); err != nil {
+					log.Warn("fx is not healthy, make sure you have done 'fx provision' first")
+					return nil
+				}
+
 				params := strings.Join(c.Args()[1:], " ")
 				return fx.Call(c.Args().First(), params)
 			},

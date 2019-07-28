@@ -54,3 +54,9 @@ func SetHost(host string) error {
 func GetHost() string {
 	return viper.GetString("host")
 }
+
+// IsRemote if running on remote
+func IsRemote() bool {
+	host := GetHost()
+	return host != "127.0.0.1" && host != "localhost"
+}

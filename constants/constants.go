@@ -20,3 +20,6 @@ var BaseImages = []string{
 
 // ConfigPath path to config
 var ConfigPath = path.Join(os.Getenv("HOME"), ".fx")
+
+// AgentContainerName fx agent name
+const AgentContainerName = "fx-agent"
