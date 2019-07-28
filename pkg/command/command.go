@@ -24,7 +24,8 @@ func NewRemoteRunner(sshClient ssh.Client) *RemoteRunner {
 
 // Run script on remote host
 func (r *RemoteRunner) Run(script string) ([]byte, error) {
-	output, err := r.sshClient.RunCommand(script)
+	stdout, stderr, err := r.sshClient.RunCommand(script)
+	output := string(stdout) + string(stderr)
 	return []byte(output), err
 }
 

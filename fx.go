@@ -118,36 +118,14 @@ func main() {
 		},
 		{
 			Name:  "provision",
-			Usage: "initialize a host to be a fx server",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "host name or IP address of a host",
-					Value: "127.0.0.1",
-				},
-				cli.StringFlag{
-					Name:  "user, U",
-					Usage: "user name required for SSH login",
-				},
-				cli.StringFlag{
-					Name:  "password, P",
-					Usage: "password required for SSH login",
-				},
-				cli.StringFlag{
-					Name:  "key, K",
-					Usage: "full path to public key file",
-				},
-			},
+			Usage: "provision on default host",
 			Action: func(c *cli.Context) error {
-				host := c.String("host")
-				user := c.String("user")
-				password := c.String("password")
-				opts := provision.Options{
-					Host:     host,
-					User:     user,
-					Password: password,
+				host, err := config.GetDefaultHost()
+				if err != nil {
+					log.Fatalf("could get default host %v", err)
+					return nil
 				}
-				provisionor := provision.New(opts)
+				provisionor := provision.New(host)
 				return provisionor.Start()
 			},
 		},

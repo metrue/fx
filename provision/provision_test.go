@@ -1,14 +1,14 @@
 package provision
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/metrue/fx/config"
+)
 
 func TestStart(t *testing.T) {
-	opt := Options{
-		Host:     "13.124.202.227",
-		User:     "root",
-		Password: "hithit",
-	}
-	provisionor := New(opt)
+	host := config.Host{Host: "127.0.0.1"}
+	provisionor := New(host)
 	if err := provisionor.Start(); err != nil {
 		t.Fatal(err)
 	}
