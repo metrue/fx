@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -16,12 +17,35 @@ func TestConfig(t *testing.T) {
 	if err := Init(configPath); err != nil {
 		t.Fatal(err)
 	}
-	host := "localhost"
-	if err := SetHost(host); err != nil {
+
+	host, err := GetDefaultHost()
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	if h := GetHost(); h != host {
-		t.Fatalf("should get %s but got %s", host, h)
+	if !reflect.DeepEqual(host, Host{Host: "localhost"}) {
+		t.Fatalf("should get %v but got %v", Host{Host: "localhost"}, host)
+	}
+
+	name := "remote-a"
+	h := Host{
+		Host:     "192.168.1.1",
+		User:     "user-a",
+		Password: "password-a",
+	}
+	if err := AddHost(name, h); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := SetDefaultHost(name, h); err != nil {
+		t.Fatal(err)
+	}
+
+	host, err = GetDefaultHost()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(host, h) {
+		t.Fatalf("should get %v but got %v", h, host)
 	}
 }

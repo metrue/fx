@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"path"
@@ -10,6 +11,7 @@ import (
 	"github.com/gobuffalo/packr"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
+	"github.com/metrue/fx/commands"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/doctor"
@@ -31,11 +33,79 @@ func main() {
 	app.Usage = "makes function as a service"
 	app.Version = "0.3.22"
 
-	endpoint := net.JoinHostPort(config.GetHost(), constants.AgentPort)
+	host, err := config.GetDefaultHost()
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalf("fx config is dirty, run 'fx autofix' to fix")
+	}
+	endpoint := net.JoinHostPort(host.Host, constants.AgentPort)
 	box := packr.NewBox("./api/images")
 	fx := api.NewWithDockerRemoteAPI(endpoint, box)
 
 	app.Commands = []cli.Command{
+		{
+			Name:  "host",
+			Usage: "manage hosts",
+			Subcommands: []cli.Command{
+				{
+					Name:  "add",
+					Usage: "add a new host",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name, N",
+							Usage: "a alias name for this host",
+						},
+						cli.StringFlag{
+							Name:  "host, H",
+							Usage: "host name or IP address of a host",
+						},
+						cli.StringFlag{
+							Name:  "user, U",
+							Usage: "user name required for SSH login",
+						},
+						cli.StringFlag{
+							Name:  "password, P",
+							Usage: "password required for SSH login",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						name := c.String("name")
+						host := c.String("host")
+						user := c.String("user")
+						password := c.String("password")
+						return commands.AddHost(name, config.NewHost(host, user, password))
+					},
+				},
+				{
+					Name:  "remove",
+					Usage: "remove an existing host",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							log.Fatalf("no name given: fx host remove <host_name>")
+							return nil
+						}
+						return commands.RemoveHost(c.Args().First())
+					},
+				},
+				{
+					Name:  "list",
+					Usage: "list hosts",
+					Action: func(c *cli.Context) error {
+						return commands.ListHosts()
+					},
+				},
+				{
+					Name:  "default",
+					Usage: "set/get default host",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() != "" {
+							return commands.SetDefaultHost(c.Args().First())
+						}
+						return commands.GetDefaultHost()
+					},
+				},
+			},
+		},
 		{
 			Name:  "doctor",
 			Usage: "health check for fx",

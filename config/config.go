@@ -27,7 +27,19 @@ func Init(configPath string) error {
 		}
 		fd.Close()
 
-		viper.Set("host", "localhost")
+		viper.Set("default", Host{
+			Host:     "localhost",
+			Password: "",
+			User:     "",
+		})
+
+		viper.Set("hosts", map[string]Host{
+			"localhost": Host{
+				Host:     "localhost",
+				Password: "",
+				User:     "",
+			},
+		})
 		return viper.WriteConfig()
 	}
 
@@ -37,26 +49,82 @@ func Init(configPath string) error {
 	return nil
 }
 
-// SetHost set host
-func SetHost(host string) error {
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return fmt.Errorf("config file not found: %s", err)
-		}
-		return err
+// GetHost get host by name
+func GetHost(name string) (Host, error) {
+	var hosts map[string]Host
+	if err := viper.UnmarshalKey("hosts", &hosts); err != nil {
+		return Host{}, err
 	}
-
-	viper.Set("host", host)
-	return viper.WriteConfig()
+	host, ok := hosts[name]
+	if !ok {
+		return Host{}, fmt.Errorf("no such host %v", name)
+	}
+	return host, nil
 }
 
-// GetHost get host
-func GetHost() string {
-	return viper.GetString("host")
+// GetDefaultHost get host
+func GetDefaultHost() (Host, error) {
+	var host Host
+	if err := viper.UnmarshalKey("default", &host); err != nil {
+		return Host{}, err
+	}
+	return host, nil
+}
+
+// SetDefaultHost set default host
+// TODO no need name
+func SetDefaultHost(name string, host Host) error {
+	viper.Set("default", host)
+	return viper.WriteConfig()
 }
 
 // IsRemote if running on remote
 func IsRemote() bool {
-	host := GetHost()
-	return host != "127.0.0.1" && host != "localhost"
+	host, err := GetDefaultHost()
+	if err != nil {
+		return false
+	}
+	return host.IsRemote()
+}
+
+// AddHost add host
+func AddHost(name string, host Host) error {
+	if !viper.IsSet("hosts") {
+		viper.Set("hosts", map[string]Host{})
+	}
+
+	hosts, err := ListHosts()
+	if err != nil {
+		return err
+	}
+	hosts[name] = host
+	viper.Set("hosts", hosts)
+	return viper.WriteConfig()
+}
+
+// RemoveHost remote a host
+func RemoveHost(name string) error {
+	hosts, err := ListHosts()
+	if err != nil {
+		return err
+	}
+
+	if len(hosts) == 1 {
+		return fmt.Errorf("only one host left now, at least one host required by fx")
+	}
+
+	if _, ok := hosts[name]; ok {
+		delete(hosts, name)
+		return nil
+	}
+	return fmt.Errorf("no such host %s", name)
+}
+
+// ListHosts list hosts
+func ListHosts() (map[string]Host, error) {
+	var hosts map[string]Host
+	if err := viper.UnmarshalKey("hosts", &hosts); err != nil {
+		return nil, err
+	}
+	return hosts, nil
 }
