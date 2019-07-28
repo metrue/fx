@@ -28,17 +28,21 @@ func init() {
 	}
 }
 
+func fx() *api.API {
+	box := packr.NewBox("./api/images")
+	fx := api.New(cfg, box)
+	if err := fx.Init(); err != nil {
+		log.Fatalf("Could not finish fx initialization: %v", err)
+	}
+	return fx
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
 	app.Version = "0.3.22"
 
-	box := packr.NewBox("./api/images")
-	fx := api.New(cfg, box)
-	if err := fx.Init(); err != nil {
-		log.Fatalf("Could not finish fx initialization: %v", err)
-	}
 	commander := commands.New(cfg)
 
 	app.Commands = []cli.Command{
@@ -157,7 +161,7 @@ func main() {
 					}
 					port = freePort
 				}
-				return fx.Up(c.Args().First(), api.UpOptions{Name: name, Port: port})
+				return fx().Up(c.Args().First(), api.UpOptions{Name: name, Port: port})
 			},
 		},
 		{
@@ -165,14 +169,14 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return fx.Down(c.Args())
+				return fx().Down(c.Args())
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
-				return fx.List(c.Args().First())
+				return fx().List(c.Args().First())
 			},
 		},
 		{
@@ -186,7 +190,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				params := strings.Join(c.Args()[1:], " ")
-				return fx.Call(c.Args().First(), params)
+				return fx().Call(c.Args().First(), params)
 			},
 		},
 	}
