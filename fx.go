@@ -2,24 +2,39 @@ package main
 
 import (
 	"os"
+	"path"
 	"strings"
 
 	"github.com/apex/log"
+	"github.com/gobuffalo/packr"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/api"
-	"github.com/metrue/fx/constants"
-	"github.com/metrue/fx/env"
+	"github.com/metrue/fx/commands"
+	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/doctor"
+	"github.com/metrue/fx/provision"
 	"github.com/phayes/freeport"
 	"github.com/urfave/cli"
 )
 
-func fx() *api.API {
-	endpoint := "http://" + constants.DockerRemoteAPIEndpoint
-	version, err := api.Version(endpoint)
-	if err != nil {
-		panic(err)
+var cfg *config.Config
+
+func init() {
+	configDir := path.Join(os.Getenv("HOME"), ".fx")
+	cfg := config.New(configDir)
+	if err := cfg.Init(); err != nil {
+		log.Fatalf("Init config failed %s", err)
+		os.Exit(1)
 	}
-	return api.NewWithDockerRemoteAPI(endpoint, version)
+}
+
+func fx() *api.API {
+	box := packr.NewBox("./api/images")
+	fx := api.New(cfg, box)
+	if err := fx.Init(); err != nil {
+		log.Fatalf("Could not finish fx initialization: %v", err)
+	}
+	return fx
 }
 
 func main() {
@@ -28,19 +43,95 @@ func main() {
 	app.Usage = "makes function as a service"
 	app.Version = "0.3.22"
 
+	commander := commands.New(cfg)
+
 	app.Commands = []cli.Command{
 		{
-			Name:  "init",
-			Usage: "initialize fx running enviroment",
+			Name:  "host",
+			Usage: "manage hosts",
+			Subcommands: []cli.Command{
+				{
+					Name:  "add",
+					Usage: "add a new host",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name, N",
+							Usage: "a alias name for this host",
+						},
+						cli.StringFlag{
+							Name:  "host, H",
+							Usage: "host name or IP address of a host",
+						},
+						cli.StringFlag{
+							Name:  "user, U",
+							Usage: "user name required for SSH login",
+						},
+						cli.StringFlag{
+							Name:  "password, P",
+							Usage: "password required for SSH login",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						name := c.String("name")
+						host := c.String("host")
+						user := c.String("user")
+						password := c.String("password")
+						return commander.AddHost(name, config.NewHost(host, user, password))
+					},
+				},
+				{
+					Name:  "remove",
+					Usage: "remove an existing host",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							log.Fatalf("no name given: fx host remove <host_name>")
+							return nil
+						}
+						return commander.RemoveHost(c.Args().First())
+					},
+				},
+				{
+					Name:  "list",
+					Usage: "list hosts",
+					Action: func(c *cli.Context) error {
+						return commander.ListHosts()
+					},
+				},
+				{
+					Name:  "default",
+					Usage: "set/get default host",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() != "" {
+							return commander.SetDefaultHost(c.Args().First())
+						}
+						return commander.GetDefaultHost()
+					},
+				},
+			},
+		},
+		{
+			Name:  "doctor",
+			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
-				log.Info("Init Enviroment ....")
-				err := env.Init()
+				host, err := cfg.GetDefaultHost()
 				if err != nil {
-					log.Fatalf("Init Enviroment%v", err)
-				} else {
-					log.Info("Init Enviroment: \u2713")
+					log.Fatalf("could get default host %v", err)
+					return nil
 				}
-				return err
+				return doctor.New(host).Start()
+			},
+		},
+		{
+			Name:  "provision",
+			Usage: "provision on default host",
+			Action: func(c *cli.Context) error {
+				host, err := cfg.GetDefaultHost()
+				if err != nil {
+					log.Fatalf("could get default host %v", err)
+					return nil
+				}
+				provisionor := provision.New(host)
+				return provisionor.Start()
 			},
 		},
 		{
@@ -104,8 +195,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
+	if err := app.Run(os.Args); err != nil {
 		log.Fatalf("fx startup with fatal: %v", err)
 	}
 }

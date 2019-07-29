@@ -12,9 +12,9 @@ import (
 )
 
 // Version get version of dockerd server
-func Version(endpoint string) (string, error) {
+func (api *API) Version(base string) (string, error) {
 	path := "/version"
-	url := fmt.Sprintf("%s%s", endpoint, path)
+	url := fmt.Sprintf("%s%s", base, path)
 	if !strings.HasPrefix(url, "http") {
 		url = "http://" + url
 	}

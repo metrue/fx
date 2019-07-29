@@ -13,7 +13,7 @@ run() {
 }
 
 # main
-$fx init
+$fx provision
 
 for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd' 'rs'; do
   run $lang &

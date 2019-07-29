@@ -6,8 +6,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/gobuffalo/packr"
+	"github.com/golang/mock/gomock"
+	"github.com/metrue/fx/config"
+	mockConfig "github.com/metrue/fx/config/mocks"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
 	gock "gopkg.in/h2non/gock.v1"
@@ -87,13 +92,26 @@ module.exports = (input) => {
 func TestBuild(t *testing.T) {
 	defer gock.Off()
 
-	dockerRemoteAPI := "http://" + constants.DockerRemoteAPIEndpoint
-	version := "0.2.1"
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	gock.New(dockerRemoteAPI).
-		Post("/" + version + "/build").
+	host := config.Host{Host: "127.0.0.1"}
+	cfg := mockConfig.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetDefaultHost().Return(host, nil)
+	box := packr.NewBox("./images")
+	api := New(cfg, box)
+	if err := api.Init(); err != nil {
+		t.Fatal(err)
+	}
+
+	url := "http://" + host.Host + ":" + constants.AgentPort
+	gock.New(url).
+		Post("/v" + api.version + "/build").
 		AddMatcher(func(req *http.Request, ereq *gock.Request) (bool, error) {
-			return true, nil
+			if strings.Contains(req.URL.String(), "/v"+api.version+"/build") {
+				return true, nil
+			}
+			return false, nil
 		}).
 		Reply(200).
 		JSON(map[string]string{
@@ -144,7 +162,6 @@ module.exports = (input) => {
 		},
 	}
 
-	api := NewWithDockerRemoteAPI(dockerRemoteAPI, version)
 	service, err := api.Build(project)
 	if err != nil {
 		t.Fatal(err)
