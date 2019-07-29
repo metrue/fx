@@ -27,6 +27,7 @@ require (
 	github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5
 	github.com/pierrec/lz4 v0.0.0-20190222153722-062282ea0dcf // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/robfig/cron v1.2.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0
