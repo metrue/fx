@@ -1,4 +1,4 @@
-# Make a Golang function a service with fx
+# Make a JavaScript function a service with fx
 
 Write a function like,
 
@@ -17,7 +17,7 @@ $ fx up -p 8080:3000 func.js
 test it using `curl`
 
 ```shell
-$ curl 127.0.0.1
+$ curl 127.0.0.1:8080
 
 HTTP/1.1 200 OK
 Connection: keep-alive
