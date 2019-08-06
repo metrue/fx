@@ -1,6 +1,4 @@
-# fx
-
-### Up and Run
+# Make a Golang function a service with fx
 
 Write a function like,
 
@@ -10,8 +8,15 @@ module.exports = (ctx) => {
 }
 ```
 
-```Shell
+then deploy it with `fx up` command,
+
+```shell
 $ fx up -p 8080:3000 func.js
+```
+
+test it using `curl`
+
+```shell
 $ curl 127.0.0.1
 
 HTTP/1.1 200 OK
