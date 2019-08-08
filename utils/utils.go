@@ -1,15 +1,17 @@
 package utils
 
 import (
-	"archive/tar"
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 )
 
 // Download a resource from URL to given path
@@ -48,7 +50,9 @@ func Unzip(source string, target string) (err error) {
 	for _, file := range reader.File {
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
-			os.MkdirAll(path, file.Mode())
+			if err := os.MkdirAll(path, file.Mode()); err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -170,7 +174,7 @@ func CopyDir(src string, dst string) (err error) {
 	return
 }
 
-// Create Dir if not exist
+// EnsurerDir Create Dir if not exist
 func EnsurerDir(dir string) (err error) {
 	if _, statError := os.Stat(dir); os.IsNotExist(statError) {
 		mkError := os.MkdirAll(dir, os.ModePerm)
@@ -179,53 +183,18 @@ func EnsurerDir(dir string) (err error) {
 	return nil
 }
 
-// TarDir builds a tar from directory
-func TarDir(srcDir string, desFileName string) {
-	dir, err := os.Open(srcDir)
+// EnsureFile ensure a file
+func EnsureFile(fullpath string) error {
+	dir := path.Dir(fullpath)
+	err := EnsurerDir(dir)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer dir.Close()
-
-	files, err := dir.Readdir(0)
+	_, err = os.OpenFile(fullpath, os.O_RDONLY|os.O_CREATE, 0666)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
-	// create tar file
-	tarfile, err := os.Create(desFileName)
-	if err != nil {
-		panic(err)
-	}
-	defer tarfile.Close()
-
-	var fileWriter io.WriteCloser = tarfile
-
-	tarfileWriter := tar.NewWriter(fileWriter)
-	defer tarfileWriter.Close()
-
-	for _, fileInfo := range files {
-		if fileInfo.IsDir() {
-			continue
-		}
-
-		file, err := os.Open(dir.Name() + string(filepath.Separator) + fileInfo.Name())
-		checkerror(err)
-		defer file.Close()
-
-		// prepare the tar header
-		header := new(tar.Header)
-		header.Name = file.Name()
-		header.Size = fileInfo.Size()
-		header.Mode = int64(fileInfo.Mode())
-		header.ModTime = fileInfo.ModTime()
-
-		err = tarfileWriter.WriteHeader(header)
-		checkerror(err)
-
-		_, err = io.Copy(tarfileWriter, file)
-		checkerror(err)
-	}
+	return nil
 }
 
 // IsPathExists checks whether a path exists or if failed to check
@@ -240,12 +209,6 @@ func IsPathExists(path string) (bool, error) {
 	return true, err
 }
 
-func checkerror(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 // GetCurrentExecPath parses a path from running executable/go file
 func GetCurrentExecPath() (scriptPath string) {
 	scriptPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -255,24 +218,19 @@ func GetCurrentExecPath() (scriptPath string) {
 	return scriptPath
 }
 
-func HandleError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 // GetHostIP returns the host's IP
-func GetHostIP() (ip net.IP) {
+func GetHostIP() (net.IP, error) {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
-	HandleError(err)
-
+	if err != nil {
+		return net.IP{}, err
+	}
 	defer conn.Close()
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	return localAddr.IP
+	return localAddr.IP, nil
 }
 
-// get programming language from file name extension
+// GetLangFromFileName get programming language from file name extension
 func GetLangFromFileName(fileName string) (lang string) {
 	extLangMap := map[string]string{
 		".js":   "node",
@@ -282,6 +240,31 @@ func GetLangFromFileName(fileName string) (lang string) {
 		".php":  "php",
 		".jl":   "julia",
 		".java": "java",
+		".d":    "d",
+		".rs":   "rust",
 	}
 	return extLangMap[filepath.Ext(fileName)]
+}
+
+// PairsToParams make "a=1, b=2" to be {"a": "1", "b": "2"}
+func PairsToParams(pairs []string) map[string]string {
+	params := map[string]string{}
+	for _, pair := range pairs {
+		subs := strings.Split(pair, "=")
+		if len(subs) == 2 {
+			params[subs[0]] = subs[1]
+		}
+	}
+	return params
+}
+
+// OutputJSON output json
+func OutputJSON(v interface{}) error {
+	bytes, err := json.MarshalIndent(v, "", "\t")
+	if err != nil {
+		return fmt.Errorf("Could marshal %v : %v", v, err)
+	}
+	fmt.Println(string(bytes))
+
+	return nil
 }

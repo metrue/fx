@@ -1,3 +1,6 @@
+---
+env:
+  - GO111MODULE=on
 builds:
   - main: fx.go
     binary: fx
@@ -8,23 +11,24 @@ builds:
     goarch:
       - amd64
 # Archive customization
-archive:
-  format: tar.gz
-  replacements:
-    amd64: 64-bit
-    darwin: macOS
-    linux: Tux
-  files:
-    - README.md
-brew:
-  github:
-    owner: metrue
-    name: homebrew-fx
-  commit_author:
-    name: metrue
-    email: h.minghe@gmail.com
-  folder: Formula
-  caveats: ""
-  homepage: "https://github.com/metrue/fx"
-
-  description: "fx, a simple but powerful Function as a Service build tools"
+archives:
+  -
+    format: tar.gz
+    replacements:
+      amd64: 64-bit
+      darwin: macOS
+      linux: Tux
+    files:
+      - README.md
+brews:
+  -
+    github:
+      owner: metrue
+      name: homebrew-fx
+    commit_author:
+      name: metrue
+      email: h.minghe@gmail.com
+    folder: Formula
+    caveats: ""
+    homepage: "https://github.com/metrue/fx"
+    description: "fx, a simple but powerful Function as a Service build tools"

@@ -10,192 +10,185 @@ Poor man's function as a service.
 ![](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
 
-### Introduction
-
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
+
+Feel free hacking fx to support the languages not listed. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
+
 
 | Language      | Status        | Contributor   |
 | ------------- |:-------------:|:-------------:|
 | Go            | Supported     | fx            |
+| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)|
 | Node          | Supported     | fx            |
 | Python        | Supported     | fx            |
 | Ruby          | Supported     | fx            |
 | Java          | Supported     | fx            |
 | PHP           | Supported     | [@chlins](https://github.com/chlins)|
 | Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
+| D             | Supported     | [@andre2007](https://github.com/andre2007)|
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
-| Scala         | Working on     | |
-| Perl          | Working on    | |
-| .Net          | Working on    | |
-| Rust          | Working on    | |
 
-Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe)
+## Architecture
 
-### Installation
+            ┌────────┐
+            │fx init │       fx━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+            └────────┘       ┃          ┌───────────────────────┐                                   ┃
+     ────────────────────────╋─────────▶│Environment initialize │                                   ┃
+            ┌──────┐         ┃          │* proxy docker sock    │                                   ┃
+            │fx up │         ┃          │* pull fx base docker  │                                   ┃
+    ┌ ─ ─ ─ ┴──────┘─ ─ ┐    ┃          └───────────────────────┘                                   ┃
+       Function Source       ┃          ┌──────────────┐       ┌─────────────────────────────┐      ┃
+    └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘────╋──┬──────▶│     Pack     │       │                             │      ┃
+                             ┃  │       └──────┬───────┘       │                             │      ┃
+            ┌────────┐       ┃  │       ┌──────▼───────┐       │                             │      ┃
+            │fx call │       ┃  │       │Build Service │◀─────▶│                             │      ┃
+            └────────┘       ┃  │       └──────┬───────┘       │                             │      ┃
+    ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    ┃  │       ┌──────▼───────┐       │                             │      ┃
+       Function Source       ┃  │       │ Run Service  │◀─────▶│                             │      ┃
+    │   (with params)   │────╋──┤       └──────────────┘       │                             │      ┃
+     ─ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃  │                              │                             │      ┃
+                             ┃  │                              │                             │      ┃
+                             ┃  │       ┌──────────────┐       │         Docker API          │      ┃
+           ┌────────┐        ┃  └──────▶│ Call Service │       │                             │      ┃
+           │fx down │        ┃          │    (http)    │       │                             │      ┃
+           └────────┘        ┃          └──────────────┘       │                             │      ┃
+     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          ┌──────────────┐       │                             │      ┃
+         Service Name   │────╋─────────▶│ Stop Service │◀─────▶│                             │      ┃
+     └ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          └──────────────┘       │                             │      ┃
+          ┌────────┐         ┃                                 │                             │      ┃
+          │fx list │         ┃                                 │                             │      ┃
+          └────────┘         ┃                                 │                             │      ┃
+     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          ┌──────────────┐       │                             │      ┃
+         Service Name   │────╋─────────▶│List Services │◀─────▶│                             │      ┃
+     └ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          └──────────────┘       └─────────────────────────────┘      ┃
+                             ┃                                                                      ┃
+                             ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+
+# Installation
 
 * MacOS
 
 ```
 brew tap metrue/homebrew-fx
-brew install fx
+brew install metrue/fx/fx
 ```
 
 * Linux/Unix
 
-To install fx, you can use the [install script](https://github.com/metrue/fx/blob/master/bin/install.sh) using cURL:
+via cURL
 
 ```
-curl -o- https://raw.githubusercontent.com/metrue/fx/master/bin/install.sh | bash
+curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
-or Wget:
+or Wget
 
 ```
-wget -qO- https://raw.githubusercontent.com/metrue/fx/master/bin/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
-fx will be installed into /usr/local/bin, if fx not found after installation, you may need to checkout if `/usr/local/bin/fx` exists.
-sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available on $PAHT.
+fx will be installed into /usr/local/bin, sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available in `$PAHT`.
 
 * Window
 
 You can go the release page to [download](https://github.com/metrue/fx/releases) fx manually;
 
-### Usage
+## Usage
 
-Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first.
-
-* start server
+Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
 
 ```
-fx serve
+NAME:
+   fx - makes function as a service
+
+USAGE:
+   fx [global options] command [command options] [arguments...]
+
+VERSION:
+   0.4.0
+
+COMMANDS:
+     host       manage hosts
+     doctor     health check for fx
+     provision  provision on default host
+     up         deploy a function or a group of functions
+     down       destroy a service
+     list       list deployed services
+     call       run a function instantly
+     help, h    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
 ```
 
-now you can make a function to service in a second.
+1. Initialize fx running enviroment
 
 ```
-fx up ./examples/functions/func.js
+fx provision
 ```
+It may take minutes since `fx` needs to download some basic resources
 
-the function defined in *examples/functions/func.js* is quite simple, it calculates the sum of two numbers then returns:
-```
-module.exports = (input) => {
+2. Write a function
+
+You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
+
+```js
+module.exports = (input, ctx) => {
     return parseInt(input.a, 10) + parseInt(input.b, 10)
 }
 ```
+Then save it to a file `sum.js`.
+
+3. Deploy your function as a service
+
+```
+fx up sum.js
+```
+
+or give your service a name with `--name`
+
+```
+fx up --name service_sum sum.js
+```
+
+if everything ok, you will get an `url` for service.
+
+4. Test your service
 
 then you can test your service:
 ```
-curl -X POST <service url> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
+curl -X POST <service address> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
 ```
 
-of course you can do more.
+## Contribute
+
+fx uses [Project](https://github.com/metrue/fx/projects) to manage the development.
+
+#### Prerequisites
+
+Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
+
+
+#### Build & Test
 
 ```
-Usage:
-$ fx serve                                      start f(x) server
-$ fx up   func1.js func2.py func3.go ...        deploy a function or a group of functions
-$ fx down [service ID] ...                      destroy a function or a group of functions
-$ fx list                                       list deployed services
-$ fx --version                                  show current version of f(x)
-```
-
-#### How to write your function
-
-functions example with Go, Ruby, Python, Node, PHP, Java, Julia.
-
-* Go
-```
-package main
-
-type Input struct {
-	A int32
-	B int32
-}
-
-type Output struct {
-	Sum int32
-}
-
-func Fx(input *Input) (output *Output) {
-	output = &Output{
-		Sum: input.A + input.B,
-	}
-	return
-}
-```
-
-* Ruby
-```
-def fx(input)
-    return input['a'] + input['b']
-end
-```
-
-* Java
-```
-package fx;
-
-import org.json.JSONObject;
-
-public class Fx {
-    public int handle(JSONObject input) {
-        String a = input.get("a").toString();
-        String b = input.get("b").toString();
-        return Integer.parseInt(a) + Integer.parseInt(b);
-    }
-}
-```
-
-* Python
-```
-def fx(input):
-    return input['a'] + input['b']
-```
-
-* Node
-```
-module.exports = (input) => {
-    return parseInt(input.a, 10) + parseInt(input.b, 10)
-}
-```
-
-* PHP
-```
-<?php
-    function Fx($input) {
-        return $input["a"]+$input["b"];
-    }
-```
-
-* Julia
-```
-struct Input
-    a::Number
-    b::Number
-end
-
-fx = function(input::Input)
-    return input.a + input.b
-end
-```
-
-### Contributing
-
-##### Requirements
-* Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
-* dep: fx project uses [dep](https://github.com/golang/dep) to do the golang dependency management.
-* protoc / grpc: Used for RPC and types definition (See a [setup script](https://gist.github.com/muka/4cc42c478b2699f0969450a1ec1ce44c) example)
-
-##### Build and Run
-
-```
-$ git clone https://github.com/metrue/fx.git
+$ git clone https://github.com/metrue/fx
 $ cd fx
-$ make install-deps && make build
-$ ./build/fx serve                      # start your fx server
-$ ./build/fx up func.js                 # deploy a function
+$ dep ensure
+$ make build
 ```
+
+Then you can build and test:
+
+```
+$ make build
+$ ./build/fx -h
+```
+
+
+## Contributors
 
 Thank you to all the people who already contributed to fx!
 
@@ -207,6 +200,9 @@ Thank you to all the people who already contributed to fx!
         </a>
         <a href="https://github.com/pplam" target="_blank">
             <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/muka" target="_blank">
+            <img alt="muka" src="https://avatars2.githubusercontent.com/u/1021269?v=4&s=50" width="50">
         </a>
         <a href="https://github.com/xwjdsh" target="_blank">
             <img alt="xwjdsh" src="https://avatars2.githubusercontent.com/u/11025519?v=4&s=50" width="50">
@@ -223,10 +219,12 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/chlins" target="_blank">
             <img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">
         </a>
+        <a href="https://github.com/andre2007" target="_blank">
+            <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/1451047?s=50&v=4" width="50">
+        </a>
+        <a href="https://github.com/steventhanna" target="_blank">
+            <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/2541678?s=50&v=4" width="50">
+        </a>
     </tr>
   </tbody>
 </table>
-
-### LICENSE
-
-MIT

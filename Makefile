@@ -1,26 +1,34 @@
 OUTPUT_DIR=./build
 DIST_DIR=./dist
 
-install-deps:
-	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get -u google.golang.org/grpc
-	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+lint:
+	golangci-lint run
 
-	@dep ensure
 generate:
-	./bin/install_protoc.sh
-	@go generate ./api/fx.go
+	packr
+
 build: generate
 	go build -o ${OUTPUT_DIR}/fx fx.go
-cross:
+
+pull:
+	./scripts/pull.sh
+
+cross: generate
 	goreleaser --snapshot --skip-publish --skip-validate
-release:
-	goreleaser --skip-validate
+
 clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
+
+unit-test: generate
+	./scripts/coverage.sh
+
+cli-test: generate
+	./scripts/test_cli.sh
+
+http-test: generate
+	./scripts/http_test.sh
+
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate

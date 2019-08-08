@@ -5,4 +5,8 @@ build/
 *.pyc
 *.swp
 /fx
-tmp/
+/tmp
+/api/google
+/api/fx.pb.gw.go
+/api/fx.pb.go
+/coverage.txt

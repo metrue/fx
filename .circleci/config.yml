@@ -1,62 +1,73 @@
+defaults: &defaults
+  machine: true
+  environment:
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+    OUTPUT_DIR: "./build"
+    DIST_DIR: "./dist"
+
+install_golang: &install_golang
+  run:
+    name: install Golang 1.11
+    command: |
+      sudo add-apt-repository ppa:gophers/archive
+      sudo apt-get update
+      sudo apt-get install golang-1.11-go
+      alias go="/usr/lib/go-1.11/bin/go"
+      go version
+
+install_deps: &install_deps
+  run:
+    name: Install deps
+    command: |
+      /usr/lib/go-1.11/bin/go mod vendor
+      /usr/lib/go-1.11/bin/go get -u github.com/gobuffalo/packr/packr
+
+install_httpie: &install_httpie
+  run:
+    name: install httpie
+    command: |
+      sudo apt-get -y update && sudo apt-get -y install httpie
+
+install_jq: &install_jq
+  run:
+    name: install jq
+    command: |
+      sudo apt-get update && sudo apt-get -y install jq
+
+build_binary: &build_binary
+  run:
+    name: build binary
+    command: |
+      /usr/lib/go-1.11/bin/go build -o ${OUTPUT_DIR}/fx fx.go
+
+unit_test: &unit_test
+  run:
+    name: unit test
+    command: |
+      make unit-test
+      bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+cli_test: &cli_test
+  run:
+    name: cli test
+    command: make cli-test
+
 version: 2
-machine:
-    services:
-        - docker
-dependencies:
-    override:
-        - sudo add-apt-repository ppa:masterminds/glide -y
-        - sudo apt-get update
-        - sudo apt-get install glide -y
 jobs:
-  build:
-    docker:
-      - image: circleci/golang:1.8
-
-    working_directory: /go/src/github.com/metrue/fx
-
+  test:
+    <<: *defaults
     steps:
       - checkout
-
-      - setup_remote_docker
-
+      - *install_golang
+      - *install_deps
+      - *unit_test
+      - *build_binary
       - run:
-          name: Install Dep
-          command: |
-              go get github.com/golang/dep
-              cd $GOPATH/src/github.com/golang/dep
-              go install ./...
+          name: Pull images
+          command: make pull
+      - *cli_test
 
-      - run:
-          name: Build and Install
-          command: |
-              make install-deps
-              go install ./
-
-      - run:
-          name: Unit Test
-          command: |
-              ./bin/coverage.sh
-              bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-
-      - run:
-          name: Integration Test
-          command: |
-              fx serve > server_output.log 2>&1 &
-              sleep 20
-              touch deploy.log
-              fx up examples/functions/func.js >> deploy.log
-              fx up examples/functions/func.rb >> deploy.log
-              fx up examples/functions/func.py >> deploy.log
-              fx up examples/functions/func.go >> deploy.log
-              fx up examples/functions/func.php >> deploy.log
-              fx up examples/functions/func.jl >> deploy.log
-              fx up examples/functions/func.java >> deploy.log
-              cat server_output.log
-              cat deploy.log;
-              cat deploy.log | grep '\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-' | wc -l | grep 14
-
-deployment:
-    production:
-    branch: master
-    commands:
-        - echo "Not Ready Yet"
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - test
