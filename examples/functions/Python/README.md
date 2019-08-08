@@ -2,10 +2,9 @@
 
 Write a function like,
 
-```ruby
-def fx(ctx)
-  ctx[:response].body = "hello world"
-end
+```python
+def fx(requenst):
+    return "hello world"
 ```
 
 then deploy it with `fx up` command,
@@ -19,15 +18,11 @@ test it using `curl`
 ```shell
 $ curl 127.0.0.1:8080
 
-HTTP/1.1 200 Created
-Connection: Keep-Alive
+HTTP/1.0 200 OK
 Content-Length: 11
-Content-Type: text/html;charset=utf-8
-Date: Thu, 08 Aug 2019 02:39:55 GMT
-Server: WEBrick/1.4.2 (Ruby/2.6.3/2019-04-16)
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-X-Xss-Protection: 1; mode=block
+Content-Type: text/html; charset=utf-8
+Date: Thu, 08 Aug 2019 05:33:32 GMT
+Server: Werkzeug/0.12.2 Python/3.6.3
 
 hello world
 ```
