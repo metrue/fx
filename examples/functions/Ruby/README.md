@@ -17,6 +17,8 @@ $ fx up -p 8080:3000 func.go
 test it using `curl`
 
 ```shell
+$ curl 127.0.0.1:8080
+
 HTTP/1.1 200 Created
 Connection: Keep-Alive
 Content-Length: 11
