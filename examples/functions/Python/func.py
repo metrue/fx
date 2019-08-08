@@ -1,2 +1,2 @@
-def fx(request):
+def fx(requenst):
     return "hello world"
