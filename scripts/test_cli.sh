@@ -15,7 +15,7 @@ run() {
 # main
 $fx provision
 
-for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd' 'rs'; do
+for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'; do
   run $lang &
 done
 
