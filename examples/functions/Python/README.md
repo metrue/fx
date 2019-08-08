@@ -1,4 +1,4 @@
-# Make a Ruby function a service with fx
+# Make a Python function a service with fx
 
 Write a function like,
 
@@ -27,6 +27,6 @@ Server: Werkzeug/0.12.2 Python/3.6.3
 hello world
 ```
 
-### ctx
+### request
 
-The `ctx` object is a Hash have contains [request](https://rubydoc.info/github/rack/rack/master/Rack/Request<Paste>), [response](https://rubydoc.info/github/rack/rack/master/Rack/Response), [status](https://www.rubydoc.info/gems/sinatra/Sinatra%2FHelpers:status), and [headers](https://www.rubydoc.info/gems/sinatra/Sinatra%2FHelpers:headers) of [Sinatra](https://github.com/sinatra/sinatra)
+The `request` object is a [request](https://flask.palletsprojects.com/en/1.1.x/api/#flask.request) of [flask](https://github.com/pallets/flask)
