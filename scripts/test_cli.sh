@@ -7,7 +7,7 @@ service='fx-service-abc'
 
 run() {
   local lang=$1
-  $fx up --name ${service}_${lang} examples/functions/func.${lang}
+  $fx up --name ${service}_${lang} test/functions/func.${lang}
   $fx list # | jq ''
   $fx down ${service}_${lang} # | grep "Down Service ${service}"
 }
