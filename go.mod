@@ -10,7 +10,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/gin-gonic/gin v1.4.0
 	github.com/gobuffalo/packr v1.30.1
-	github.com/golang/mock v1.2.0
+	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
