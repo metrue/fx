@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/apex/log"
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/types"
@@ -97,8 +98,9 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	scanner := bufio.NewScanner(resp.Body)
 
 	for scanner.Scan() {
-		// TODO Maybe need log something out
-		// fmt.Printf("%s\n", scanner.Text())
+		if os.Getenv("DEBUG") != "" {
+			log.Infof(scanner.Text())
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		return types.Service{}, err

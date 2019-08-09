@@ -6,6 +6,7 @@ run:
   skip-dirs:
     - examples
     - api/images
+    - test
   # skip-files:
 
 linters:
