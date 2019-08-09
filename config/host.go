@@ -5,6 +5,7 @@ type Host struct {
 	Host     string
 	User     string
 	Password string
+	Enabled  bool
 }
 
 // NewHost new a host
@@ -13,6 +14,7 @@ func NewHost(addr, user, password string) Host {
 		Host:     addr,
 		User:     user,
 		Password: password,
+		Enabled:  false,
 	}
 }
 

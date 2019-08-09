@@ -20,7 +20,7 @@ func (cmder *Commander) AddHost(name string, host config.Host) error {
 			return nil
 		}
 	}
-	return cmder.cfg.AddHost(name, host)
+	return cmder.cfg.AddMachine(name, host)
 }
 
 // RemoveHost remote a host
@@ -30,28 +30,10 @@ func (cmder *Commander) RemoveHost(name string) error {
 
 // ListHosts list hosts
 func (cmder *Commander) ListHosts() error {
-	hosts, err := cmder.cfg.ListHosts()
+	hosts, err := cmder.cfg.ListMachines()
 	if err != nil {
 		return err
 	}
 
 	return utils.OutputJSON(hosts)
-}
-
-// SetDefaultHost set default host
-func (cmder *Commander) SetDefaultHost(name string) error {
-	host, err := cmder.cfg.GetHost(name)
-	if err != nil {
-		return err
-	}
-	return cmder.cfg.SetDefaultHost(name, host)
-}
-
-// GetDefaultHost get default host
-func (cmder *Commander) GetDefaultHost() error {
-	host, err := cmder.cfg.GetDefaultHost()
-	if err != nil {
-		return err
-	}
-	return utils.OutputJSON(host)
 }

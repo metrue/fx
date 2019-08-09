@@ -11,9 +11,9 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/commands"
 	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/doctor"
 	"github.com/metrue/fx/provision"
-	"github.com/phayes/freeport"
 	"github.com/urfave/cli"
 )
 
@@ -28,10 +28,10 @@ func init() {
 	}
 }
 
-func fx() *api.API {
+func fx(host config.Host) *api.API {
 	box := packr.NewBox("./api/images")
 	fx := api.New(cfg, box)
-	if err := fx.Init(); err != nil {
+	if err := fx.Init(host); err != nil {
 		log.Fatalf("Could not finish fx initialization: %v", err)
 	}
 	return fx
@@ -47,20 +47,20 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "host",
-			Usage: "manage hosts",
+			Name:  "infra",
+			Usage: "manage infrastructure of fx",
 			Subcommands: []cli.Command{
 				{
 					Name:  "add",
-					Usage: "add a new host",
+					Usage: "add a new machine",
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "name, N",
-							Usage: "a alias name for this host",
+							Usage: "a alias name for this machine",
 						},
 						cli.StringFlag{
 							Name:  "host, H",
-							Usage: "host name or IP address of a host",
+							Usage: "host name or IP address of a machine",
 						},
 						cli.StringFlag{
 							Name:  "user, U",
@@ -81,10 +81,10 @@ func main() {
 				},
 				{
 					Name:  "remove",
-					Usage: "remove an existing host",
+					Usage: "remove an existing machine",
 					Action: func(c *cli.Context) error {
 						if c.Args().First() == "" {
-							log.Fatalf("no name given: fx host remove <host_name>")
+							log.Fatalf("no name given: fx infra remove <name>")
 							return nil
 						}
 						return commander.RemoveHost(c.Args().First())
@@ -92,19 +92,49 @@ func main() {
 				},
 				{
 					Name:  "list",
-					Usage: "list hosts",
+					Usage: "list machines",
 					Action: func(c *cli.Context) error {
 						return commander.ListHosts()
 					},
 				},
 				{
-					Name:  "default",
-					Usage: "set/get default host",
+					Name:  "activate",
+					Usage: "enable a machine be a host of fx infrastructure",
 					Action: func(c *cli.Context) error {
-						if c.Args().First() != "" {
-							return commander.SetDefaultHost(c.Args().First())
+						name := c.Args().First()
+						if name == "" {
+							log.Fatalf("name required for: fx infra activate <name>")
+							return nil
 						}
-						return commander.GetDefaultHost()
+
+						host, err := cfg.GetMachine(name)
+						if err != nil {
+							log.Fatalf("could get host %v, make sure you add it first", err)
+							log.Info("You can add a machine by: \n fx infra add -Name <name> -H <ip or hostname> -U <user> -P <password>")
+							return nil
+						}
+						provisionor := provision.New(host)
+						if err := provisionor.Start(); err != nil {
+							log.Fatalf("could not provision %s: %v", name, err)
+							return nil
+						}
+						log.Infof("provision machine %v: %s", name, constants.CheckedSymbol)
+
+						if err := cfg.EnableMachine(name); err != nil {
+							log.Fatalf("could not enable %s: %v", name, err)
+							return nil
+						}
+						log.Infof("enble machine %v: %s", name, constants.CheckedSymbol)
+
+						return nil
+					},
+				},
+				{
+					Name:  "deactivate",
+					Usage: "disable a machine be a host of fx infrastructure",
+					Action: func(c *cli.Context) error {
+						// TODO set it status to be inactive
+						return nil
 					},
 				},
 			},
@@ -113,25 +143,19 @@ func main() {
 			Name:  "doctor",
 			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
-				host, err := cfg.GetDefaultHost()
+				hosts, err := cfg.ListMachines()
 				if err != nil {
-					log.Fatalf("could get default host %v", err)
+					log.Fatalf("list machines failed %v", err)
 					return nil
 				}
-				return doctor.New(host).Start()
-			},
-		},
-		{
-			Name:  "provision",
-			Usage: "provision on default host",
-			Action: func(c *cli.Context) error {
-				host, err := cfg.GetDefaultHost()
-				if err != nil {
-					log.Fatalf("could get default host %v", err)
-					return nil
+				for name, h := range hosts {
+					if err := doctor.New(h).Start(); err != nil {
+						log.Warnf("machine %s is in dirty state: %v", name, err)
+					} else {
+						log.Infof("machine %s is in healthy state: %s", name, constants.CheckedSymbol)
+					}
 				}
-				provisionor := provision.New(host)
-				return provisionor.Start()
+				return nil
 			},
 		},
 		{
@@ -155,13 +179,22 @@ func main() {
 				}
 				port := c.Int("port")
 				if port == 0 {
-					freePort, err := freeport.GetFreePort()
-					if err != nil {
-						return err
-					}
-					port = freePort
+					log.Fatalf("invalid port %d", port)
+					return nil
 				}
-				return fx().Up(c.Args().First(), api.UpOptions{Name: name, Port: port})
+				hosts, err := cfg.ListActiveMachines()
+				if err != nil {
+					log.Fatalf("list active machines failed: %v", err)
+				}
+				for n, host := range hosts {
+					src := c.Args().First()
+					if err := fx(host).Up(src, api.UpOptions{Name: name, Port: port}); err != nil {
+						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, src, n, err)
+					} else {
+						log.Fatalf("up function %s(%s) to machine %s: %v", name, src, n, constants.CheckedSymbol)
+					}
+				}
+				return nil
 			},
 		},
 		{
@@ -169,14 +202,36 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return fx().Down(c.Args())
+				hosts, err := cfg.ListActiveMachines()
+				if err != nil {
+					log.Fatalf("list active machines failed: %v", err)
+				}
+				for name, host := range hosts {
+					if err := fx(host).Down(c.Args()); err != nil {
+						log.Fatalf("stop function on machine %s failed: %v", name, err)
+					} else {
+						log.Fatalf("stop function on machine %s: %v", name, constants.CheckedSymbol)
+					}
+				}
+				return nil
 			},
 		},
 		{
 			Name:  "list",
 			Usage: "list deployed services",
 			Action: func(c *cli.Context) error {
-				return fx().List(c.Args().First())
+				hosts, err := cfg.ListActiveMachines()
+				if err != nil {
+					log.Fatalf("list active machines failed: %v", err)
+				}
+				for name, host := range hosts {
+					if err := fx(host).List(c.Args().First()); err != nil {
+						log.Fatalf("list functions on machine %s failed: %v", name, err)
+					} else {
+						log.Fatalf("list functions on machine %s: %v", name, constants.CheckedSymbol)
+					}
+				}
+				return nil
 			},
 		},
 		{
@@ -190,7 +245,18 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				params := strings.Join(c.Args()[1:], " ")
-				return fx().Call(c.Args().First(), params)
+				hosts, err := cfg.ListActiveMachines()
+				if err != nil {
+					log.Fatalf("list active machines failed: %v", err)
+				}
+				for name, host := range hosts {
+					if err := fx(host).Call(c.Args().First(), params); err != nil {
+						log.Fatalf("call functions on machine %s with %v failed: %v", name, params, err)
+					} else {
+						log.Infof("call functions on machine %s with %v: %v", name, params, constants.CheckedSymbol)
+					}
+				}
+				return nil
 			},
 		},
 	}

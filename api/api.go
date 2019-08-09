@@ -32,11 +32,7 @@ func New(cfg config.Configer, box packr.Box) *API {
 }
 
 // Init init api
-func (api *API) Init() error {
-	host, err := api.cfg.GetDefaultHost()
-	if err != nil {
-		return err
-	}
+func (api *API) Init(host config.Host) error {
 	url := fmt.Sprintf("http://%s:%s", host.Host, constants.AgentPort)
 	version, err := api.Version(url)
 	if err != nil {

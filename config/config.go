@@ -10,7 +10,11 @@ import (
 
 // Configer interface
 type Configer interface {
-	GetDefaultHost() (Host, error)
+	GetMachine(name string) (Host, error)
+	ListActiveMachines() (map[string]Host, error)
+	ListMachines() (map[string]Host, error)
+	EnableMachine(name string) error
+	DisableMachine(name string) error
 }
 
 // Config config of fx
@@ -44,17 +48,12 @@ func (c *Config) Init() error {
 		}
 		fd.Close()
 
-		viper.Set("default", Host{
-			Host:     "localhost",
-			Password: "",
-			User:     "",
-		})
-
 		viper.Set("hosts", map[string]Host{
 			"localhost": Host{
 				Host:     "localhost",
 				Password: "",
 				User:     "",
+				Enabled:  true,
 			},
 		})
 		return viper.WriteConfig()
@@ -66,8 +65,8 @@ func (c *Config) Init() error {
 	return nil
 }
 
-// GetHost get host by name
-func (c *Config) GetHost(name string) (Host, error) {
+// GetMachine get host by name
+func (c *Config) GetMachine(name string) (Host, error) {
 	var hosts map[string]Host
 	if err := viper.UnmarshalKey("hosts", &hosts); err != nil {
 		return Host{}, err
@@ -79,38 +78,28 @@ func (c *Config) GetHost(name string) (Host, error) {
 	return host, nil
 }
 
-// GetDefaultHost get host
-func (c *Config) GetDefaultHost() (Host, error) {
-	var host Host
-	if err := viper.UnmarshalKey("default", &host); err != nil {
-		return Host{}, err
-	}
-	return host, nil
-}
-
-// SetDefaultHost set default host
-// TODO no need name
-func (c *Config) SetDefaultHost(name string, host Host) error {
-	viper.Set("default", host)
-	return viper.WriteConfig()
-}
-
-// IsRemote if running on remote
-func (c *Config) IsRemote() bool {
-	host, err := c.GetDefaultHost()
+// ListActiveMachines list enabled machines
+func (c *Config) ListActiveMachines() (map[string]Host, error) {
+	hosts, err := c.ListMachines()
 	if err != nil {
-		return false
+		return map[string]Host{}, err
 	}
-	return host.IsRemote()
+	lst := map[string]Host{}
+	for name, h := range hosts {
+		if h.Enabled {
+			lst[name] = h
+		}
+	}
+	return lst, nil
 }
 
-// AddHost add host
-func (c *Config) AddHost(name string, host Host) error {
+// AddMachine add host
+func (c *Config) AddMachine(name string, host Host) error {
 	if !viper.IsSet("hosts") {
 		viper.Set("hosts", map[string]Host{})
 	}
 
-	hosts, err := c.ListHosts()
+	hosts, err := c.ListMachines()
 	if err != nil {
 		return err
 	}
@@ -121,7 +110,7 @@ func (c *Config) AddHost(name string, host Host) error {
 
 // RemoveHost remote a host
 func (c *Config) RemoveHost(name string) error {
-	hosts, err := c.ListHosts()
+	hosts, err := c.ListMachines()
 	if err != nil {
 		return err
 	}
@@ -137,11 +126,53 @@ func (c *Config) RemoveHost(name string) error {
 	return fmt.Errorf("no such host %s", name)
 }
 
-// ListHosts list hosts
-func (c *Config) ListHosts() (map[string]Host, error) {
+// ListMachines list hosts
+func (c *Config) ListMachines() (map[string]Host, error) {
 	var hosts map[string]Host
 	if err := viper.UnmarshalKey("hosts", &hosts); err != nil {
 		return nil, err
 	}
 	return hosts, nil
+}
+
+// EnableMachine enable a machine, after machine enabled, function will be deployed onto it when ever `fx up` invoked
+func (c *Config) EnableMachine(name string) error {
+	host, err := c.GetMachine(name)
+	if err != nil {
+		return err
+	}
+	host.Enabled = true
+
+	if !viper.IsSet("hosts") {
+		viper.Set("hosts", map[string]Host{})
+	}
+
+	hosts, err := c.ListMachines()
+	if err != nil {
+		return err
+	}
+	hosts[name] = host
+	viper.Set("hosts", hosts)
+	return viper.WriteConfig()
+}
+
+// DisableMachine disable a machine, after machine disabled, function will not be deployed onto it
+func (c *Config) DisableMachine(name string) error {
+	host, err := c.GetMachine(name)
+	if err != nil {
+		return err
+	}
+	host.Enabled = false
+
+	if !viper.IsSet("hosts") {
+		viper.Set("hosts", map[string]Host{})
+	}
+
+	hosts, err := c.ListMachines()
+	if err != nil {
+		return err
+	}
+	hosts[name] = host
+	viper.Set("hosts", hosts)
+	return viper.WriteConfig()
 }
