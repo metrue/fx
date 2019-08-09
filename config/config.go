@@ -48,14 +48,14 @@ func (c *Config) Init() error {
 		}
 		fd.Close()
 
-		viper.Set("hosts", map[string]Host{
-			"localhost": Host{
-				Host:     "localhost",
-				Password: "",
-				User:     "",
-				Enabled:  true,
-			},
-		})
+		localhost := Host{
+			Host:        "localhost",
+			Password:    "",
+			User:        "",
+			Enabled:     true,
+			Provisioned: false,
+		}
+		viper.Set("hosts", map[string]Host{"localhost": localhost})
 		return viper.WriteConfig()
 	}
 
@@ -175,4 +175,34 @@ func (c *Config) DisableMachine(name string) error {
 	hosts[name] = host
 	viper.Set("hosts", hosts)
 	return viper.WriteConfig()
+}
+
+// UpdateProvisionedStatus update provisioned status
+func (c *Config) UpdateProvisionedStatus(name string, ok bool) error {
+	host, err := c.GetMachine(name)
+	if err != nil {
+		return err
+	}
+	host.Provisioned = ok
+
+	if !viper.IsSet("hosts") {
+		viper.Set("hosts", map[string]Host{})
+	}
+
+	hosts, err := c.ListMachines()
+	if err != nil {
+		return err
+	}
+	hosts[name] = host
+	viper.Set("hosts", hosts)
+	return viper.WriteConfig()
+}
+
+// IsMachineProvisioned check if machine provisioned
+func (c *Config) IsMachineProvisioned(name string) bool {
+	host, err := c.GetMachine(name)
+	if err != nil {
+		return false
+	}
+	return host.Provisioned
 }

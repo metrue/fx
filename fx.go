@@ -113,12 +113,17 @@ func main() {
 							log.Info("You can add a machine by: \n fx infra add -Name <name> -H <ip or hostname> -U <user> -P <password>")
 							return nil
 						}
-						provisionor := provision.New(host)
-						if err := provisionor.Start(); err != nil {
-							log.Fatalf("could not provision %s: %v", name, err)
-							return nil
+						if !host.Provisioned {
+							provisionor := provision.New(host)
+							if err := provisionor.Start(); err != nil {
+								log.Fatalf("could not provision %s: %v", name, err)
+								return nil
+							}
+							log.Infof("provision machine %v: %s", name, constants.CheckedSymbol)
+							if err := cfg.UpdateProvisionedStatus(name, true); err != nil {
+								log.Fatalf("update machine provision status failed: %v", err)
+							}
 						}
-						log.Infof("provision machine %v: %s", name, constants.CheckedSymbol)
 
 						if err := cfg.EnableMachine(name); err != nil {
 							log.Fatalf("could not enable %s: %v", name, err)
@@ -133,7 +138,16 @@ func main() {
 					Name:  "deactivate",
 					Usage: "disable a machine be a host of fx infrastructure",
 					Action: func(c *cli.Context) error {
-						// TODO set it status to be inactive
+						name := c.Args().First()
+						if name == "" {
+							log.Fatalf("name required for: fx infra activate <name>")
+							return nil
+						}
+						if err := cfg.DisableMachine(name); err != nil {
+							log.Fatalf("could not disable %s: %v", name, err)
+							return nil
+						}
+						log.Infof("machine %s deactive: %v", name, constants.CheckedSymbol)
 						return nil
 					},
 				},
@@ -187,11 +201,23 @@ func main() {
 					log.Fatalf("list active machines failed: %v", err)
 				}
 				for n, host := range hosts {
+					if !host.Provisioned {
+						provisionor := provision.New(host)
+						if err := provisionor.Start(); err != nil {
+							log.Fatalf("could not provision %s: %v", name, err)
+							return nil
+						}
+						log.Infof("provision machine %v: %s", name, constants.CheckedSymbol)
+						if err := cfg.UpdateProvisionedStatus(n, true); err != nil {
+							log.Fatalf("update machine provision status failed: %v", err)
+						}
+					}
+
 					src := c.Args().First()
 					if err := fx(host).Up(src, api.UpOptions{Name: name, Port: port}); err != nil {
 						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, src, n, err)
 					} else {
-						log.Fatalf("up function %s(%s) to machine %s: %v", name, src, n, constants.CheckedSymbol)
+						log.Infof("up function %s(%s) to machine %s: %v", name, src, n, constants.CheckedSymbol)
 					}
 				}
 				return nil
@@ -210,7 +236,7 @@ func main() {
 					if err := fx(host).Down(c.Args()); err != nil {
 						log.Fatalf("stop function on machine %s failed: %v", name, err)
 					} else {
-						log.Fatalf("stop function on machine %s: %v", name, constants.CheckedSymbol)
+						log.Infof("stop function on machine %s: %v", name, constants.CheckedSymbol)
 					}
 				}
 				return nil
@@ -227,8 +253,6 @@ func main() {
 				for name, host := range hosts {
 					if err := fx(host).List(c.Args().First()); err != nil {
 						log.Fatalf("list functions on machine %s failed: %v", name, err)
-					} else {
-						log.Fatalf("list functions on machine %s: %v", name, constants.CheckedSymbol)
 					}
 				}
 				return nil
@@ -252,8 +276,6 @@ func main() {
 				for name, host := range hosts {
 					if err := fx(host).Call(c.Args().First(), params); err != nil {
 						log.Fatalf("call functions on machine %s with %v failed: %v", name, params, err)
-					} else {
-						log.Infof("call functions on machine %s with %v: %v", name, params, constants.CheckedSymbol)
 					}
 				}
 				return nil

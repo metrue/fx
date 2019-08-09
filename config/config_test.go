@@ -78,4 +78,21 @@ func TestConfig(t *testing.T) {
 	if !reflect.DeepEqual(lst[name], h) {
 		t.Fatalf("should get %v but got %v", h, lst[name])
 	}
+
+	if lst[name].Provisioned != false {
+		t.Fatalf("should get %v but got %v", false, lst[name].Provisioned)
+	}
+
+	if err := c.UpdateProvisionedStatus(name, true); err != nil {
+		t.Fatal(err)
+	}
+
+	updatedHost, err := c.GetMachine(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if updatedHost.Provisioned != true {
+		t.Fatalf("should get %v but got %v", true, updatedHost.Provisioned)
+	}
 }

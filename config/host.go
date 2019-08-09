@@ -2,19 +2,21 @@ package config
 
 // Host host entity
 type Host struct {
-	Host     string
-	User     string
-	Password string
-	Enabled  bool
+	Host        string
+	User        string
+	Password    string
+	Enabled     bool
+	Provisioned bool
 }
 
 // NewHost new a host
 func NewHost(addr, user, password string) Host {
 	return Host{
-		Host:     addr,
-		User:     user,
-		Password: password,
-		Enabled:  false,
+		Host:        addr,
+		User:        user,
+		Password:    password,
+		Enabled:     false,
+		Provisioned: false,
 	}
 }
 
