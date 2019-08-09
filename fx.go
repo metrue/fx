@@ -30,7 +30,7 @@ func init() {
 
 func fx(host config.Host) *api.API {
 	box := packr.NewBox("./api/images")
-	fx := api.New(cfg, box)
+	fx := api.New(box)
 	if err := fx.Init(host); err != nil {
 		log.Fatalf("Could not finish fx initialization: %v", err)
 	}

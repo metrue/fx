@@ -23,12 +23,11 @@ type API struct {
 	endpoint string
 	box      packr.Box
 	version  string
-	cfg      config.Configer
 }
 
 // New an API
-func New(cfg config.Configer, box packr.Box) *API {
-	return &API{cfg: cfg, box: box}
+func New(box packr.Box) *API {
+	return &API{box: box}
 }
 
 // Init init api
