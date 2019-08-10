@@ -15,55 +15,18 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 Feel free hacking fx to support the languages not listed. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
 
-| Language      | Status        | Contributor   |
-| ------------- |:-------------:|:-------------:|
-| Go            | Supported     | fx            |
-| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)|
-| Node          | Supported     | fx            |
-| Python        | Supported     | fx            |
-| Ruby          | Supported     | fx            |
-| Java          | Supported     | fx            |
-| PHP           | Supported     | [@chlins](https://github.com/chlins)|
-| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
-| D             | Supported     | [@andre2007](https://github.com/andre2007)|
-| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
-
-## Architecture
-
-            ┌────────┐
-            │fx init │       fx━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-            └────────┘       ┃          ┌───────────────────────┐                                   ┃
-     ────────────────────────╋─────────▶│Environment initialize │                                   ┃
-            ┌──────┐         ┃          │* proxy docker sock    │                                   ┃
-            │fx up │         ┃          │* pull fx base docker  │                                   ┃
-    ┌ ─ ─ ─ ┴──────┘─ ─ ┐    ┃          └───────────────────────┘                                   ┃
-       Function Source       ┃          ┌──────────────┐       ┌─────────────────────────────┐      ┃
-    └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘────╋──┬──────▶│     Pack     │       │                             │      ┃
-                             ┃  │       └──────┬───────┘       │                             │      ┃
-            ┌────────┐       ┃  │       ┌──────▼───────┐       │                             │      ┃
-            │fx call │       ┃  │       │Build Service │◀─────▶│                             │      ┃
-            └────────┘       ┃  │       └──────┬───────┘       │                             │      ┃
-    ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐    ┃  │       ┌──────▼───────┐       │                             │      ┃
-       Function Source       ┃  │       │ Run Service  │◀─────▶│                             │      ┃
-    │   (with params)   │────╋──┤       └──────────────┘       │                             │      ┃
-     ─ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃  │                              │                             │      ┃
-                             ┃  │                              │                             │      ┃
-                             ┃  │       ┌──────────────┐       │         Docker API          │      ┃
-           ┌────────┐        ┃  └──────▶│ Call Service │       │                             │      ┃
-           │fx down │        ┃          │    (http)    │       │                             │      ┃
-           └────────┘        ┃          └──────────────┘       │                             │      ┃
-     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          ┌──────────────┐       │                             │      ┃
-         Service Name   │────╋─────────▶│ Stop Service │◀─────▶│                             │      ┃
-     └ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          └──────────────┘       │                             │      ┃
-          ┌────────┐         ┃                                 │                             │      ┃
-          │fx list │         ┃                                 │                             │      ┃
-          └────────┘         ┃                                 │                             │      ┃
-     ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          ┌──────────────┐       │                             │      ┃
-         Service Name   │────╋─────────▶│List Services │◀─────▶│                             │      ┃
-     └ ─ ─ ─ ─ ─ ─ ─ ─ ─     ┃          └──────────────┘       └─────────────────────────────┘      ┃
-                             ┃                                                                      ┃
-                             ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
+| Language      | Status        | Contributor   | Example        |
+| ------------- |:-------------:|:-------------:| :-------------:|
+| Go            | Supported     | fx            | [/examples/Golang](https://github.com/metrue/fx/tree/master/examples/functions/Golang) |
+| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)| [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/Rust) |
+| Node          | Supported     | fx            | [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/JavaScript) |
+| Python        | Supported     | fx            | [/examples/Python](https://github.com/metrue/fx/tree/master/examples/functions/Python) |
+| Ruby          | Supported     | fx            | [/examples/Ruby](https://github.com/metrue/fx/tree/master/examples/functions/Ruby) |
+| Java          | Supported     | fx            | [/examples/Java](https://github.com/metrue/fx/tree/master/examples/functions/Java) |
+| PHP           | Supported     | [@chlins](https://github.com/chlins)| [/examples/PHP](https://github.com/metrue/fx/tree/master/examples/functions/PHP) |
+| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)| [/examples/Julia](https://github.com/metrue/fx/tree/master/examples/functions/Julia) |
+| D             | Supported     | [@andre2007](https://github.com/andre2007)| [/examples/D](https://github.com/metrue/fx/tree/master/examples/functions/D) |
+| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | ||
 
 # Installation
 
@@ -78,13 +41,13 @@ brew install metrue/fx/fx
 
 via cURL
 
-```
+```shell
 curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
 or Wget
 
-```
+```shell
 wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
@@ -106,60 +69,127 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.4.0
+   0.5.1
 
 COMMANDS:
-     host       manage hosts
-     doctor     health check for fx
-     provision  provision on default host
-     up         deploy a function or a group of functions
-     down       destroy a service
-     list       list deployed services
-     call       run a function instantly
-     help, h    Shows a list of commands or help for one command
+   infra     manage infrastructure of fx
+   doctor    health check for fx
+   up        deploy a function or a group of functions
+   down      destroy a service
+   list, ls  list deployed services
+   call      run a function instantly
+   help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 ```
 
-1. Initialize fx running enviroment
+1. List your current machines and activate you machine
+
+```shell
+$ fx infra ls     # list machines
+
+{
+	"localhost": {
+		"Host": "localhost",
+		"User": "",
+		"Password": "",
+		"Enabled": true,
+		"Provisioned": false
+	}
+}
+
+$ fx infra activate localhost    # activate 'localhost'
+
+2019/08/10 13:21:20  info Provision:pull python Docker base iamge: ✓
+2019/08/10 13:21:21  info Provision:pull d Docker base image: ✓
+2019/08/10 13:21:23  info Provision:pull java Docker base image: ✓
+2019/08/10 13:21:28  info Provision:pull julia Docker base image: ✓
+2019/08/10 13:21:31  info Provision:pull node Docker base image: ✓
+2019/08/10 13:22:09  info Provision:pull go Docker base image: ✓
+2019/08/10 13:22:09  info provision machine localhost: ✓
+2019/08/10 13:22:09  info enble machine localhost: ✓
+```
+It may take seconds since `fx` needs to download some basic resources
+
+*Note* you can add a remote host as fx machine also,
+```
+$ fx infra add --name my_aws_vm --host 13.121.202.227 --user root --password yourpassword
+
+$ fx infra list
+{
+	"my_aws_vm": {
+		"Host": "13.121.202.227",
+		"User": "root",
+		"Password": "yourpassword",
+		"Enabled": false,
+		"Provisioned": false
+	},
+	"localhost": {
+		"Host": "localhost",
+		"User": "",
+		"Password": "",
+		"Enabled": true,
+		"Provisioned": true
+	}
+}
+
+$ fx infra activate my_aws_vm
 
 ```
-fx provision
-```
-It may take minutes since `fx` needs to download some basic resources
+then your function will be deployed onto remote host also.
 
 2. Write a function
 
 You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
 
 ```js
-module.exports = (input, ctx) => {
-    return parseInt(input.a, 10) + parseInt(input.b, 10)
+module.exports = (ctx) => {
+    ctx.body = 'hello world'
 }
 ```
-Then save it to a file `sum.js`.
+Then save it to a file `func.js`.
 
 3. Deploy your function as a service
 
-```
-fx up sum.js
-```
+Give your service a port with `--port`, and name with `--name` if you want.
 
-or give your service a name with `--name`
+```shell
+$ fx up -name fx_service_name -p 10001 func.js
 
+2019/08/10 13:26:37  info Pack Service: ✓
+2019/08/10 13:26:39  info Build Service: ✓
+2019/08/10 13:26:39  info Run Service: ✓
+2019/08/10 13:26:39  info Service (fx_service_name) is running on: 0.0.0.0:10001
+2019/08/10 13:26:39  info up function fx_service_name(func.js) to machine localhost: ✓
 ```
-fx up --name service_sum sum.js
-```
-
-if everything ok, you will get an `url` for service.
 
 4. Test your service
 
 then you can test your service:
-```
-curl -X POST <service address> -H "Content-Type: application/json" -d '{"a": 1, "b": 1}'
+
+```shell
+$ curl -v 0.0.0.0:10001
+
+
+GET / HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Host: 0.0.0.0:10001
+User-Agent: HTTPie/1.0.2
+
+
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 11
+Content-Type: text/plain; charset=utf-8
+Date: Sat, 10 Aug 2019 05:28:03 GMT
+
+hello world
+
 ```
 
 ## Contribute
@@ -176,7 +206,6 @@ Docker: make sure [Docker](https://docs.docker.com/engine/installation/) install
 ```
 $ git clone https://github.com/metrue/fx
 $ cd fx
-$ dep ensure
 $ make build
 ```
 
