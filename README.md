@@ -17,15 +17,15 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet [me](
 
 | Language      | Status        | Contributor   | Example        |
 | ------------- |:-------------:|:-------------:| :-------------:|
-| Go            | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Golang |
-| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)| https://github.com/metrue/fx/tree/master/examples/functions/Rust|
-| Node          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/JavaScript |
-| Python        | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Python|
-| Ruby          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Ruby |
-| Java          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Java |
-| PHP           | Supported     | [@chlins](https://github.com/chlins)| https://github.com/metrue/fx/tree/master/examples/functions/PHP |
-| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)| https://github.com/metrue/fx/tree/master/examples/functions/Julia |
-| D             | Supported     | [@andre2007](https://github.com/andre2007)| https://github.com/metrue/fx/tree/master/examples/functions/D |
+| Go            | Supported     | fx            | [/examples/Golang](https://github.com/metrue/fx/tree/master/examples/functions/Golang) |
+| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)| [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/Rust) |
+| Node          | Supported     | fx            | [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/JavaScript) |
+| Python        | Supported     | fx            | [/examples/Python](https://github.com/metrue/fx/tree/master/examples/functions/Python) |
+| Ruby          | Supported     | fx            | [/examples/Ruby](https://github.com/metrue/fx/tree/master/examples/functions/Ruby) |
+| Java          | Supported     | fx            | [/examples/Java](https://github.com/metrue/fx/tree/master/examples/functions/Java) |
+| PHP           | Supported     | [@chlins](https://github.com/chlins)| [/examples/PHP](https://github.com/metrue/fx/tree/master/examples/functions/PHP) |
+| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)| [/examples/Julia](https://github.com/metrue/fx/tree/master/examples/functions/Julia) |
+| D             | Supported     | [@andre2007](https://github.com/andre2007)| [/examples/D](https://github.com/metrue/fx/tree/master/examples/functions/D) |
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | ||
 
 ## Architecture
