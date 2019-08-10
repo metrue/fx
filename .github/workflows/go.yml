@@ -17,9 +17,15 @@ jobs:
       use: actions/checkout@master
       path: ${{ go.module-path }}
 
+    - name: Install docker
+      working-directory: ${{ go.module-path }}
+      run: |
+        ./scripts/provision.sh
+
     - name: Get dependencies
       working-directory: ${{ go.module-path }}
       run: |
+        go get -u github.com/gobuffalo/packr/pack
         go get -v -t -d ./...
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
@@ -28,4 +34,4 @@ jobs:
 
     - name: Build
       working-directory: ${{ go.module-path }}
-      run: go build -v .
+      run: make build
