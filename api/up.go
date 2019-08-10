@@ -1,32 +1,23 @@
 package api
 
 import (
-	"io/ioutil"
-
 	"github.com/apex/log"
 	"github.com/metrue/fx/types"
-	"github.com/metrue/fx/utils"
 )
 
 // UpOptions options for up
 type UpOptions struct {
+	Body []byte
+	Lang string
 	Name string
 	Port int
 }
 
 // Up up a source code of function to be a service
-func (api *API) Up(file string, opt UpOptions) error {
-	src, err := ioutil.ReadFile(file)
-	if err != nil {
-		log.Fatalf("Read Source: %v", err)
-		return err
-	}
-	log.Info("Read Source: \u2713")
-
-	lang := utils.GetLangFromFileName(file)
+func (api *API) Up(opt UpOptions) error {
 	fn := types.ServiceFunctionSource{
-		Language: lang,
-		Source:   string(src),
+		Language: opt.Lang,
+		Source:   string(opt.Body),
 	}
 
 	project, err := api.Pack(opt.Name, fn)
