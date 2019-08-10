@@ -41,13 +41,13 @@ brew install metrue/fx/fx
 
 via cURL
 
-```
+```shell
 curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
 or Wget
 
-```
+```shell
 wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
 ```
 
