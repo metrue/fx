@@ -26,3 +26,6 @@ const AgentContainerName = "fx-agent"
 
 // CheckedSymbol check symbol ✓
 const CheckedSymbol = "\u2713"
+
+// UncheckedSymbol uncheck ✗
+const UncheckedSymbol = "\u2717"

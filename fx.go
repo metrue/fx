@@ -43,7 +43,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
-	app.Version = "0.5.2"
+	app.Version = "0.5.3"
 
 	commander := commands.New(cfg)
 
@@ -189,6 +189,10 @@ func main() {
 					Name:  "port, p",
 					Usage: "port number",
 				},
+				cli.BoolFlag{
+					Name:  "healthcheck, hc",
+					Usage: "do a health check after service up",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				name := c.String("name")
@@ -224,10 +228,11 @@ func main() {
 					}
 
 					if err := fx(host).Up(api.UpOptions{
-						Body: body,
-						Lang: lang,
-						Name: name,
-						Port: port,
+						Body:       body,
+						Lang:       lang,
+						Name:       name,
+						Port:       port,
+						HealtCheck: c.Bool("healthcheck"),
 					}); err != nil {
 						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, funcFile, n, err)
 					} else {
