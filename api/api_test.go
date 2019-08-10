@@ -6,7 +6,6 @@ import (
 	"github.com/gobuffalo/packr"
 	"github.com/golang/mock/gomock"
 	"github.com/metrue/fx/config"
-	mockConfig "github.com/metrue/fx/config/mocks"
 	"github.com/metrue/fx/types"
 )
 
@@ -15,11 +14,9 @@ func TestDockerHTTP(t *testing.T) {
 	defer ctrl.Finish()
 
 	host := config.Host{Host: "127.0.0.1"}
-	cfg := mockConfig.NewMockConfiger(ctrl)
-	cfg.EXPECT().GetDefaultHost().Return(host, nil)
 	box := packr.NewBox("./api/images")
-	api := New(cfg, box)
-	if err := api.Init(); err != nil {
+	api := New(box)
+	if err := api.Init(host); err != nil {
 		t.Fatal(err)
 	}
 

@@ -23,20 +23,15 @@ type API struct {
 	endpoint string
 	box      packr.Box
 	version  string
-	cfg      config.Configer
 }
 
 // New an API
-func New(cfg config.Configer, box packr.Box) *API {
-	return &API{cfg: cfg, box: box}
+func New(box packr.Box) *API {
+	return &API{box: box}
 }
 
 // Init init api
-func (api *API) Init() error {
-	host, err := api.cfg.GetDefaultHost()
-	if err != nil {
-		return err
-	}
+func (api *API) Init(host config.Host) error {
 	url := fmt.Sprintf("http://%s:%s", host.Host, constants.AgentPort)
 	version, err := api.Version(url)
 	if err != nil {

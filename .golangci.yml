@@ -14,7 +14,7 @@ linters:
     - megacheck
     - govet
     - deadcode
-    - gocyclo
+    # - gocyclo
     - golint
     - varcheck
     - structcheck

@@ -24,9 +24,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
-	github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5
 	github.com/pierrec/lz4 v0.0.0-20190222153722-062282ea0dcf // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0

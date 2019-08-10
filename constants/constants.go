@@ -23,3 +23,6 @@ var ConfigPath = path.Join(os.Getenv("HOME"), ".fx")
 
 // AgentContainerName fx agent name
 const AgentContainerName = "fx-agent"
+
+// CheckedSymbol check symbol ✓
+const CheckedSymbol = "\u2713"
