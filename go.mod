@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
-	github.com/metrue/go-ssh-client v0.0.0-20190728081238-ced3b93f8f8a
+	github.com/metrue/go-ssh-client v0.0.0-20190810064746-98a7a27048f3
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
