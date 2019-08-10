@@ -15,18 +15,18 @@ fx is a tool to help you do Function as a Service on your own server. fx can mak
 Feel free hacking fx to support the languages not listed. Welcome to tweet [me](https://twitter.com/_metrue) or [Buy me a coffee](https://www.paypal.me/minghe).
 
 
-| Language      | Status        | Contributor   |
-| ------------- |:-------------:|:-------------:|
-| Go            | Supported     | fx            |
-| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)|
-| Node          | Supported     | fx            |
-| Python        | Supported     | fx            |
-| Ruby          | Supported     | fx            |
-| Java          | Supported     | fx            |
-| PHP           | Supported     | [@chlins](https://github.com/chlins)|
-| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)|
-| D             | Supported     | [@andre2007](https://github.com/andre2007)|
-| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | |
+| Language      | Status        | Contributor   | Example        |
+| ------------- |:-------------:|:-------------:| :-------------:|
+| Go            | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Golang |
+| Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)| https://github.com/metrue/fx/tree/master/examples/functions/Rust|
+| Node          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/JavaScript |
+| Python        | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Python|
+| Ruby          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Ruby |
+| Java          | Supported     | fx            | https://github.com/metrue/fx/tree/master/examples/functions/Java |
+| PHP           | Supported     | [@chlins](https://github.com/chlins)| https://github.com/metrue/fx/tree/master/examples/functions/PHP |
+| Julia         | Supported     | [@mbesancon](https://github.com/mbesancon)| https://github.com/metrue/fx/tree/master/examples/functions/Julia |
+| D             | Supported     | [@andre2007](https://github.com/andre2007)| https://github.com/metrue/fx/tree/master/examples/functions/D |
+| R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | ||
 
 ## Architecture
 
