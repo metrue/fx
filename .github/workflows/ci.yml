@@ -1,7 +1,6 @@
-name: Go
+name: CI
 on: [push]
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -14,7 +13,7 @@ jobs:
       id: go
 
     - name: Check out code into the Go module directory
-      use: actions/checkout@master
+      uses: actions/checkout@master
       path: ${{ go.module-path }}
 
     - name: Install docker
