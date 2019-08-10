@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/doctor"
 	"github.com/metrue/fx/provision"
+	"github.com/metrue/fx/utils"
 	"github.com/urfave/cli"
 )
 
@@ -91,8 +93,9 @@ func main() {
 					},
 				},
 				{
-					Name:  "list",
-					Usage: "list machines",
+					Name:    "list",
+					Aliases: []string{"ls"},
+					Usage:   "list machines",
 					Action: func(c *cli.Context) error {
 						return commander.ListHosts()
 					},
@@ -179,6 +182,7 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "name, n",
+					Value: uuid.New().String(),
 					Usage: "service name",
 				},
 				cli.IntFlag{
@@ -188,9 +192,6 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				name := c.String("name")
-				if name == "" {
-					name = uuid.New().String()
-				}
 				port := c.Int("port")
 				if port == 0 {
 					log.Fatalf("invalid port %d", port)
@@ -200,6 +201,15 @@ func main() {
 				if err != nil {
 					log.Fatalf("list active machines failed: %v", err)
 				}
+
+				funcFile := c.Args().First()
+				body, err := ioutil.ReadFile(funcFile)
+				if err != nil {
+					log.Fatalf("Read Source: %v", err)
+					return err
+				}
+				lang := utils.GetLangFromFileName(funcFile)
+
 				for n, host := range hosts {
 					if !host.Provisioned {
 						provisionor := provision.New(host)
@@ -213,11 +223,15 @@ func main() {
 						}
 					}
 
-					src := c.Args().First()
-					if err := fx(host).Up(src, api.UpOptions{Name: name, Port: port}); err != nil {
-						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, src, n, err)
+					if err := fx(host).Up(api.UpOptions{
+						Body: body,
+						Lang: lang,
+						Name: name,
+						Port: port,
+					}); err != nil {
+						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, funcFile, n, err)
 					} else {
-						log.Infof("up function %s(%s) to machine %s: %v", name, src, n, constants.CheckedSymbol)
+						log.Infof("up function %s(%s) to machine %s: %v", name, funcFile, n, constants.CheckedSymbol)
 					}
 				}
 				return nil
@@ -243,8 +257,9 @@ func main() {
 			},
 		},
 		{
-			Name:  "list",
-			Usage: "list deployed services",
+			Name:    "list",
+			Aliases: []string{"ls"},
+			Usage:   "list deployed services",
 			Action: func(c *cli.Context) error {
 				hosts, err := cfg.ListActiveMachines()
 				if err != nil {
