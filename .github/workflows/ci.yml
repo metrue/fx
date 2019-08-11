@@ -14,8 +14,9 @@ jobs:
       uses: actions/checkout@master
 
     - name: unit test
-      working-directory: ${{ go.module-path }}
+      working-directory:
       run: |
+        echo ${GOPATH}
         ls -a ./
         go test -v ./...
 
