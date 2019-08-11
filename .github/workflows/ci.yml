@@ -16,10 +16,12 @@ jobs:
     - name: Provision Docker Enviroment for Ubuntu
       run: |
         ./scripts/provision.sh
+        docker ps
 
     - name: unit test
       working-directory:
       run: |
+        docker ps
         go test -v ./...
 
   BuildDockerImages:
