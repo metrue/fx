@@ -16,8 +16,6 @@ jobs:
     - name: unit test
       working-directory:
       run: |
-        echo ${GOPATH}
-        ls -a ./
         go test -v ./...
 
   BuildDockerImages:
