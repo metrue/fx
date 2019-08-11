@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -32,11 +33,12 @@ func init() {
 
 func fx(host config.Host) *api.API {
 	box := packr.NewBox("./api/images")
-	fx := api.New(box)
-	if err := fx.Init(host); err != nil {
-		log.Fatalf("Could not finish fx initialization: %v", err)
+	version, err := utils.DockerVersion(host.Host, constants.AgentPort)
+	if err != nil {
+		log.Fatalf("Could not get version of Docker engine version, %v", err)
 	}
-	return fx
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host.Host, constants.AgentPort, version)
+	return api.New(box, endpoint, version)
 }
 
 func main() {

@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gobuffalo/packr"
 	"github.com/golang/mock/gomock"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
@@ -18,9 +17,8 @@ func TestStop(t *testing.T) {
 	defer ctrl.Finish()
 
 	host := config.Host{Host: "127.0.0.1"}
-	box := packr.NewBox("./images")
-	api := New(box)
-	if err := api.Init(host); err != nil {
+	api, err := createAPI(host.Host, constants.AgentPort)
+	if err != nil {
 		t.Fatal(err)
 	}
 
