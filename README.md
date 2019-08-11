@@ -153,10 +153,10 @@ Then save it to a file `func.js`.
 
 3. Deploy your function as a service
 
-Give your service a port with `--port`, and name with `--name` if you want.
+Give your service a port with `--port`, and name with `--name`, heath checking with `--healthcheck` if you want.
 
 ```shell
-$ fx up -name fx_service_name -p 10001 func.js
+$ fx up -name fx_service_name -p 10001 --healthcheck func.js
 
 2019/08/10 13:26:37  info Pack Service: ✓
 2019/08/10 13:26:39  info Build Service: ✓

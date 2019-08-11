@@ -10,99 +10,73 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	"github.com/metrue/fx/types"
+	"github.com/pkg/errors"
 )
-
-type healtCheck struct {
-	Test        []string `json:"Test"`
-	Interval    float64  `json:"Interval"`
-	Timeout     float64  `json:"Timeout"`
-	Retries     int64    `json:"Retries"`
-	StartPeriod float64  `json:"StartPeriod"`
-}
 
 // ContainerCreateRequestPayload request paylaod
 type ContainerCreateRequestPayload struct {
-	Hostname         string                   `json:"Hostname,omitempty"`
-	Domainname       string                   `json:"Domainname,omitempty"`
-	User             string                   `json:"User,omitempty"`
-	AttachStdin      bool                     `json:"AttachStdin,omitempty"`
-	AttachStdout     bool                     `json:"AttachStdout,omitempty"`
-	AttachStderr     bool                     `json:"AttachStderr,omitempty"`
-	Tty              bool                     `json:"Tty,omitempty"`
-	OpenStdin        bool                     `json:"OpenStdin,omitempty"`
-	StdinOnce        bool                     `json:"StdinOnce,omitempty"`
-	Env              []string                 `json:"Env,omitempty"`
-	Cmd              []string                 `json:"Cmd,omitempty"`
-	Entrypoint       string                   `json:"Entrypoint,omitempty"`
-	Image            string                   `json:"Image,omitempty"`
-	Labels           map[string]string        `json:"Labels,omitempty"`
-	Volumes          map[string]interface{}   `json:"Volumes,omitempty"`
-	Healthcheck      healtCheck               `json:"Healthcheck,omitempty"`
-	WorkingDir       string                   `json:"WorkingDir,omitempty"`
-	NetworkDisabled  bool                     `json:"NetworkDisabled,omitempty"`
-	MacAddress       string                   `json:"MacAddress,omitempty"`
-	ExposedPorts     nat.PortSet              `json:"ExposedPorts,omitempty"`
-	StopSignal       string                   `json:"StopSignal,omitempty"`
-	HostConfig       container.HostConfig     `json:"HostConfig,omitempty"`
-	NetworkingConfig network.NetworkingConfig `json:"NetworkingConfig,omitempty"`
+	*container.Config
+	HostConfig       *container.HostConfig
+	NetworkingConfig *network.NetworkingConfig
 }
 
 // Run a service
 func (api *API) Run(port int, service *types.Service) error {
-	req := ContainerCreateRequestPayload{
+	config := &container.Config{
 		Image:  service.Image,
 		Labels: map[string]string{},
 		ExposedPorts: nat.PortSet{
 			"3000/tcp": struct{}{},
 		},
-		HostConfig: container.HostConfig{
-			AutoRemove: true,
-			PortBindings: nat.PortMap{
-				"3000/tcp": []nat.PortBinding{
-					{
-						HostIP:   types.DefaultHost,
-						HostPort: fmt.Sprintf("%d", port),
-					},
+	}
+	hostConfig := &container.HostConfig{
+		AutoRemove: true,
+		PortBindings: nat.PortMap{
+			"3000/tcp": []nat.PortBinding{
+				{
+					HostIP:   types.DefaultHost,
+					HostPort: fmt.Sprintf("%d", port),
 				},
 			},
 		},
 	}
+	req := ContainerCreateRequestPayload{
+		Config:     config,
+		HostConfig: hostConfig,
+	}
 
 	body, err := json.Marshal(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "error mashal container create req")
 	}
 
+	// create container
 	path := fmt.Sprintf("/containers/create?name=%s", service.Name)
-	type containerCreateResponse struct {
-		ID       string   `json:"Id"`
-		Warnings []string `json:"Warnings"`
-	}
-	var res containerCreateResponse
-	err = api.post(path, body, 201, &res)
-	if err != nil {
-		return err
+	var createRes container.ContainerCreateCreatedBody
+	if err := api.post(path, body, 201, &createRes); err != nil {
+		return errors.Wrap(err, "create container request failed")
 	}
 
-	if res.ID == "" {
+	if createRes.ID == "" {
 		return fmt.Errorf("container id is missing")
 	}
 
-	path = fmt.Sprintf("/containers/%s/start", res.ID)
+	// start container
+	path = fmt.Sprintf("/containers/%s/start", createRes.ID)
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "error new container create request")
 	}
 	client := &http.Client{Timeout: 20 * time.Second}
-	_, err = client.Do(request)
-	if err != nil {
-		return err
+	if _, err = client.Do(request); err != nil {
+		return errors.Wrap(err, "error do start container request")
 	}
 
-	info, err := api.inspect(service.Name)
+	info, err := api.inspect(createRes.ID)
 	if err != nil {
-		return err
+		msg := fmt.Sprintf("inspect container %s error", createRes.ID)
+		return errors.Wrap(err, msg)
 	}
 	service.ID = info.ID
 	service.Host = info.HostConfig.PortBindings["3000/tcp"][0].HostIP
