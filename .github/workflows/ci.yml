@@ -13,6 +13,10 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@master
 
+    - name: Provision Docker Enviroment for Ubuntu
+      run: |
+        ./scripts/provision.sh
+
     - name: unit test
       working-directory:
       run: |
