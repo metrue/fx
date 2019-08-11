@@ -19,6 +19,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        args: release
 
     - name: release-notification
       uses: metrue/noticeme-github-action@master
@@ -26,4 +27,3 @@ jobs:
         NOTICE_ME_TOKEN: ${{ secrets.NOTICE_ME_TOKEN }}
       with:
         args: '"fx release ok"'
-        args: release
