@@ -22,6 +22,8 @@ jobs:
       working-directory:
       run: |
         docker ps
+        curl http://127.0.0.1:8866/version
+        curl http://localhost:8866/version
         go test -v ./...
 
   BuildDockerImages:
