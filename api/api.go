@@ -35,6 +35,19 @@ func Create(host string, port string) (*API, error) {
 	}, nil
 }
 
+// MustCreate a api object, panic if not
+func MustCreate(host string, port string) *API {
+	version, err := utils.DockerVersion(host, port)
+	if err != nil {
+		panic(err)
+	}
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
+	return &API{
+		endpoint: endpoint,
+		version:  version,
+	}
+}
+
 func (api *API) get(path string, qs string, v interface{}) error {
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
 	if !strings.HasPrefix(url, "http") {

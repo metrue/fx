@@ -11,10 +11,13 @@ import (
 // Configer interface
 type Configer interface {
 	GetMachine(name string) (Host, error)
+	AddMachine(name string, host Host) error
+	RemoveHost(name string) error
 	ListActiveMachines() (map[string]Host, error)
 	ListMachines() (map[string]Host, error)
 	EnableMachine(name string) error
 	DisableMachine(name string) error
+	UpdateProvisionedStatus(name string, ok bool) error
 }
 
 // Config config of fx
