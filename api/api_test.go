@@ -3,20 +3,15 @@ package api
 import (
 	"testing"
 
-	"github.com/gobuffalo/packr"
-	"github.com/golang/mock/gomock"
 	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
 )
 
 func TestDockerHTTP(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	host := config.Host{Host: "127.0.0.1"}
-	box := packr.NewBox("./api/images")
-	api := New(box)
-	if err := api.Init(host); err != nil {
+	api, err := createAPI(host.Host, constants.AgentPort)
+	if err != nil {
 		t.Fatal(err)
 	}
 
