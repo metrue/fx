@@ -1,0 +1,105 @@
+on: push
+name: CI
+jobs:
+  UnitTest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.12
+        uses: actions/setup-go@v1
+        with:
+          version: 1.12
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@master
+
+      - name: Provision Docker Enviroment for Ubuntu
+        run: |
+          ./scripts/provision.sh
+          docker ps
+
+      # TODO enable when GITHUB fix the localhost network access issue
+      # - name: Unit Test
+      #   working-directory:
+      #   run: |
+      #     docker ps
+      #     curl http://127.0.0.1:8866/version
+      #     curl http://localhost:8866/version
+      #     go test -v ./...
+
+  BuildDockerImages:
+    needs: [UnitTest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: login
+        uses: actions/docker/login@8cdf801b322af5f369e00d85e9cf3a7122f49108
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: build-fx-go-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-go-base:latest -f api/asserts/dockerfiles/base/go/Dockerfile
+            api/asserts/dockerfiles/base/go
+
+      - name: push-fx-go-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-go-base:latest
+
+      - name: build-fx-rust-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-rust-base:latest -f api/asserts/dockerfiles/base/rust/Dockerfile
+            api/asserts/dockerfiles/base/rust
+
+      - name: push-fx-rust-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-rust-base:latest
+
+      - name: build-fx-node-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-node-base:latest -f api/asserts/dockerfiles/base/node/Dockerfile
+            api/asserts/dockerfiles/base/node
+
+      - name: push-fx-node-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-node-base:latest
+
+      - name: notify
+        uses: metrue/noticeme-github-action@master
+        env:
+          NOTICE_ME_TOKEN: ${{ secrets.NOTICE_ME_TOKEN }}
+        with:
+          args: BuildFxDockerImagesOK
+
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: lint
+        uses: actions-contrib/golangci-lint@master
+        with:
+          args: run
+
+      - name: notify
+        uses: metrue/noticeme-github-action@master
+        env:
+          NOTICE_ME_TOKEN: ${{ secrets.NOTICE_ME_TOKEN }}
+        with:
+          args: LintFxOK

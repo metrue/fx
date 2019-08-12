@@ -17,28 +17,17 @@ type UpOptions struct {
 	Name       string
 	Port       int
 	HealtCheck bool
+	Project    types.Project
 }
 
 // Up up a source code of function to be a service
 func (api *API) Up(opt UpOptions) error {
-	fn := types.ServiceFunctionSource{
-		Language: opt.Lang,
-		Source:   string(opt.Body),
-	}
-
-	project, err := api.Pack(opt.Name, fn)
+	service, err := api.Build(opt.Project)
 	if err != nil {
-		log.Fatalf("Pack Service: %v", err)
+		log.Fatalf("Build Service %s: %v", opt.Name, err)
 		return err
 	}
-	log.Infof("Pack Service: %s", constants.CheckedSymbol)
-
-	service, err := api.Build(project)
-	if err != nil {
-		log.Fatalf("Build Service: %v", err)
-		return err
-	}
-	log.Infof("Build Service: %s", constants.CheckedSymbol)
+	log.Infof("Build Service %s: %s", opt.Name, constants.CheckedSymbol)
 
 	if err := api.Run(opt.Port, &service); err != nil {
 		log.Fatalf("Run Service: %v", err)

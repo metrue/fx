@@ -1,12 +1,18 @@
-package api
+package packer
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 
+	"github.com/gobuffalo/packr"
 	"github.com/metrue/fx/types"
 )
+
+// DockerPacker pack a function source code to a Docker build-able project
+type DockerPacker struct {
+	box packr.Box
+}
 
 func isHandler(lang string, name string) bool {
 	basename := filepath.Base(name)
@@ -16,13 +22,18 @@ func isHandler(lang string, name string) bool {
 		nameWithoutExt == "mod" // mod.rs is for Rust
 }
 
+// NewDockerPacker new a Docker packer
+func NewDockerPacker(box packr.Box) *DockerPacker {
+	return &DockerPacker{box: box}
+}
+
 // Pack pack a single function source code to be project
-func (api *API) Pack(serviceName string, fn types.ServiceFunctionSource) (types.Project, error) {
+func (p *DockerPacker) Pack(serviceName string, fn types.ServiceFunctionSource) (types.Project, error) {
 	var files []types.ProjectSourceFile
-	for _, name := range api.box.List() {
+	for _, name := range p.box.List() {
 		prefix := fmt.Sprintf("%s/", fn.Language)
 		if strings.HasPrefix(name, prefix) {
-			content, err := api.box.FindString(name)
+			content, err := p.box.FindString(name)
 			if err != nil {
 				return types.Project{}, err
 			}

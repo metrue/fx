@@ -11,35 +11,28 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
-	"github.com/gobuffalo/packr"
 	"github.com/google/go-querystring/query"
-	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/types"
+	"github.com/metrue/fx/utils"
 )
 
 // API interact with dockerd http api
 type API struct {
 	endpoint string
-	box      packr.Box
 	version  string
 }
 
-// New an API
-func New(box packr.Box) *API {
-	return &API{box: box}
-}
-
-// Init init api
-func (api *API) Init(host config.Host) error {
-	url := fmt.Sprintf("http://%s:%s", host.Host, constants.AgentPort)
-	version, err := api.Version(url)
+// Create a API
+func Create(host string, port string) (*API, error) {
+	version, err := utils.DockerVersion(host, port)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	api.version = version
-	api.endpoint = fmt.Sprintf("%s/v%s", url, version)
-	return nil
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
+	return &API{
+		endpoint: endpoint,
+		version:  version,
+	}, nil
 }
 
 func (api *API) get(path string, qs string, v interface{}) error {

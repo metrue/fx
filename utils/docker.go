@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"encoding/json"
@@ -11,15 +11,14 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 )
 
-// Version get version of dockerd server
-func (api *API) Version(base string) (string, error) {
-	path := "/version"
-	url := fmt.Sprintf("%s%s", base, path)
-	if !strings.HasPrefix(url, "http") {
-		url = "http://" + url
+// DockerVersion docker verion
+func DockerVersion(host string, port string) (string, error) {
+	path := host + ":" + port + "/version"
+	if !strings.HasPrefix(path, "http") {
+		path = "http://" + path
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", path, nil)
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +29,7 @@ func (api *API) Version(base string) (string, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("request %s failed: %d - %s", url, resp.StatusCode, resp.Status)
+		return "", fmt.Errorf("request %s failed: %d - %s", path, resp.StatusCode, resp.Status)
 	}
 
 	defer resp.Body.Close()

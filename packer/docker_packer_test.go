@@ -1,11 +1,10 @@
-package api
+package packer
 
 import (
 	"testing"
 
 	"github.com/gobuffalo/packr"
 	"github.com/golang/mock/gomock"
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/types"
 )
 
@@ -13,12 +12,8 @@ func TestPacker(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	host := config.Host{Host: "127.0.0.1"}
-	box := packr.NewBox("./images")
-	api := New(box)
-	if err := api.Init(host); err != nil {
-		t.Fatal(err)
-	}
+	box := packr.NewBox("../api/images")
+	p := NewDockerPacker(box)
 
 	mockSource := `
 module.exports = ({a, b}) => {
@@ -31,7 +26,7 @@ module.exports = ({a, b}) => {
 	}
 
 	serviceName := "service-mock"
-	project, err := api.Pack(serviceName, fn)
+	project, err := p.Pack(serviceName, fn)
 	if err != nil {
 		t.Fatal(err)
 	}

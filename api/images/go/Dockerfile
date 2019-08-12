@@ -1,4 +1,4 @@
-FROM metrue/fx-golang-base:latest
+FROM metrue/fx-go-base:latest
 
 COPY . /go/src/github.com/metrue/fx
 WORKDIR /go/src/github.com/metrue/fx
