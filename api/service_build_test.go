@@ -90,7 +90,7 @@ func TestBuild(t *testing.T) {
 	defer gock.Off()
 
 	host := config.Host{Host: "127.0.0.1"}
-	api, err := createAPI(host.Host, constants.AgentPort)
+	api, err := Create(host.Host, constants.AgentPort)
 	if err != nil {
 		t.Fatal(err)
 	}

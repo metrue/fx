@@ -11,7 +11,6 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
-	"github.com/gobuffalo/packr"
 	"github.com/google/go-querystring/query"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
@@ -21,30 +20,19 @@ import (
 type API struct {
 	endpoint string
 	version  string
-	box      packr.Box
 }
 
-// New an API
-func New(
-	box packr.Box,
-	endpoint string,
-	version string,
-) *API {
-	return &API{
-		box:      box,
-		endpoint: endpoint,
-		version:  version,
-	}
-}
-
-func createAPI(host string, port string) (*API, error) {
+// Create a API
+func Create(host string, port string) (*API, error) {
 	version, err := utils.DockerVersion(host, port)
 	if err != nil {
 		return nil, err
 	}
 	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
-	box := packr.NewBox("./images")
-	return New(box, endpoint, version), nil
+	return &API{
+		endpoint: endpoint,
+		version:  version,
+	}, nil
 }
 
 func (api *API) get(path string, qs string, v interface{}) error {

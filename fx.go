@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -15,16 +14,23 @@ import (
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/doctor"
+	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/provision"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/urfave/cli"
 )
 
 var cfg *config.Config
+var packeer *packer.DockerPacker
 
 func init() {
 	configDir := path.Join(os.Getenv("HOME"), ".fx")
 	cfg := config.New(configDir)
+
+	box := packr.NewBox("./api/images")
+	packeer = packer.NewDockerPacker(box)
+
 	if err := cfg.Init(); err != nil {
 		log.Fatalf("Init config failed %s", err)
 		os.Exit(1)
@@ -32,13 +38,11 @@ func init() {
 }
 
 func fx(host config.Host) *api.API {
-	box := packr.NewBox("./api/images")
-	version, err := utils.DockerVersion(host.Host, constants.AgentPort)
+	f, err := api.Create(host.Host, constants.AgentPort)
 	if err != nil {
-		log.Fatalf("Could not get version of Docker engine version, %v", err)
+		log.Fatalf("Could not create API instance: %v", err)
 	}
-	endpoint := fmt.Sprintf("http://%s:%s/v%s", host.Host, constants.AgentPort, version)
-	return api.New(box, endpoint, version)
+	return f
 }
 
 func main() {
@@ -216,6 +220,15 @@ func main() {
 				}
 				lang := utils.GetLangFromFileName(funcFile)
 
+				fn := types.ServiceFunctionSource{
+					Language: lang,
+					Source:   string(body),
+				}
+				project, err := packeer.Pack(name, fn)
+				if err != nil {
+					panic(err)
+				}
+
 				for n, host := range hosts {
 					if !host.Provisioned {
 						provisionor := provision.New(host)
@@ -235,6 +248,7 @@ func main() {
 						Name:       name,
 						Port:       port,
 						HealtCheck: c.Bool("healthcheck"),
+						Project:    project,
 					}); err != nil {
 						log.Fatalf("up function %s(%s) to machine %s failed: %v", name, funcFile, n, err)
 					} else {
@@ -295,8 +309,27 @@ func main() {
 				if err != nil {
 					log.Fatalf("list active machines failed: %v", err)
 				}
+
+				file := c.Args().First()
+				src, err := ioutil.ReadFile(file)
+				if err != nil {
+					log.Fatalf("Read Source: %v", err)
+					return err
+				}
+				log.Info("Read Source: \u2713")
+
+				lang := utils.GetLangFromFileName(file)
+				fn := types.ServiceFunctionSource{
+					Language: lang,
+					Source:   string(src),
+				}
+				project, err := packeer.Pack(file, fn)
+				if err != nil {
+					panic(err)
+				}
+
 				for name, host := range hosts {
-					if err := fx(host).Call(c.Args().First(), params); err != nil {
+					if err := fx(host).Call(file, params, project); err != nil {
 						log.Fatalf("call functions on machine %s with %v failed: %v", name, params, err)
 					}
 				}

@@ -18,7 +18,7 @@ func TestServiceRun(t *testing.T) {
 	defer ctrl.Finish()
 
 	host := config.Host{Host: "127.0.0.1"}
-	api, err := createAPI(host.Host, constants.AgentPort)
+	api, err := Create(host.Host, constants.AgentPort)
 	if err != nil {
 		t.Fatal(err)
 	}

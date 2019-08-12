@@ -10,33 +10,12 @@ import (
 	"time"
 
 	"github.com/apex/log"
-	"github.com/google/uuid"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 )
 
 // Call function directly with given params
-func (api *API) Call(file string, param string) error {
-	src, err := ioutil.ReadFile(file)
-	if err != nil {
-		log.Fatalf("Read Source: %v", err)
-		return err
-	}
-	log.Info("Read Source: \u2713")
-
-	lang := utils.GetLangFromFileName(file)
-	fn := types.ServiceFunctionSource{
-		Language: lang,
-		Source:   string(src),
-	}
-
-	project, err := api.Pack(uuid.New().String(), fn)
-	if err != nil {
-		log.Fatalf("Pack Service: %v", err)
-		return err
-	}
-	log.Info("Pack Service: \u2713")
-
+func (api *API) Call(file string, param string, project types.Project) error {
 	service, err := api.Build(project)
 	if err != nil {
 		log.Fatalf("Build Service: %v", err)

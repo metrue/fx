@@ -18,7 +18,7 @@ jobs:
         ./scripts/provision.sh
         docker ps
 
-    - name: unit test
+    - name: Unit Test
       working-directory:
       run: |
         docker ps
