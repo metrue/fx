@@ -3,7 +3,7 @@ package utils
 import "testing"
 
 func TestDockerVersion(t *testing.T) {
-	host := "localhost"
+	host := "127.0.0.1"
 	port := "8866"
 	version, err := DockerVersion(host, port)
 	if err != nil {

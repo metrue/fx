@@ -19,13 +19,13 @@ jobs:
           docker ps
 
       # TODO enable when GITHUB fix the localhost network access issue
-      # - name: Unit Test
-      #   working-directory:
-      #   run: |
-      #     docker ps
-      #     curl http://127.0.0.1:8866/version
-      #     curl http://localhost:8866/version
-      #     go test -v ./...
+      - name: Unit Test
+        working-directory:
+        run: |
+          docker ps
+          curl http://127.0.0.1:8866/version
+          curl http://localhost:8866/version
+          go test -v ./...
 
   BuildDockerImages:
     needs: [UnitTest]
