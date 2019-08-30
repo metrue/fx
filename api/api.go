@@ -164,7 +164,7 @@ func (api *API) list(name string) ([]types.Service, error) {
 		// https://github.com/moby/moby/issues/6705
 		if strings.HasPrefix(container.Names[0], fmt.Sprintf("/%s", name)) {
 			svs[container.Image] = types.Service{
-				Name:  name,
+				Name:  container.Names[0],
 				Image: container.Image,
 				ID:    container.ID,
 				Host:  container.Ports[0].IP,

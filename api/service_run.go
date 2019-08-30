@@ -23,8 +23,7 @@ type ContainerCreateRequestPayload struct {
 // Run a service
 func (api *API) Run(port int, service *types.Service) error {
 	config := &container.Config{
-		Image:  service.Image,
-		Labels: map[string]string{},
+		Image: service.Image,
 		ExposedPorts: nat.PortSet{
 			"3000/tcp": struct{}{},
 		},
