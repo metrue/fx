@@ -11,10 +11,13 @@ import (
 // Configer interface
 type Configer interface {
 	GetMachine(name string) (Host, error)
+	AddMachine(name string, host Host) error
+	RemoveHost(name string) error
 	ListActiveMachines() (map[string]Host, error)
 	ListMachines() (map[string]Host, error)
 	EnableMachine(name string) error
 	DisableMachine(name string) error
+	UpdateProvisionedStatus(name string, ok bool) error
 }
 
 // Config config of fx
@@ -121,7 +124,9 @@ func (c *Config) RemoveHost(name string) error {
 
 	if _, ok := hosts[name]; ok {
 		delete(hosts, name)
-		return nil
+
+		viper.Set("hosts", hosts)
+		return viper.WriteConfig()
 	}
 	return fmt.Errorf("no such host %s", name)
 }
