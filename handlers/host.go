@@ -31,7 +31,7 @@ func AddHost(cfg config.Configer) HandleFunc {
 	}
 }
 
-// RemoveHost remote a host
+// RemoveHost remove a host
 func RemoveHost(cfg config.Configer) HandleFunc {
 	return func(ctx *cli.Context) error {
 		name := ctx.Args().First()

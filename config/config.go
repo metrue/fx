@@ -124,7 +124,9 @@ func (c *Config) RemoveHost(name string) error {
 
 	if _, ok := hosts[name]; ok {
 		delete(hosts, name)
-		return nil
+
+		viper.Set("hosts", hosts)
+		return viper.WriteConfig()
 	}
 	return fmt.Errorf("no such host %s", name)
 }
