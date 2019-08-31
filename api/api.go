@@ -35,6 +35,19 @@ func Create(host string, port string) (*API, error) {
 	}, nil
 }
 
+// MustCreate a api object, panic if not
+func MustCreate(host string, port string) *API {
+	version, err := utils.DockerVersion(host, port)
+	if err != nil {
+		panic(err)
+	}
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
+	return &API{
+		endpoint: endpoint,
+		version:  version,
+	}
+}
+
 func (api *API) get(path string, qs string, v interface{}) error {
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
 	if !strings.HasPrefix(url, "http") {
@@ -164,7 +177,7 @@ func (api *API) list(name string) ([]types.Service, error) {
 		// https://github.com/moby/moby/issues/6705
 		if strings.HasPrefix(container.Names[0], fmt.Sprintf("/%s", name)) {
 			svs[container.Image] = types.Service{
-				Name:  name,
+				Name:  container.Names[0],
 				Image: container.Image,
 				ID:    container.ID,
 				Host:  container.Ports[0].IP,
