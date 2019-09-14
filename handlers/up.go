@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/apex/log"
@@ -14,6 +15,15 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
+
+// PortRange usable port range https: //en.wikipedia.org/wiki/Ephemeral_port
+var PortRange = struct {
+	min int
+	max int
+}{
+	min: 1023,
+	max: 65535,
+}
 
 // Up command handle
 func Up(cfg config.Configer, packeer packer.Packer) HandleFunc {
@@ -35,8 +45,8 @@ func Up(cfg config.Configer, packeer packer.Packer) HandleFunc {
 			log.Infof("function %s (%s) deployed successfully", name, funcFile)
 		}()
 
-		if port == 0 {
-			return errors.New("invalid port")
+		if port < PortRange.min || port > PortRange.max {
+			return fmt.Errorf("invalid port number: %d, port number should in range of %d -  %d", port, PortRange.min, PortRange.max)
 		}
 		hosts, err := cfg.ListActiveMachines()
 		if err != nil {
