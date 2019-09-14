@@ -3,9 +3,11 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
+	"github.com/apex/log"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
@@ -60,6 +62,8 @@ func (api *API) Run(port int, service *types.Service) error {
 		return fmt.Errorf("container id is missing")
 	}
 
+	log.Infof("container %s created", service.Name)
+
 	// start container
 	path = fmt.Sprintf("/containers/%s/start", createRes.ID)
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
@@ -68,13 +72,26 @@ func (api *API) Run(port int, service *types.Service) error {
 		return errors.Wrap(err, "error new container create request")
 	}
 	client := &http.Client{Timeout: 20 * time.Second}
-	if _, err = client.Do(request); err != nil {
+	resp, err := client.Do(request)
+	if err != nil {
 		return errors.Wrap(err, "error do start container request")
 	}
 
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if len(b) != 0 {
+		msg := fmt.Sprintf("start container met issue: %s", string(b))
+		return errors.New(msg)
+	}
+	log.Infof("container %s started", service.Name)
+
 	info, err := api.inspect(createRes.ID)
 	if err != nil {
-		msg := fmt.Sprintf("inspect container %s error", createRes.ID)
+		msg := fmt.Sprintf("inspect container %s error", service.Name)
 		return errors.Wrap(err, msg)
 	}
 	service.ID = info.ID
