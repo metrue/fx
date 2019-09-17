@@ -19,7 +19,7 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet me [@
 | ------------- |:-------------:|:-------------:| :-------------:|
 | Go            | Supported     | fx            | [/examples/Golang](https://github.com/metrue/fx/tree/master/examples/functions/Golang) |
 | Rust          | Supported     | [@FrontMage](https://github.com/FrontMage)| [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/Rust) |
-| Node          | Supported     | fx            | [/examples/Rust](https://github.com/metrue/fx/tree/master/examples/functions/JavaScript) |
+| Node          | Supported     | fx            | [/examples/JavaScript](https://github.com/metrue/fx/tree/master/examples/functions/JavaScript) |
 | Python        | Supported     | fx            | [/examples/Python](https://github.com/metrue/fx/tree/master/examples/functions/Python) |
 | Ruby          | Supported     | fx            | [/examples/Ruby](https://github.com/metrue/fx/tree/master/examples/functions/Ruby) |
 | Java          | Supported     | fx            | [/examples/Java](https://github.com/metrue/fx/tree/master/examples/functions/Java) |
