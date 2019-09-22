@@ -22,14 +22,37 @@ type ContainerCreateRequestPayload struct {
 	NetworkingConfig *network.NetworkingConfig
 }
 
+const fxNetworkName = "fx-net"
+
 // Run a service
 func (api *API) Run(port int, service *types.Service) error {
+	networks, err := api.GetNetwork(fxNetworkName)
+	if err != nil {
+		return errors.Wrapf(err, "get network failed: %s", err)
+	}
+
+	if len(networks) == 0 {
+		if err := api.CreateNetwork(fxNetworkName); err != nil {
+			return errors.Wrapf(err, "error create network: %s", err)
+		}
+	}
+	networks, _ = api.GetNetwork(fxNetworkName)
 	config := &container.Config{
 		Image: service.Image,
 		ExposedPorts: nat.PortSet{
 			"3000/tcp": struct{}{},
 		},
 	}
+
+	endpoint := &network.EndpointSettings{
+		NetworkID: networks[0].ID,
+	}
+	networkConfig := &network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{
+			"fx-net": endpoint,
+		},
+	}
+
 	hostConfig := &container.HostConfig{
 		AutoRemove: true,
 		PortBindings: nat.PortMap{
@@ -42,8 +65,9 @@ func (api *API) Run(port int, service *types.Service) error {
 		},
 	}
 	req := ContainerCreateRequestPayload{
-		Config:     config,
-		HostConfig: hostConfig,
+		Config:           config,
+		HostConfig:       hostConfig,
+		NetworkingConfig: networkConfig,
 	}
 
 	body, err := json.Marshal(req)
