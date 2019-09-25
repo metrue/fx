@@ -69,10 +69,11 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.5.1
+   0.6.0
 
 COMMANDS:
    infra     manage infrastructure of fx
+   image     manage image of service
    doctor    health check for fx
    up        deploy a function or a group of functions
    down      destroy a service
@@ -163,6 +164,13 @@ $ fx up -name fx_service_name -p 10001 --healthcheck func.js
 2019/08/10 13:26:39  info Run Service: ✓
 2019/08/10 13:26:39  info Service (fx_service_name) is running on: 0.0.0.0:10001
 2019/08/10 13:26:39  info up function fx_service_name(func.js) to machine localhost: ✓
+```
+
+if you want see what the source code of your service looks like, you can export it into a dirctory,
+
+```shell
+$ fx image export -o <path of dir> func.js
+2019/09/25 19:31:19  info exported to <path of dir>: ✓
 ```
 
 4. Test your service

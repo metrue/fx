@@ -51,9 +51,24 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	if err := makeTar(project, tarFilePath); err != nil {
 		return types.Service{}, err
 	}
-	dockerBuildContext, err := os.Open(tarFilePath)
-	if err != nil {
+	labels := map[string]string{
+		"belong-to": "fx",
+	}
+	if err := api.BuildImage(tarFilePath, imageID, labels); err != nil {
 		return types.Service{}, err
+	}
+
+	return types.Service{
+		Name:  project.Name,
+		Image: imageID,
+	}, nil
+}
+
+// BuildImage build docker image
+func (api *API) BuildImage(tarFile string, tag string, labels map[string]string) error {
+	dockerBuildContext, err := os.Open(tarFile)
+	if err != nil {
+		return err
 	}
 	defer dockerBuildContext.Close()
 
@@ -64,34 +79,29 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 	}
 
 	// Apply default labels
-	labelsJSON, _ := json.Marshal(
-		map[string]string{
-			"belong-to": "fx",
-		},
-	)
-
+	labelsJSON, _ := json.Marshal(labels)
 	q := buildQuery{
-		Tags:       imageID,
+		Tags:       tag,
 		Labels:     string(labelsJSON),
 		Dockerfile: "Dockerfile",
 	}
 	qs, err := query.Values(q)
 	if err != nil {
-		return types.Service{}, err
+		return err
 	}
 
 	path := "/build"
 	url := fmt.Sprintf("%s%s?%s", api.endpoint, path, qs.Encode())
 	req, err := http.NewRequest("POST", url, dockerBuildContext)
 	if err != nil {
-		return types.Service{}, err
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/x-tar")
 	client := &http.Client{Timeout: 600 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return types.Service{}, err
+		return err
 	}
 
 	defer resp.Body.Close()
@@ -103,11 +113,7 @@ func (api *API) Build(project types.Project) (types.Service, error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return types.Service{}, err
+		return err
 	}
-
-	return types.Service{
-		Name:  project.Name,
-		Image: imageID,
-	}, nil
+	return nil
 }

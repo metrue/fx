@@ -7,7 +7,7 @@ lint:
 generate:
 	packr
 
-build: generate
+build:
 	go build -o ${OUTPUT_DIR}/fx fx.go
 
 pull:
@@ -20,13 +20,13 @@ clean:
 	rm -rf ${OUTPUT_DIR}
 	rm -rf ${DIST_DIR}
 
-unit-test: generate
+unit-test:
 	./scripts/coverage.sh
 
-cli-test: generate
+cli-test:
 	./scripts/test_cli.sh
 
-http-test: generate
+http-test:
 	./scripts/http_test.sh
 
 zip:

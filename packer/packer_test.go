@@ -3,17 +3,13 @@ package packer
 import (
 	"testing"
 
-	"github.com/gobuffalo/packr"
 	"github.com/golang/mock/gomock"
 	"github.com/metrue/fx/types"
 )
 
-func TestPacker(t *testing.T) {
+func TestPack(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	box := packr.NewBox("./images")
-	p := NewDockerPacker(box)
 
 	mockSource := `
 module.exports = ({a, b}) => {
@@ -26,7 +22,7 @@ module.exports = ({a, b}) => {
 	}
 
 	serviceName := "service-mock"
-	project, err := p.Pack(serviceName, fn)
+	project, err := Pack(serviceName, fn)
 	if err != nil {
 		t.Fatal(err)
 	}

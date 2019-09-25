@@ -15,7 +15,7 @@ import (
 )
 
 // Call command handle
-func Call(cfg config.Configer, packeer packer.Packer) HandleFunc {
+func Call(cfg config.Configer) HandleFunc {
 	return func(ctx *cli.Context) error {
 		params := strings.Join(ctx.Args()[1:], " ")
 		hosts, err := cfg.ListActiveMachines()
@@ -36,7 +36,7 @@ func Call(cfg config.Configer, packeer packer.Packer) HandleFunc {
 			Language: lang,
 			Source:   string(src),
 		}
-		project, err := packeer.Pack(file, fn)
+		project, err := packer.Pack(file, fn)
 		if err != nil {
 			panic(err)
 		}
