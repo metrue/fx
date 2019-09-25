@@ -26,7 +26,7 @@ var PortRange = struct {
 }
 
 // Up command handle
-func Up(cfg config.Configer, packeer packer.Packer) HandleFunc {
+func Up(cfg config.Configer) HandleFunc {
 	return func(ctx *cli.Context) (err error) {
 		funcFile := ctx.Args().First()
 		name := ctx.String("name")
@@ -80,7 +80,7 @@ func Up(cfg config.Configer, packeer packer.Packer) HandleFunc {
 			Language: lang,
 			Source:   string(body),
 		}
-		project, err := packeer.Pack(name, fn)
+		project, err := packer.Pack(name, fn)
 		if err != nil {
 			return errors.Wrapf(err, "could pack function %s (%s)", name, funcFile)
 		}
@@ -89,9 +89,9 @@ func Up(cfg config.Configer, packeer packer.Packer) HandleFunc {
 			if !host.Provisioned {
 				provisionor := provision.New(host)
 				if err := provisionor.Start(); err != nil {
-					return errors.Wrapf(err, "could not provision %s", name)
+					return errors.Wrapf(err, "could not provision %s", n)
 				}
-				log.Infof("provision machine %v: %s", name, constants.CheckedSymbol)
+				log.Infof("provision machine %v: %s", n, constants.CheckedSymbol)
 				if err := cfg.UpdateProvisionedStatus(n, true); err != nil {
 					return errors.Wrap(err, "update machine provision status failed")
 				}

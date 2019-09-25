@@ -16,7 +16,14 @@ jobs:
       - name: Provision Docker Enviroment for Ubuntu
         run: |
           ./scripts/provision.sh
-          docker ps
+
+      - name: Build fx
+        run: |
+          make build
+
+      - name: CLI test
+        run: |
+          make cli-test
 
       # TODO enable when GITHUB fix the localhost network access issue
       # - name: Unit Test

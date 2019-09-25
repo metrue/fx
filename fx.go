@@ -5,23 +5,17 @@ import (
 	"path"
 
 	"github.com/apex/log"
-	"github.com/gobuffalo/packr"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/handlers"
-	"github.com/metrue/fx/packer"
 	"github.com/urfave/cli"
 )
 
 var cfg *config.Config
-var packeer *packer.DockerPacker
 
 func init() {
 	configDir := path.Join(os.Getenv("HOME"), ".fx")
 	cfg := config.New(configDir)
-
-	box := packr.NewBox("./api/images")
-	packeer = packer.NewDockerPacker(box)
 
 	if err := cfg.Init(); err != nil {
 		log.Fatalf("Init config failed %s", err)
@@ -33,7 +27,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
-	app.Version = "0.5.7"
+	app.Version = "0.6.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -97,6 +91,38 @@ func main() {
 			},
 		},
 		{
+			Name:  "image",
+			Usage: "manage image of service",
+			Subcommands: []cli.Command{
+				{
+					Name:  "build",
+					Usage: "build a image",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "tag, t",
+							Usage: "image tag",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						return handlers.BuildImage(cfg)(c)
+					},
+				},
+				{
+					Name:  "export",
+					Usage: "export the Docker project of service",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output, o",
+							Usage: "output directory",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						return handlers.ExportImage()(c)
+					},
+				},
+			},
+		},
+		{
 			Name:  "doctor",
 			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
@@ -127,7 +153,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Up(cfg, packeer)(c)
+				return handlers.Up(cfg)(c)
 			},
 		},
 		{
@@ -156,7 +182,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Call(cfg, packeer)(c)
+				return handlers.Call(cfg)(c)
 			},
 		},
 	}
