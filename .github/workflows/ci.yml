@@ -27,6 +27,12 @@ jobs:
           wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 && chmod +x kind-linux-amd64 && mv kind-linux-amd64 $GOBIN/kind
           ./scripts/setup_kind.sh
 
+      - name: unit test
+        run: |
+          export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
+          cd ./kubernetes && go test -v ./...
+
+
       - name: Build fx
         run: |
           make build
