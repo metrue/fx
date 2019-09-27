@@ -1,9 +1,7 @@
 package kubernetes
 
 import (
-	"flag"
 	"os"
-	"path/filepath"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -74,24 +72,15 @@ func (k *K8S) CreatePod(namespace string, name string, image string, port int32)
 }
 
 // New create a k8s cluster client
-func New() *K8S {
-	var kubeconfig *string
-	if home := homeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
-	flag.Parse()
-
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+func New(kubeconfig string) (*K8S, error) {
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
-	return &K8S{clientset}
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	if err != nil {
+		return nil, err
+	}
+	return &K8S{clientset}, nil
 }

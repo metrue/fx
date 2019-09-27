@@ -2,13 +2,23 @@ package kubernetes
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
 func TestK8S(t *testing.T) {
-	k8s := New()
-	if k8s == nil {
-		t.Fatalf("k8s client new failed")
+	kubeconfig := os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		t.Skip("skip test since no KUBECONFIG given in environment variable")
+	}
+	k8s, err := New(kubeconfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newPod, err := k8s.CreatePod("default", "test-fx-pod", "metrue/kube-hello", 3000)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	podList, err := k8s.ListPods()
@@ -19,18 +29,14 @@ func TestK8S(t *testing.T) {
 		t.Fatal("pod number should > 0")
 	}
 
-	name := "fx-kube-1-6954f99b9b-ls5zs"
-	pod, err := k8s.GetPod("default", name)
+	pod := podList.Items[0]
+	p, err := k8s.GetPod("default", pod.Name)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if pod.Name != name {
-		t.Fatalf("should get %s but got %s", name, pod.Name)
+	if p.Name != pod.Name {
+		t.Fatalf("should get %s but got %s", pod.Name, p.Name)
 	}
 
-	newPod, err := k8s.CreatePod("default", "test-fx-pod", "metrue/kube-hello", 3000)
-	if err != nil {
-		t.Fatal(err)
-	}
 	fmt.Println(newPod.Name)
 }
