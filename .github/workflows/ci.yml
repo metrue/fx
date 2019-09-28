@@ -13,11 +13,6 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
-      - name: lint
-        uses: actions-contrib/golangci-lint@master
-        with:
-          args: run
-
       - name: setup docker
         run: |
           ./scripts/provision.sh
@@ -37,10 +32,15 @@ jobs:
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
           cd ./kubernetes && go test -v ./...
 
-
       - name: build fx
         run: |
           make build
+
+      - name: lint
+        uses: actions-contrib/golangci-lint@master
+        with:
+          args: run
+
 
       - name: test fx cli
         run: |
