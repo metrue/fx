@@ -61,4 +61,7 @@ func TestK8S(t *testing.T) {
 		t.Fatalf("should get %s but got %s", serviceName, svc.Name)
 	}
 	// TODO check service status
+	if err := k8s.DeleteService(namespace, serviceName); err != nil {
+		t.Fatal(err)
+	}
 }

@@ -43,4 +43,8 @@ func (k *K8S) CreateService(
 }
 
 // DeleteService a service
-func (k *K8S) DeleteService() {}
+func (k *K8S) DeleteService(namespace string, name string) error {
+	// TODO figure out the elegant way to delete a service
+	options := &metav1.DeleteOptions{}
+	return k.CoreV1().Services(namespace).Delete(name, options)
+}
