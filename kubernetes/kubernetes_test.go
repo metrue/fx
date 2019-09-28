@@ -20,7 +20,10 @@ func TestK8S(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	newPod, err := k8s.CreatePod(namespace, podName, image, port, map[string]string{})
+	labels := map[string]string{
+		"fx-app": "fx-app",
+	}
+	newPod, err := k8s.CreatePod(namespace, podName, image, port, labels)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,4 +51,14 @@ func TestK8S(t *testing.T) {
 	if err := k8s.DeletePod(namespace, podName); err != nil {
 		t.Fatal(err)
 	}
+
+	serviceName := podName + "-svc"
+	svc, err := k8s.CreateService(namespace, serviceName, "LoadBalancer", []int32{port}, labels)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if svc.Name != serviceName {
+		t.Fatalf("should get %s but got %s", serviceName, svc.Name)
+	}
+	// TODO check service status
 }
