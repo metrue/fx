@@ -20,7 +20,7 @@ func TestK8S(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	newPod, err := k8s.CreatePod(namespace, podName, image, port)
+	newPod, err := k8s.CreatePod(namespace, podName, image, port, map[string]string{})
 	if err != nil {
 		t.Fatal(err)
 	}
