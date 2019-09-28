@@ -62,6 +62,13 @@ func (k *K8S) CreatePod(namespace string, name string, image string, port int32)
 	return createdPod, nil
 }
 
+// DeletePod delete a pod
+func (k *K8S) DeletePod(namespace string, name string) error {
+	// TODO figure how to delete a pod in a elegant way
+	options := metav1.DeleteOptions{}
+	return k.CoreV1().Pods(namespace).Delete(name, &options)
+}
+
 // New create a k8s cluster client
 func New(kubeconfig string) (*K8S, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
