@@ -1,0 +1,57 @@
+on:
+  schedule:
+    - cron: '0 12 * * *'
+name: docker
+jobs:
+  Docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: login
+        uses: actions/docker/login@8cdf801b322af5f369e00d85e9cf3a7122f49108
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: build-fx-go-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-go-base:latest -f api/asserts/dockerfiles/base/go/Dockerfile
+            api/asserts/dockerfiles/base/go
+
+      - name: push-fx-go-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-go-base:latest
+
+      - name: build-fx-rust-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-rust-base:latest -f api/asserts/dockerfiles/base/rust/Dockerfile
+            api/asserts/dockerfiles/base/rust
+
+      - name: push-fx-rust-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-rust-base:latest
+
+      - name: build-fx-node-image
+        uses: actions/docker/cli@master
+        with:
+          args: build -t metrue/fx-node-base:latest -f api/asserts/dockerfiles/base/node/Dockerfile
+            api/asserts/dockerfiles/base/node
+
+      - name: push-fx-node-image
+        uses: actions/docker/cli@master
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          args: push metrue/fx-node-base:latest
