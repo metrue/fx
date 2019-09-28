@@ -37,9 +37,11 @@ jobs:
           make build
 
       - name: lint
-        uses: actions-contrib/golangci-lint@master
-        with:
-          args: run
+        run: |
+          export GOBIN=$(go env GOPATH)/bin
+          export PATH=$PATH:$GOBIN
+          go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+          golangci-lint run
 
 
       - name: test fx cli
