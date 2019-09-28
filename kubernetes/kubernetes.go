@@ -31,7 +31,13 @@ func (k *K8S) ListPods() (*v1.PodList, error) {
 }
 
 // CreatePod create a pod
-func (k *K8S) CreatePod(namespace string, name string, image string, port int32) (*v1.Pod, error) {
+func (k *K8S) CreatePod(
+	namespace string,
+	name string,
+	image string,
+	port int32,
+	labels map[string]string,
+) (*v1.Pod, error) {
 	container := v1.Container{
 		Name:  "fx-placeholder-container-name",
 		Image: image,
@@ -46,7 +52,8 @@ func (k *K8S) CreatePod(namespace string, name string, image string, port int32)
 
 	pod := &v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
+			Name:   name,
+			Labels: labels,
 		},
 		Spec: v1.PodSpec{
 			Containers:    []v1.Container{container},
