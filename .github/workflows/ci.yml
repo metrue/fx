@@ -13,6 +13,11 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
+      - name: lint
+        uses: actions-contrib/golangci-lint@master
+        with:
+          args: run
+
       - name: setup docker
         run: |
           ./scripts/provision.sh
@@ -26,11 +31,6 @@ jobs:
           chmod +x kubectl && mv kubectl $GOBIN
           wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 && chmod +x kind-linux-amd64 && mv kind-linux-amd64 $GOBIN/kind
           ./scripts/setup_kind.sh
-
-      - name: lint
-        uses: actions-contrib/golangci-lint@master
-        with:
-          args: run
 
       - name: unit test
         run: |
