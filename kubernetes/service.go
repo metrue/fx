@@ -3,6 +3,7 @@ package kubernetes
 import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	intstr "k8s.io/apimachinery/pkg/util/intstr"
 )
 
 // CreateService create a service
@@ -19,6 +20,8 @@ func (k *K8S) CreateService(
 			Name:     "fx-function-as-an-api", // TODO maybe no need to set a name
 			Protocol: v1.ProtocolTCP,
 			Port:     port,
+			// NodePort:   30001,   // will be random issued
+			TargetPort: intstr.FromInt(int(port)),
 		})
 	}
 
