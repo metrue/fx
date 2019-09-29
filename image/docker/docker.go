@@ -11,7 +11,7 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/google/uuid"
-	"github.com/metrue/fx/builders"
+	"github.com/metrue/fx/image"
 	"github.com/metrue/fx/utils"
 )
 
@@ -79,5 +79,5 @@ func (d *Docker) Build(workdir string, name string) error {
 }
 
 var (
-	_ builders.Builder = &Docker{}
+	_ image.Builder = &Docker{}
 )

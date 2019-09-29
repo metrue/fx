@@ -3,11 +3,15 @@ package handlers
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/apex/log"
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/container"
+	"github.com/metrue/fx/container/kubernetes"
+	"github.com/metrue/fx/image/docker"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/provision"
 	"github.com/metrue/fx/types"
@@ -80,6 +84,36 @@ func Up(cfg config.Configer) HandleFunc {
 			Language: lang,
 			Source:   string(body),
 		}
+
+		// TODO refactor to runner manager stuff
+		var runner container.Runner
+		if os.Getenv("KUBECONFIG") != "" {
+			runner, err = kubernetes.Create()
+			if err != nil {
+				return err
+			}
+
+			wd, err := ioutil.TempDir("/tmp", "fx-wd")
+			if err != nil {
+				return err
+			}
+			if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
+				return err
+			}
+			imageBuilder, err := docker.CreateDocker()
+			if err != nil {
+				return err
+			}
+			if err := imageBuilder.Build(wd, name); err != nil {
+				return err
+			}
+
+			if err := runner.Deploy(name, name, int32(port), map[string]string{}); err != nil {
+				return err
+			}
+			return nil
+		}
+
 		project, err := packer.Pack(name, fn)
 		if err != nil {
 			return errors.Wrapf(err, "could pack function %s (%s)", name, funcFile)

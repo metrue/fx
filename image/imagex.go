@@ -1,4 +1,4 @@
-package builders
+package image
 
 // Builder image builder
 type Builder interface {

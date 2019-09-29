@@ -1,4 +1,4 @@
-package runners
+package container
 
 // Runner make a image a service
 type Runner interface {

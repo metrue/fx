@@ -1,7 +1,7 @@
 package rkt
 
 import (
-	"github.com/metrue/fx/builders"
+	"github.com/metrue/fx/image"
 )
 
 // Rkt rkt as a image builder
@@ -13,5 +13,5 @@ func (r *Rkt) Build(workdir string, name string) error {
 }
 
 var (
-	_ builders.Builder = &Rkt{}
+	_ image.Builder = &Rkt{}
 )

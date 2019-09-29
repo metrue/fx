@@ -1,7 +1,7 @@
 package docker
 
 import (
-	"github.com/metrue/fx/runners"
+	"github.com/metrue/fx/container"
 )
 
 type Docker struct {
@@ -24,5 +24,5 @@ func (d *Docker) GetStatus(name string, svc interface{}) error {
 }
 
 var (
-	_ runners.Runner = &Docker{}
+	_ container.Runner = &Docker{}
 )

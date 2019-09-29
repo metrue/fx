@@ -3,8 +3,6 @@ package kubernetes
 import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 // GetPod get a pod
@@ -69,18 +67,4 @@ func (k *K8S) DeletePod(namespace string, name string) error {
 	// TODO figure how to delete a pod in a elegant way
 	options := metav1.DeleteOptions{}
 	return k.CoreV1().Pods(namespace).Delete(name, &options)
-}
-
-// New create a k8s cluster client
-func New(kubeconfig string) (*K8S, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if err != nil {
-		return nil, err
-	}
-
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
-	return &K8S{clientset}, nil
 }

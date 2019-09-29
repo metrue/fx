@@ -1,13 +1,36 @@
 package kubernetes
 
 import (
-	"github.com/metrue/fx/runners"
+	"fmt"
+	"os"
+
+	"github.com/metrue/fx/container"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 // K8S client
 type K8S struct {
 	*kubernetes.Clientset
+}
+
+// Create a k8s cluster client
+func Create() (*K8S, error) {
+	kubeconfig := os.Getenv("KUBECONFIG")
+	if kubeconfig == "" {
+		return nil, fmt.Errorf("KUBECONFIG not given")
+	}
+
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if err != nil {
+		return nil, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return &K8S{clientset}, nil
 }
 
 // Deploy a image to be a service
@@ -65,5 +88,5 @@ func (k *K8S) GetStatus(name string, svc interface{}) error {
 }
 
 var (
-	_ runners.Runner = &K8S{}
+	_ container.Runner = &K8S{}
 )
