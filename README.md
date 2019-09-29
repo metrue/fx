@@ -202,7 +202,7 @@ hello world
 
 ## Contribute
 
-fx uses [Project](https://github.com/metrue/fx/projects) to manage the development.
+fx uses [Project](https://github.com/metrue/fx/projects/4) to manage the development.
 
 #### Prerequisites
 
