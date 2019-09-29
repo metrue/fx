@@ -30,7 +30,7 @@ jobs:
       - name: unit test
         run: |
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
-          cd ./runners && go test -v ./...
+          go test -v ./runners/... ./builders/...
 
       - name: build fx
         run: |
