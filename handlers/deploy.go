@@ -3,35 +3,27 @@ package handlers
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/apex/log"
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/container"
+	"github.com/metrue/fx/container/kubernetes"
+	"github.com/metrue/fx/image/docker"
 	"github.com/metrue/fx/packer"
-	"github.com/metrue/fx/provision"
-	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
 
-// PortRange usable port range https: //en.wikipedia.org/wiki/Ephemeral_port
-var PortRange = struct {
-	min int
-	max int
-}{
-	min: 1023,
-	max: 65535,
-}
-
-// Up command handle
-func Up(cfg config.Configer) HandleFunc {
+// Deploy deploy handle function
+func Deploy(cfg config.Configer) HandleFunc {
 	return func(ctx *cli.Context) (err error) {
 		funcFile := ctx.Args().First()
 		name := ctx.String("name")
 		port := ctx.Int("port")
-		healtcheck := ctx.Bool("healthcheck")
 		force := ctx.Bool("force")
 
 		defer func() {
@@ -76,41 +68,36 @@ func Up(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		fn := types.ServiceFunctionSource{
-			Language: lang,
-			Source:   string(body),
-		}
-
-		project, err := packer.Pack(name, fn)
-		if err != nil {
-			return errors.Wrapf(err, "could pack function %s (%s)", name, funcFile)
-		}
-
-		for n, host := range hosts {
-			if !host.Provisioned {
-				provisionor := provision.New(host)
-				if err := provisionor.Start(); err != nil {
-					return errors.Wrapf(err, "could not provision %s", n)
-				}
-				log.Infof("provision machine %v: %s", n, constants.CheckedSymbol)
-				if err := cfg.UpdateProvisionedStatus(n, true); err != nil {
-					return errors.Wrap(err, "update machine provision status failed")
-				}
+		// TODO refactor to runner manager stuff
+		var runner container.Runner
+		// TODO support docker also
+		if os.Getenv("KUBECONFIG") != "" {
+			runner, err = kubernetes.Create()
+			if err != nil {
+				return err
 			}
 
-			if err := api.MustCreate(host.Host, constants.AgentPort).
-				Up(api.UpOptions{
-					Body:       body,
-					Lang:       lang,
-					Name:       name,
-					Port:       port,
-					HealtCheck: healtcheck,
-					Project:    project,
-				}); err != nil {
-				return errors.Wrapf(err, "up function %s(%s) to machine %s failed", name, funcFile, n)
+			wd, err := ioutil.TempDir("/tmp", "fx-wd")
+			if err != nil {
+				return err
 			}
-			log.Infof("up function %s(%s) to machine %s: %v", name, funcFile, n, constants.CheckedSymbol)
+			if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
+				return err
+			}
+			imageBuilder, err := docker.CreateClient()
+			if err != nil {
+				return err
+			}
+			if err := imageBuilder.Build(wd, name); err != nil {
+				return err
+			}
+
+			if err := runner.Deploy(name, name, int32(port), map[string]string{}); err != nil {
+				return err
+			}
+			return nil
 		}
-		return nil
+
+		return fmt.Errorf("KUBECONFIG not ready")
 	}
 }

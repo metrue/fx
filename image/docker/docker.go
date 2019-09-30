@@ -20,8 +20,8 @@ type Docker struct {
 	*client.Client
 }
 
-// CreateDocker create a docker instance
-func CreateDocker() (*Docker, error) {
+// CreateClient create a docker instance
+func CreateClient() (*Docker, error) {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
