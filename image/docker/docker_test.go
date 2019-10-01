@@ -3,7 +3,7 @@ package docker
 import "testing"
 
 func TestDocker(t *testing.T) {
-	cli, err := CreateDocker()
+	cli, err := CreateClient()
 	if err != nil {
 		t.Fatal(err)
 	}
