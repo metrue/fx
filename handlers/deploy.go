@@ -91,8 +91,12 @@ func Deploy(cfg config.Configer) HandleFunc {
 			if err := imageBuilder.Build(wd, name); err != nil {
 				return err
 			}
+			imageName, err := imageBuilder.Push(name)
+			if err != nil {
+				return err
+			}
 
-			if err := runner.Deploy(name, name, int32(port), map[string]string{}); err != nil {
+			if err := runner.Deploy(name, imageName, int32(port), map[string]string{}); err != nil {
 				return err
 			}
 			return nil
