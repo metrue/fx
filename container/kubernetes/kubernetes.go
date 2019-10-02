@@ -47,8 +47,10 @@ func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) err
 		return err
 	}
 
-	const isOnPublicCloud = false
-	typ := "LoadBalencer"
+	// TODO fx should be able to know what's the target Kubernetes service platform
+	// it's going to deploy to
+	const isOnPublicCloud = true
+	typ := "LoadBalancer"
 	if !isOnPublicCloud {
 		typ = "NodePort"
 	}
