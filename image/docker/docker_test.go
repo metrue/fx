@@ -9,8 +9,12 @@ func TestDocker(t *testing.T) {
 	}
 
 	workdir := "./fixture"
-	name := "fx-test-docker-iamge-builder"
+	name := "fx-test-docker-image:latest"
 	if err := cli.Build(workdir, name); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := cli.Push(name); err != nil {
 		t.Fatal(err)
 	}
 }

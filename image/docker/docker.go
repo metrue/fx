@@ -2,6 +2,8 @@ package docker
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -75,6 +77,50 @@ func (d *Docker) Build(workdir string, name string) error {
 		log.Info(string(body))
 	}
 
+	return nil
+}
+
+// Push image to hub.docker.com
+func (d *Docker) Push(name string) error {
+	ctx := context.Background()
+
+	username := os.Getenv("DOCKER_USERNAME")
+	password := os.Getenv("DOCKER_PASSWORD")
+	if username == "" || password == "" {
+		return fmt.Errorf("DOCKER_USERNAME and DOCKER_PASSWORD required for push image to registy")
+	}
+
+	authConfig := dockerTypes.AuthConfig{
+		Username: username,
+		Password: password,
+	}
+	encodedJSON, err := json.Marshal(authConfig)
+	if err != nil {
+		return err
+	}
+
+	nameWithTag := username + "/" + name
+	if err := d.ImageTag(ctx, name, nameWithTag); err != nil {
+		return err
+	}
+
+	options := dockerTypes.ImagePushOptions{
+		All:          false,
+		RegistryAuth: base64.URLEncoding.EncodeToString(encodedJSON),
+	}
+	resp, err := d.ImagePush(ctx, nameWithTag, options)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+
+	if os.Getenv("DEBUG") != "" {
+		body, err := ioutil.ReadAll(resp)
+		if err != nil {
+			return err
+		}
+		log.Info(string(body))
+	}
 	return nil
 }
 
