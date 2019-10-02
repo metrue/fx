@@ -28,9 +28,10 @@ jobs:
           ./scripts/setup_kind.sh
 
       - name: unit test
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          export DOCKER_USERNAME=${DOCKER_USERNAME}
-          export DOCKER_PASSWORD=${DOCKER_PASSWORD}
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
           go test -v ./image/... ./container/...
 
