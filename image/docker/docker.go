@@ -81,13 +81,13 @@ func (d *Docker) Build(workdir string, name string) error {
 }
 
 // Push image to hub.docker.com
-func (d *Docker) Push(name string) error {
+func (d *Docker) Push(name string) (string, error) {
 	ctx := context.Background()
 
 	username := os.Getenv("DOCKER_USERNAME")
 	password := os.Getenv("DOCKER_PASSWORD")
 	if username == "" || password == "" {
-		return fmt.Errorf("DOCKER_USERNAME and DOCKER_PASSWORD required for push image to registy")
+		return "", fmt.Errorf("DOCKER_USERNAME and DOCKER_PASSWORD required for push image to registy")
 	}
 
 	authConfig := dockerTypes.AuthConfig{
@@ -96,12 +96,12 @@ func (d *Docker) Push(name string) error {
 	}
 	encodedJSON, err := json.Marshal(authConfig)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	nameWithTag := username + "/" + name
 	if err := d.ImageTag(ctx, name, nameWithTag); err != nil {
-		return err
+		return "", err
 	}
 
 	options := dockerTypes.ImagePushOptions{
@@ -109,18 +109,18 @@ func (d *Docker) Push(name string) error {
 	}
 	resp, err := d.ImagePush(ctx, nameWithTag, options)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Close()
 
 	if os.Getenv("DEBUG") != "" {
 		body, err := ioutil.ReadAll(resp)
 		if err != nil {
-			return err
+			return "", err
 		}
 		log.Info(string(body))
 	}
-	return nil
+	return nameWithTag, nil
 }
 
 var (
