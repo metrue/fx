@@ -105,7 +105,6 @@ func (d *Docker) Push(name string) error {
 	}
 
 	options := dockerTypes.ImagePushOptions{
-		All:          false,
 		RegistryAuth: base64.URLEncoding.EncodeToString(encodedJSON),
 	}
 	resp, err := d.ImagePush(ctx, nameWithTag, options)
