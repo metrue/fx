@@ -76,6 +76,9 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 		}
 		log.Info(string(body))
 	}
+	if err != nil {
+		return err
+	}
 
 	if err := d.ContainerStart(ctx, resp.ID, dockerTypes.ContainerStartOptions{}); err != nil {
 		return err
@@ -83,14 +86,28 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 	return nil
 }
 
+// Update a container
 func (d *Docker) Update(ctx context.Context, name string) error {
+	// TODO
+	// UpdateConfig holds the mutable attributes of a Container.
+	// Those attributes can be updated at runtime.
+	updateConfig := dockerTypesContainer.UpdateConfig{}
+	resp, err := d.ContainerUpdate(ctx, name, updateConfig)
+	if os.Getenv("DEBUG") != "" {
+		log.Infof("%s", resp.Warnings)
+	}
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
+// Destroy stop and remove container
 func (d *Docker) Destroy(ctx context.Context, name string) error {
 	return d.ContainerStop(ctx, name, nil)
 }
 
+// GetStatus get status of container
 func (d *Docker) GetStatus(ctx context.Context, name string) error {
 	return nil
 }
