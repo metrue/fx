@@ -9,7 +9,7 @@ func TestK8S(t *testing.T) {
 	namespace := "default"
 	// TODO image is ready on hub.docker.com
 	image := "metrue/kube-hello"
-	port := int32(3000)
+	ports := []int32{32300}
 	podName := "test-fx-pod"
 	kubeconfig := os.Getenv("KUBECONFIG")
 	if kubeconfig == "" {
@@ -23,7 +23,7 @@ func TestK8S(t *testing.T) {
 	labels := map[string]string{
 		"fx-app": "fx-app",
 	}
-	newPod, err := k8s.CreatePod(namespace, podName, image, port, labels)
+	newPod, err := k8s.CreatePod(namespace, podName, image, labels)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestK8S(t *testing.T) {
 	}
 
 	serviceName := podName + "-svc"
-	svc, err := k8s.CreateService(namespace, serviceName, "NodePort", []int32{port}, labels)
+	svc, err := k8s.CreateService(namespace, serviceName, "NodePort", ports, labels)
 	if err != nil {
 		t.Fatal(err)
 	}

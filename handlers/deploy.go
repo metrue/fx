@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -96,7 +97,7 @@ func Deploy(cfg config.Configer) HandleFunc {
 				return err
 			}
 
-			if err := runner.Deploy(name, imageName, int32(port), map[string]string{}); err != nil {
+			if err := runner.Deploy(context.Background(), name, imageName, []int32{int32(port)}); err != nil {
 				return err
 			}
 			return nil

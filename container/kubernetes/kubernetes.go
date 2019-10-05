@@ -1,9 +1,11 @@
 package kubernetes
 
 import (
+	"context"
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/metrue/fx/container"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -34,14 +36,24 @@ func Create() (*K8S, error) {
 }
 
 // Deploy a image to be a service
-func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) error {
+func (k *K8S) Deploy(
+	ctx context.Context,
+	name string,
+	image string,
+	ports []int32,
+) error {
 	namespace := "default"
-	labels := map[string]string{}
+
+	// By using a label selector between Pod and Service, we can link Service and Pod directly, it means a Endpoint will
+	// be created automatically, then incoming traffic to Service will be forward to Pod.
+	// Then we have no need to create Endpoint manually anymore.
+	labels := map[string]string{
+		"fx-app": "fx-app-" + uuid.New().String(),
+	}
 	if _, err := k.CreatePod(
 		namespace,
 		name,
 		image,
-		port,
 		labels,
 	); err != nil {
 		return err
@@ -54,13 +66,12 @@ func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) err
 	if !isOnPublicCloud {
 		typ = "NodePort"
 	}
-	podsLabels := map[string]string{}
 	if _, err := k.CreateService(
 		namespace,
 		name,
 		typ,
-		[]int32{port},
-		podsLabels,
+		ports,
+		labels,
 	); err != nil {
 		return err
 	}
@@ -68,12 +79,12 @@ func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) err
 }
 
 // Update a service
-func (k *K8S) Update(name string, svc interface{}) error {
+func (k *K8S) Update(ctx context.Context, name string) error {
 	return nil
 }
 
 // Destroy a service
-func (k *K8S) Destroy(name string, svc interface{}) error {
+func (k *K8S) Destroy(ctx context.Context, name string) error {
 	const namespace = "default"
 	if err := k.DeleteService(namespace, name); err != nil {
 		return err
@@ -85,7 +96,7 @@ func (k *K8S) Destroy(name string, svc interface{}) error {
 }
 
 // GetStatus get status of a service
-func (k *K8S) GetStatus(name string, svc interface{}) error {
+func (k *K8S) GetStatus(ctx context.Context, name string) error {
 	return nil
 }
 

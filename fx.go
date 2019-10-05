@@ -192,6 +192,14 @@ func main() {
 			},
 		},
 		{
+			Name:      "destroy",
+			Usage:     "destroy a service",
+			ArgsUsage: "[service 1, service 2, ....]",
+			Action: func(c *cli.Context) error {
+				return handlers.Destroy(cfg)(c)
+			},
+		},
+		{
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",

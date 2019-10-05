@@ -90,6 +90,7 @@ func (d *Docker) Push(name string) (string, error) {
 		return "", fmt.Errorf("DOCKER_USERNAME and DOCKER_PASSWORD required for push image to registy")
 	}
 
+	// TODO support private registy, like Azure Container registry
 	authConfig := dockerTypes.AuthConfig{
 		Username: username,
 		Password: password,

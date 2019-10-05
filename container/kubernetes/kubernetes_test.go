@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"context"
 	"os"
 	"testing"
 )
@@ -9,7 +10,7 @@ func TestK8SRunner(t *testing.T) {
 	// TODO image is ready on hub.docker.com
 	name := "fx-test-func"
 	image := "metrue/kube-hello"
-	port := int32(3000)
+	ports := []int32{32300}
 	kubeconfig := os.Getenv("KUBECONFIG")
 	if kubeconfig == "" {
 		t.Skip("skip test since no KUBECONFIG given in environment variable")
@@ -19,12 +20,12 @@ func TestK8SRunner(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var svc []byte
-	if err := k8s.Deploy(name, image, port, &svc); err != nil {
+	ctx := context.Background()
+	if err := k8s.Deploy(ctx, name, image, ports); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := k8s.Destroy(name, svc); err != nil {
+	if err := k8s.Destroy(ctx, name); err != nil {
 		t.Fatal(err)
 	}
 }
