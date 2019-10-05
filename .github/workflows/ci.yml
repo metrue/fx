@@ -53,9 +53,9 @@ jobs:
 
       - name: test AKS
         env:
-          AKS_KUBECONFIG: ${{ AKS_KUBECONFIG }}
-          DOCKER_USERNAME: ${{ DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ DOCKER_PASSWORD }}
+          AKS_KUBECONFIG: ${{ secrets.AKS_KUBECONFIG }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           export KUBECONFIG=${HOME}/.kube/aks
           echo ${AKS_KUBECONFIG} > $KUBECONFIG
