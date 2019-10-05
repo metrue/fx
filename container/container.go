@@ -1,9 +1,11 @@
 package container
 
+import "context"
+
 // Runner make a image a service
 type Runner interface {
-	Deploy(name string, image string, port int32, svc interface{}) error
-	Destroy(name string, svc interface{}) error
-	Update(name string, svc interface{}) error
-	GetStatus(name string, svc interface{}) error
+	Deploy(ctx context.Context, name string, image string, ports []int32) error
+	Destroy(ctx context.Context, name string) error
+	Update(ctx context.Context, name string) error
+	GetStatus(ctx context.Context, name string) error
 }

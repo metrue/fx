@@ -1,8 +1,7 @@
 package kubernetes
 
 import (
-	"fmt"
-
+	"github.com/metrue/fx/constants"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	intstr "k8s.io/apimachinery/pkg/util/intstr"
@@ -16,14 +15,26 @@ func (k *K8S) CreateService(
 	ports []int32,
 	podsLabels map[string]string,
 ) (*v1.Service, error) {
-	servicePorts := []v1.ServicePort{}
+	servicePorts := []v1.ServicePort{
+		v1.ServicePort{
+			Name:       "http",
+			Protocol:   v1.ProtocolTCP,
+			Port:       80,
+			TargetPort: intstr.FromInt(int(constants.FxContainerExposePort)),
+		},
+		v1.ServicePort{
+			Name:       "https",
+			Protocol:   v1.ProtocolTCP,
+			Port:       443,
+			TargetPort: intstr.FromInt(int(constants.FxContainerExposePort)),
+		},
+	}
+	// Append custom Port
 	for _, port := range ports {
-		fmt.Println(port)
 		servicePorts = append(servicePorts, v1.ServicePort{
-			Name:     "fx-function-as-an-api", // TODO maybe no need to set a name
-			Protocol: v1.ProtocolTCP,
-			Port:     80,
-			// NodePort:   30001,   // will be random issued
+			Name:       "custom",
+			Protocol:   v1.ProtocolTCP,
+			Port:       port,
 			TargetPort: intstr.FromInt(int(3000)),
 		})
 	}

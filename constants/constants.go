@@ -29,3 +29,6 @@ const CheckedSymbol = "\u2713"
 
 // UncheckedSymbol uncheck ✗
 const UncheckedSymbol = "\u2717"
+
+// FxContainerExposePort each fx container expose a default port 3000
+const FxContainerExposePort = 3000

@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"github.com/metrue/fx/constants"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -28,7 +29,6 @@ func (k *K8S) CreatePod(
 	namespace string,
 	name string,
 	image string,
-	port int32,
 	labels map[string]string,
 ) (*v1.Pod, error) {
 	container := v1.Container{
@@ -36,9 +36,9 @@ func (k *K8S) CreatePod(
 		Image: image,
 		Ports: []v1.ContainerPort{
 			v1.ContainerPort{
-				Name:          "container-fx",
-				HostPort:      3000,
-				ContainerPort: 3000,
+				Name:          "fx-container",
+				HostPort:      constants.FxContainerExposePort,
+				ContainerPort: constants.FxContainerExposePort,
 			},
 		},
 	}
@@ -49,9 +49,7 @@ func (k *K8S) CreatePod(
 			Labels: labels,
 		},
 		Spec: v1.PodSpec{
-			Containers:    []v1.Container{container},
-			RestartPolicy: "",
-			// NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+			Containers: []v1.Container{container},
 		},
 	}
 
