@@ -28,9 +28,12 @@ jobs:
           ./scripts/setup_kind.sh
 
       - name: unit test
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
-          cd ./kubernetes && go test -v ./...
+          DEBUG=true go test -v ./image/... ./container/...
 
       - name: build fx
         run: |
@@ -47,6 +50,18 @@ jobs:
       - name: test fx cli
         run: |
           make cli-test
+
+      - name: test AKS
+        env:
+          AKS_KUBECONFIG: ${{ secrets.AKS_KUBECONFIG }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          export KUBECONFIG=${HOME}/.kube/aks
+          echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
+          DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
+          ./build/fx destroy hello
+          rm ${KUBECONFIG}
 
       # TODO enable when GITHUB fix the localhost network access issue
       # - name: Unit Test

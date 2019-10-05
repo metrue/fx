@@ -1,10 +1,9 @@
 package kubernetes
 
 import (
+	"github.com/metrue/fx/constants"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 // GetPod get a pod
@@ -30,7 +29,6 @@ func (k *K8S) CreatePod(
 	namespace string,
 	name string,
 	image string,
-	port int32,
 	labels map[string]string,
 ) (*v1.Pod, error) {
 	container := v1.Container{
@@ -38,9 +36,9 @@ func (k *K8S) CreatePod(
 		Image: image,
 		Ports: []v1.ContainerPort{
 			v1.ContainerPort{
-				Name:          "container-fx",
-				HostPort:      port,
-				ContainerPort: port,
+				Name:          "fx-container",
+				HostPort:      constants.FxContainerExposePort,
+				ContainerPort: constants.FxContainerExposePort,
 			},
 		},
 	}
@@ -51,9 +49,7 @@ func (k *K8S) CreatePod(
 			Labels: labels,
 		},
 		Spec: v1.PodSpec{
-			Containers:    []v1.Container{container},
-			RestartPolicy: "",
-			// NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+			Containers: []v1.Container{container},
 		},
 	}
 
@@ -69,18 +65,4 @@ func (k *K8S) DeletePod(namespace string, name string) error {
 	// TODO figure how to delete a pod in a elegant way
 	options := metav1.DeleteOptions{}
 	return k.CoreV1().Pods(namespace).Delete(name, &options)
-}
-
-// New create a k8s cluster client
-func New(kubeconfig string) (*K8S, error) {
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if err != nil {
-		return nil, err
-	}
-
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
-	return &K8S{clientset}, nil
 }
