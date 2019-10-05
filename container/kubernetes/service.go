@@ -1,6 +1,8 @@
 package kubernetes
 
 import (
+	"fmt"
+
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	intstr "k8s.io/apimachinery/pkg/util/intstr"
@@ -16,12 +18,13 @@ func (k *K8S) CreateService(
 ) (*v1.Service, error) {
 	servicePorts := []v1.ServicePort{}
 	for _, port := range ports {
+		fmt.Println(port)
 		servicePorts = append(servicePorts, v1.ServicePort{
 			Name:     "fx-function-as-an-api", // TODO maybe no need to set a name
 			Protocol: v1.ProtocolTCP,
-			Port:     port,
+			Port:     80,
 			// NodePort:   30001,   // will be random issued
-			TargetPort: intstr.FromInt(int(port)),
+			TargetPort: intstr.FromInt(int(3000)),
 		})
 	}
 

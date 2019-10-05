@@ -37,8 +37,8 @@ func (k *K8S) CreatePod(
 		Ports: []v1.ContainerPort{
 			v1.ContainerPort{
 				Name:          "container-fx",
-				HostPort:      port,
-				ContainerPort: port,
+				HostPort:      3000,
+				ContainerPort: 3000,
 			},
 		},
 	}

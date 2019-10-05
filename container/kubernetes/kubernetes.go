@@ -36,7 +36,9 @@ func Create() (*K8S, error) {
 // Deploy a image to be a service
 func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) error {
 	namespace := "default"
-	labels := map[string]string{}
+	labels := map[string]string{
+		"fx": "fx",
+	}
 	if _, err := k.CreatePod(
 		namespace,
 		name,
@@ -54,13 +56,12 @@ func (k *K8S) Deploy(name string, image string, port int32, svc interface{}) err
 	if !isOnPublicCloud {
 		typ = "NodePort"
 	}
-	podsLabels := map[string]string{}
 	if _, err := k.CreateService(
 		namespace,
 		name,
 		typ,
 		[]int32{port},
-		podsLabels,
+		labels,
 	); err != nil {
 		return err
 	}

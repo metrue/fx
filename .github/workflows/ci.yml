@@ -48,6 +48,8 @@ jobs:
 
 
       - name: test fx cli
+        env:
+          KUBECONFIG: ${{AKS_KUBECONFIG}}
         run: |
           make cli-test
 
