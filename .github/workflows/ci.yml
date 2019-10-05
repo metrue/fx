@@ -58,7 +58,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           export KUBECONFIG=${HOME}/.kube/aks
-          echo ${AKS_KUBECONFIG} > $KUBECONFIG
+          echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
           DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
           ./build/fx destroy -n hello
           rm ${KUBECONFIG}
