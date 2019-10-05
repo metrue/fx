@@ -60,7 +60,7 @@ jobs:
           export KUBECONFIG=${HOME}/.kube/aks
           echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
           DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
-          ./build/fx destroy -n hello
+          ./build/fx destroy hello
           rm ${KUBECONFIG}
 
       # TODO enable when GITHUB fix the localhost network access issue
