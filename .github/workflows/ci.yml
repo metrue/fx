@@ -48,10 +48,20 @@ jobs:
 
 
       - name: test fx cli
-        env:
-          KUBECONFIG: ${{AKS_KUBECONFIG}}
         run: |
           make cli-test
+
+      - name: test AKS
+        env:
+          AKS_KUBECONFIG: ${{ AKS_KUBECONFIG }}
+          DOCKER_USERNAME: ${{ DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ DOCKER_PASSWORD }}
+        run: |
+          export KUBECONFIG=${HOME}/.kube/aks
+          echo ${AKS_KUBECONFIG} > $KUBECONFIG
+          DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
+          ./build/fx destroy -n hello
+          rm ${KUBECONFIG}
 
       # TODO enable when GITHUB fix the localhost network access issue
       # - name: Unit Test
