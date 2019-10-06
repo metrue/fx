@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/apex/log"
 	dockerTypes "github.com/docker/docker/api/types"
@@ -58,17 +60,19 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 	// when deploy a function on a bare Docker running without Kubernetes,
 	// image would be built on-demand on host locally, so there is no need to
 	// pull image from remote.
-	// reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
-	// if err != nil {
-	// 	return err
-	// }
-	// if os.Getenv("DEBUG") != "" {
-	// 	body, err := ioutil.ReadAll(reader)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	log.Info(string(body))
-	// }
+	if _, ok := d.isImageExisted(ctx, image); !ok {
+		reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
+		if err != nil {
+			return err
+		}
+		if os.Getenv("DEBUG") != "" {
+			body, err := ioutil.ReadAll(reader)
+			if err != nil {
+				return err
+			}
+			log.Info(string(body))
+		}
+	}
 
 	resp, err := d.ContainerCreate(ctx, config, hostConfig, nil, name)
 	if os.Getenv("DEBUG") != "" {
@@ -112,6 +116,28 @@ func (d *Docker) Destroy(ctx context.Context, name string) error {
 // GetStatus get status of container
 func (d *Docker) GetStatus(ctx context.Context, name string) error {
 	return nil
+}
+
+func (d *Docker) isImageExisted(ctx context.Context, name string) (string, bool) {
+	images, err := d.ImageList(ctx, dockerTypes.ImageListOptions{})
+	if err != nil {
+		log.Warnf("list images failed: %v", err)
+		return "", false
+	}
+
+	var tag string
+	var found bool
+	for _, img := range images {
+		for _, fullTag := range img.RepoTags {
+			arr := strings.Split(fullTag, ":")
+			if arr[0] == name {
+				found = true
+				tag = fullTag
+				break
+			}
+		}
+	}
+	return tag, found
 }
 
 var (
