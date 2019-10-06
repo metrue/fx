@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/apex/log"
@@ -56,17 +55,20 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 		},
 	}
 
-	reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
-	if err != nil {
-		return err
-	}
-	if os.Getenv("DEBUG") != "" {
-		body, err := ioutil.ReadAll(reader)
-		if err != nil {
-			return err
-		}
-		log.Info(string(body))
-	}
+	// when deploy a function on a bare Docker running without Kubernetes,
+	// image would be built on-demand on host locally, so there is no need to
+	// pull image from remote.
+	// reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
+	// if err != nil {
+	// 	return err
+	// }
+	// if os.Getenv("DEBUG") != "" {
+	// 	body, err := ioutil.ReadAll(reader)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	log.Info(string(body))
+	// }
 
 	resp, err := d.ContainerCreate(ctx, config, hostConfig, nil, name)
 	if os.Getenv("DEBUG") != "" {

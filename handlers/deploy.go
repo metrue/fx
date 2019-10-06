@@ -11,6 +11,7 @@ import (
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/container"
+	dockerc "github.com/metrue/fx/container/docker"
 	"github.com/metrue/fx/container/kubernetes"
 	"github.com/metrue/fx/image/docker"
 	"github.com/metrue/fx/packer"
@@ -69,40 +70,48 @@ func Deploy(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		// TODO refactor to runner manager stuff
+		// Build image
+		wd, err := ioutil.TempDir("/tmp", "fx-wd")
+		if err != nil {
+			return err
+		}
+		if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
+			return err
+		}
+		imageBuilder, err := docker.CreateClient()
+		if err != nil {
+			return err
+		}
+		if err := imageBuilder.Build(wd, name); err != nil {
+			return err
+		}
+		imageName := name
+
 		var runner container.Runner
-		// TODO support docker also
 		if os.Getenv("KUBECONFIG") != "" {
 			runner, err = kubernetes.Create()
 			if err != nil {
 				return err
 			}
 
-			wd, err := ioutil.TempDir("/tmp", "fx-wd")
+			imageName, err = imageBuilder.Push(name)
 			if err != nil {
 				return err
 			}
-			if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
-				return err
-			}
-			imageBuilder, err := docker.CreateClient()
+		} else {
+			runner, err = dockerc.CreateClient()
 			if err != nil {
 				return err
 			}
-			if err := imageBuilder.Build(wd, name); err != nil {
-				return err
-			}
-			imageName, err := imageBuilder.Push(name)
-			if err != nil {
-				return err
-			}
-
-			if err := runner.Deploy(context.Background(), name, imageName, []int32{int32(port)}); err != nil {
-				return err
-			}
-			return nil
 		}
 
-		return fmt.Errorf("KUBECONFIG not ready")
+		if err := runner.Deploy(
+			context.Background(),
+			name,
+			imageName,
+			[]int32{int32(port)}); err != nil {
+			return err
+		}
+		return nil
 	}
 }

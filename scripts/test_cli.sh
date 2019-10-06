@@ -13,6 +13,14 @@ run() {
   $fx down ${service}_${lang} # | grep "Down Service ${service}"
 }
 
+deploy() {
+  local lang=$1
+  local port=$2
+  $fx deploy --name ${service}_${lang} --port ${port} test/functions/func.${lang}
+  docker ps
+  $fx destroy ${service}_${lang}
+}
+
 build_image() {
   local lang=$1
   local tag=$2
@@ -34,6 +42,8 @@ port=20000
 for lang in 'js' 'rb' 'py' 'go' 'php' 'jl' 'java' 'd'; do
   run $lang $port
   ((port++))
+
+  deploy $lang $port
 
   build_image $lang "test-fx-image-build-${lang}"
   mkdir -p /tmp/${lang}/images
