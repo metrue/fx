@@ -132,6 +132,7 @@ func (d *Docker) isImageExisted(ctx context.Context, name string) (string, bool)
 	var found bool
 	for _, img := range images {
 		for _, fullTag := range img.RepoTags {
+			fmt.Println("--->", fullTag)
 			arr := strings.Split(fullTag, ":")
 			if arr[0] == name {
 				found = true
