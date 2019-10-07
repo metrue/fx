@@ -122,7 +122,7 @@ func (d *Docker) GetStatus(ctx context.Context, name string) error {
 }
 
 func (d *Docker) isImageExisted(ctx context.Context, name string) (string, bool) {
-	images, err := d.ImageList(ctx, dockerTypes.ImageListOptions{})
+	images, err := d.ImageList(ctx, dockerTypes.ImageListOptions{All: true})
 	if err != nil {
 		log.Warnf("list images failed: %v", err)
 		return "", false
