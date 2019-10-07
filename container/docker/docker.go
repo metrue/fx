@@ -61,6 +61,9 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 	// image would be built on-demand on host locally, so there is no need to
 	// pull image from remote.
 	if _, ok := d.isImageExisted(ctx, image); !ok {
+		fmt.Println("++++++++++")
+		fmt.Println(image, " ---> not ready")
+		fmt.Println("++++++++++")
 		reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
 		if err != nil {
 			return err

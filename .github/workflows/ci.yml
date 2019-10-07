@@ -49,6 +49,8 @@ jobs:
 
       - name: test fx cli
         run: |
+          echo $KUBECONFIG
+          unset KUBECONFIG
           make cli-test
 
       - name: test AKS
