@@ -85,6 +85,7 @@ func Deploy(cfg config.Configer) HandleFunc {
 		if err := imageBuilder.Build(wd, name); err != nil {
 			return err
 		}
+		log.Infof("image %s built: %v", name, constants.CheckedSymbol)
 		imageName := name
 
 		var runner container.Runner

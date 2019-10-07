@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -61,10 +62,23 @@ func (d *Docker) Deploy(ctx context.Context, name string, image string, ports []
 	// image would be built on-demand on host locally, so there is no need to
 	// pull image from remote.
 	if _, ok := d.isImageExisted(ctx, image); !ok {
-		fmt.Println("++++++++++")
-		fmt.Println(image, " ---> not ready")
-		fmt.Println("++++++++++")
-		reader, err := d.ImagePull(ctx, image, dockerTypes.ImagePullOptions{})
+		pullOptions := dockerTypes.ImagePullOptions{}
+
+		username := os.Getenv("DOCKER_USERNAME")
+		password := os.Getenv("DOCKER_PASSWORD")
+		if username != "" && password != "" {
+			authConfig := dockerTypes.AuthConfig{
+				Username: username,
+				Password: password,
+			}
+			authInfo, err := json.Marshal(authConfig)
+			if err != nil {
+				return err
+			}
+			pullOptions.RegistryAuth = base64.URLEncoding.EncodeToString(authInfo)
+		}
+
+		reader, err := d.ImagePull(ctx, image, pullOptions)
 		if err != nil {
 			return err
 		}
@@ -132,7 +146,6 @@ func (d *Docker) isImageExisted(ctx context.Context, name string) (string, bool)
 	var found bool
 	for _, img := range images {
 		for _, fullTag := range img.RepoTags {
-			fmt.Println("--->", fullTag)
 			arr := strings.Split(fullTag, ":")
 			if arr[0] == name {
 				found = true
