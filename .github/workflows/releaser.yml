@@ -1,4 +1,4 @@
-name: releaser
+name: release
 
 on:
   create:
@@ -6,10 +6,11 @@ on:
       - v*.*.*
 
 jobs:
-  ci:
+  Release:
     runs-on: ${{ matrix.os }}
+    needs: Test
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os:
           - ubuntu-latest
