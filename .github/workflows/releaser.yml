@@ -1,12 +1,12 @@
 name: releaser
 
 on:
-  pull_request:
-    branches:
-      - releases/*
   push:
     branches:
-      - releases/*
+      - production
+  create:
+    tags:
+      - v*.*.*
 
 jobs:
   ci:
