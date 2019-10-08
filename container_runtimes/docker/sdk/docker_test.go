@@ -17,7 +17,7 @@ func TestDocker(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	workdir := "./fixture"
+	workdir := "../fixture"
 	name := "fx-test-docker-image"
 	if err := cli.BuildImage(ctx, workdir, name); err != nil {
 		t.Fatal(err)

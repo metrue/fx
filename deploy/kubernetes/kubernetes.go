@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	runtime "github.com/metrue/fx/container_runtimes/docker"
+	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
