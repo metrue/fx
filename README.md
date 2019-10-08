@@ -200,6 +200,68 @@ hello world
 
 ```
 
+## Docker
+
+  TODO
+
+## Kubernetes
+
+**fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
+
+```
+KUBECONFIG=<Your KUBECONFIG> fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
+```
+
+or
+
+```
+$ export KUBECONFIG=<Your KUBECONFIG>
+$ fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
+```
+
+* Local Kubernetes Cluster
+
+Docker for Mac and Docker for Windows already support Kubernetes with single node cluster, we can use it directly, and the default `KUBECONFIG` is `~/.kube/config`.
+
+```shell
+$ export KUBECONFIG=~/.kube/config  # then fx will take the config to deloy function
+```
+
+if you have multiple Kubernetes clusters configured, you have to set context correctly. FYI [configure-access-multiple-clusters](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
+
+* Azure Kubernetes Service (AKS)
+
+You should create a Kubernetes cluster if you don't have one on AKS, detail document can found [here](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough).
+
+```
+$ az group create --name <myResourceGroup> --location eastus
+$ az aks create --resource-group <myResourceGroup> --name myAKSCluster --node-count <count>
+$ az aks get-credentials --resource-group <myResourceGroup> --name <myAKSCluster>
+```
+
+Then you can verify it with `kubectl`,
+
+```
+$ kubectl get nodes
+
+NAME                       STATUS   ROLES   AGE     VERSION
+aks-nodepool1-31718369-0   Ready    agent   6m44s   v1.12.8
+```
+
+Since AKS's config will be merged into `~/.kube/config` and set to be current context after you run `az aks get-credentials` command, so you can just set KUBECONFIG to default config also,
+
+```
+$ export KUBECONFIG=~/.kube/config  # then fx will take the config to deloy function
+```
+
+But we would suggest you run `kubectl config current-context` to check if the current context is what you want.
+
+* Amazon Elastic Kubernetes Service (EKS)
+  TODO
+
+* Google Kubernetes Engine (GKET)
+  TODO
+
 ## Contribute
 
 fx uses [Project](https://github.com/metrue/fx/projects/4) to manage the development.
