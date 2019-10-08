@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-go@master
       -
         name: GoReleaser
-        uses: ./
+        uses: goreleaser/goreleaser-action@master
         with:
           version: ${{ matrix.version }}
           args: release --rm-dist
