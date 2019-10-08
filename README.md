@@ -1,6 +1,5 @@
 fx
 ------
-
 Poor man's function as a service.
 <br/>
 ![build](https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7)
@@ -9,6 +8,15 @@ Poor man's function as a service.
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
 ![](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contribute](#contribute)
+
+
+## Introduction
 
 fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
 
@@ -208,13 +216,13 @@ hello world
 
 **fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
 
-```
+```shell
 KUBECONFIG=<Your KUBECONFIG> fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
 ```
 
 or
 
-```
+```shell
 $ export KUBECONFIG=<Your KUBECONFIG>
 $ fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
 ```
@@ -233,7 +241,7 @@ if you have multiple Kubernetes clusters configured, you have to set context cor
 
 You should create a Kubernetes cluster if you don't have one on AKS, detail document can found [here](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough).
 
-```
+```shell
 $ az group create --name <myResourceGroup> --location eastus
 $ az aks create --resource-group <myResourceGroup> --name myAKSCluster --node-count <count>
 $ az aks get-credentials --resource-group <myResourceGroup> --name <myAKSCluster>
@@ -241,7 +249,7 @@ $ az aks get-credentials --resource-group <myResourceGroup> --name <myAKSCluster
 
 Then you can verify it with `kubectl`,
 
-```
+```shell
 $ kubectl get nodes
 
 NAME                       STATUS   ROLES   AGE     VERSION
@@ -250,7 +258,7 @@ aks-nodepool1-31718369-0   Ready    agent   6m44s   v1.12.8
 
 Since AKS's config will be merged into `~/.kube/config` and set to be current context after you run `az aks get-credentials` command, so you can just set KUBECONFIG to default config also,
 
-```
+```shell
 $ export KUBECONFIG=~/.kube/config  # then fx will take the config to deloy function
 ```
 
