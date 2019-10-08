@@ -1,0 +1,36 @@
+name: releaser
+
+on:
+  pull_request:
+    branches:
+      - releases/*
+  push:
+    branches:
+      - releases/*
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+        version:
+          - latest
+          - v0.117.0
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Set up Go
+        uses: actions/setup-go@master
+      -
+        name: GoReleaser
+        uses: ./
+        with:
+          version: ${{ matrix.version }}
+          args: release --rm-dist

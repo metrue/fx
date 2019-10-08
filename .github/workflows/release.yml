@@ -30,24 +30,11 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
       - name: checkout releases/${{ steps.prepare.outputs.major_tag }} branch
         run: |
-          git checkout -B releases/${{ steps.prepare.outputs.major_tag }}
-          if [ -n "${{ steps.prepare.outputs.major_exists }}" ]; then
-            git branch --set-upstream-to=origin/releases/${{ steps.prepare.outputs.major_tag }} releases/${{ steps.prepare.outputs.major_tag }}
-          fi
-      - name: commit and push changes
-        run: |
-          # git add --all
-          # git status --short -uno
-          # git commit -m 'Release ${{ steps.prepare.outputs.tag_name }}'
+          git checkout -B releases/${{ steps.prepare.outputs.tag_name }}
           git show --stat-count=10 HEAD
-          git push -f origin releases/${{ steps.prepare.outputs.major_tag }}
+          git push -f origin releases/${{ steps.prepare.outputs.tag_name }}
       - name: update ${{ steps.prepare.outputs.minor_tag }} tag
         run: |
-          git push origin :refs/tags/${{ steps.prepare.outputs.minor_tag }}
-          git tag -fa ${{ steps.prepare.outputs.minor_tag }} -m "Release ${{ steps.prepare.outputs.tag_name }}"
-          git push origin ${{ steps.prepare.outputs.minor_tag }}
-      - name: update ${{ steps.prepare.outputs.major_tag }} tag
-        run: |
-          git push origin :refs/tags/${{ steps.prepare.outputs.major_tag }}
-          git tag -fa ${{ steps.prepare.outputs.major_tag }} -m "Release ${{ steps.prepare.outputs.tag_name }}"
-          git push origin ${{ steps.prepare.outputs.major_tag }}
+          git push origin :refs/tags/${{ steps.prepare.outputs.tag_name }}
+          git tag -fa ${{ steps.prepare.outputs.tag_name }} -m "Release ${{ steps.prepare.outputs.tag_name }}"
+          git push origin ${{ steps.prepare.outputs.tag_name }}
