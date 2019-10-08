@@ -10,9 +10,9 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
-	"github.com/metrue/fx/container"
-	"github.com/metrue/fx/container/kubernetes"
-	"github.com/metrue/fx/image/docker"
+	"github.com/metrue/fx/deploy"
+	dockerDeployer "github.com/metrue/fx/deploy/docker"
+	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
@@ -69,40 +69,33 @@ func Deploy(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		// TODO refactor to runner manager stuff
-		var runner container.Runner
-		// TODO support docker also
-		if os.Getenv("KUBECONFIG") != "" {
-			runner, err = kubernetes.Create()
-			if err != nil {
-				return err
-			}
-
-			wd, err := ioutil.TempDir("/tmp", "fx-wd")
-			if err != nil {
-				return err
-			}
-			if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
-				return err
-			}
-			imageBuilder, err := docker.CreateClient()
-			if err != nil {
-				return err
-			}
-			if err := imageBuilder.Build(wd, name); err != nil {
-				return err
-			}
-			imageName, err := imageBuilder.Push(name)
-			if err != nil {
-				return err
-			}
-
-			if err := runner.Deploy(context.Background(), name, imageName, []int32{int32(port)}); err != nil {
-				return err
-			}
-			return nil
+		workdir, err := ioutil.TempDir("/tmp", "fx-wd")
+		if err != nil {
+			return err
+		}
+		if err := packer.PackIntoDir(lang, string(body), workdir); err != nil {
+			return err
 		}
 
-		return fmt.Errorf("KUBECONFIG not ready")
+		var deployer deploy.Deployer
+		if os.Getenv("KUBECONFIG") != "" {
+			deployer, err = k8sDeployer.Create()
+			if err != nil {
+				return err
+			}
+		} else {
+			bctx := context.Background()
+			deployer, err = dockerDeployer.CreateClient(bctx)
+			if err != nil {
+				return err
+			}
+		}
+		// TODO multiple ports support
+		return deployer.Deploy(
+			context.Background(),
+			workdir,
+			name,
+			[]int32{int32(port)},
+		)
 	}
 }

@@ -2,30 +2,36 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/container/kubernetes"
+	"github.com/metrue/fx/deploy"
+	dockerDeployer "github.com/metrue/fx/deploy/docker"
+	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/urfave/cli"
 )
 
 // Destroy command handle
 func Destroy(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) error {
+	return func(ctx *cli.Context) (err error) {
 		services := ctx.Args()
+		c := context.Background()
+		var runner deploy.Deployer
 		if os.Getenv("KUBECONFIG") != "" {
-			runner, err := kubernetes.Create()
+			runner, err = k8sDeployer.Create()
 			if err != nil {
 				return err
 			}
-			for _, svc := range services {
-				if err := runner.Destroy(context.Background(), svc); err != nil {
-					return err
-				}
-			}
 		} else {
-			return fmt.Errorf("no KUBECONFIG set in environment variables")
+			runner, err = dockerDeployer.CreateClient(c)
+			if err != nil {
+				return err
+			}
+		}
+		for _, svc := range services {
+			if err := runner.Destroy(c, svc); err != nil {
+				return err
+			}
 		}
 		return nil
 	}

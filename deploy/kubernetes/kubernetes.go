@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/metrue/fx/container"
+	runtime "github.com/metrue/fx/container_runtimes/docker"
+	"github.com/metrue/fx/deploy"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -38,11 +39,23 @@ func Create() (*K8S, error) {
 // Deploy a image to be a service
 func (k *K8S) Deploy(
 	ctx context.Context,
+	workdir string,
 	name string,
-	image string,
 	ports []int32,
 ) error {
 	namespace := "default"
+
+	dockerClient, err := runtime.CreateClient(ctx)
+	if err != nil {
+		return err
+	}
+	if err := dockerClient.BuildImage(ctx, workdir, name); err != nil {
+		return err
+	}
+	image, err := dockerClient.PushImage(ctx, name)
+	if err != nil {
+		return err
+	}
 
 	// By using a label selector between Pod and Service, we can link Service and Pod directly, it means a Endpoint will
 	// be created automatically, then incoming traffic to Service will be forward to Pod.
@@ -101,5 +114,5 @@ func (k *K8S) GetStatus(ctx context.Context, name string) error {
 }
 
 var (
-	_ container.Runner = &K8S{}
+	_ deploy.Deployer = &K8S{}
 )
