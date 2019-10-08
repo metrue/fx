@@ -8,7 +8,7 @@ on:
 jobs:
   Release:
     runs-on: ${{ matrix.os }}
-    needs: Test
+    needs: [Test]
     strategy:
       fail-fast: true
       matrix:
