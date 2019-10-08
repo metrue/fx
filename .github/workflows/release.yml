@@ -1,0 +1,18 @@
+on:
+  push:
+    branches:
+      - production
+name: goreleaser
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out
+        uses: actions/checkout@master
+      - name: set up Go
+        uses: actions/setup-go@master
+      - name: run GoReleaser
+        uses: goreleaser/goreleaser-action@master
+        with:
+          version: latest
+          args: release
