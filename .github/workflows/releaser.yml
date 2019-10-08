@@ -3,10 +3,13 @@ name: releaser
 on:
   pull_request:
     branches:
-      - releases/*
+      - production
   push:
     branches:
-      - releases/*
+      - production
+  create:
+    tags:
+      - v*.*.*
 
 jobs:
   ci:
