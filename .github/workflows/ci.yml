@@ -85,7 +85,7 @@ jobs:
         with:
           version: '1.12'
       - name: GoReleaser
-        if: github.ref == "production"
+        if: github.ref == 'production'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: goreleaser/goreleaser-action@master
