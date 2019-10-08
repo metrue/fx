@@ -1,12 +1,6 @@
 name: releaser
 
 on:
-  pull_request:
-    branches:
-      - production
-  push:
-    branches:
-      - production
   create:
     tags:
       - v*.*.*
@@ -32,6 +26,8 @@ jobs:
         with:
           version: '1.12'
       - name: GoReleaser
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: goreleaser/goreleaser-action@master
         with:
           version: ${{ matrix.version }}
