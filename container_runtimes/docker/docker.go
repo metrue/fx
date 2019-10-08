@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -11,9 +12,12 @@ import (
 
 	"github.com/apex/log"
 	dockerTypes "github.com/docker/docker/api/types"
+	dockerTypesContainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"github.com/docker/go-connections/nat"
 	"github.com/google/uuid"
-	"github.com/metrue/fx/image"
+	containerruntimes "github.com/metrue/fx/container_runtimes"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 )
 
@@ -23,8 +27,7 @@ type Docker struct {
 }
 
 // CreateClient create a docker instance
-func CreateClient() (*Docker, error) {
-	ctx := context.Background()
+func CreateClient(ctx context.Context) (*Docker, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, err
@@ -33,8 +36,8 @@ func CreateClient() (*Docker, error) {
 	return &Docker{cli}, nil
 }
 
-// Build a directory to be a image
-func (d *Docker) Build(workdir string, name string) error {
+// BuildImage a directory to be a image
+func (d *Docker) BuildImage(ctx context.Context, workdir string, name string) error {
 	tarDir, err := ioutil.TempDir("/tmp", "fx-tar")
 	if err != nil {
 		return err
@@ -62,7 +65,7 @@ func (d *Docker) Build(workdir string, name string) error {
 		},
 	}
 
-	resp, err := d.ImageBuild(context.Background(), dockerBuildContext, options)
+	resp, err := d.ImageBuild(ctx, dockerBuildContext, options)
 	if err != nil {
 		return err
 	}
@@ -80,10 +83,8 @@ func (d *Docker) Build(workdir string, name string) error {
 	return nil
 }
 
-// Push image to hub.docker.com
-func (d *Docker) Push(name string) (string, error) {
-	ctx := context.Background()
-
+// PushImage push image to hub.docker.com
+func (d *Docker) PushImage(ctx context.Context, name string) (string, error) {
 	username := os.Getenv("DOCKER_USERNAME")
 	password := os.Getenv("DOCKER_PASSWORD")
 	if username == "" || password == "" {
@@ -124,6 +125,67 @@ func (d *Docker) Push(name string) (string, error) {
 	return nameWithTag, nil
 }
 
+// InspectImage inspect a image
+func (d *Docker) InspectImage(ctx context.Context, name string, img interface{}) error {
+	_, body, err := d.ImageInspectWithRaw(ctx, name)
+	if err != nil {
+		return err
+	}
+	rdr := bytes.NewReader(body)
+	return json.NewDecoder(rdr).Decode(&img)
+}
+
+// StartContainer create and start a container from given image
+func (d *Docker) StartContainer(ctx context.Context, name string, image string, ports []int32) error {
+	config := &dockerTypesContainer.Config{
+		Image: image,
+		ExposedPorts: nat.PortSet{
+			"3000/tcp": struct{}{},
+		},
+	}
+
+	bindings := []nat.PortBinding{}
+	for _, port := range ports {
+		bindings = append(bindings, nat.PortBinding{
+			HostIP:   types.DefaultHost,
+			HostPort: fmt.Sprintf("%d", port),
+		})
+	}
+
+	hostConfig := &dockerTypesContainer.HostConfig{
+		AutoRemove: true,
+		PortBindings: nat.PortMap{
+			"3000/tcp": bindings,
+		},
+	}
+	resp, err := d.ContainerCreate(ctx, config, hostConfig, nil, name)
+	if os.Getenv("DEBUG") != "" {
+		body, err := json.Marshal(resp)
+		if err != nil {
+			return err
+		}
+		log.Info(string(body))
+	}
+	if err != nil {
+		return err
+	}
+
+	if err := d.ContainerStart(ctx, resp.ID, dockerTypes.ContainerStartOptions{}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// StopContainer stop and remove container
+func (d *Docker) StopContainer(ctx context.Context, name string) error {
+	return d.ContainerStop(ctx, name, nil)
+}
+
+// InspectContainer inspect a container
+func (d *Docker) InspectContainer(ctx context.Context, name string, container interface{}) error {
+	return nil
+}
+
 var (
-	_ image.Builder = &Docker{}
+	_ containerruntimes.ContainerRuntime = &Docker{}
 )

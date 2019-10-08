@@ -7,9 +7,8 @@ import (
 )
 
 func TestK8SRunner(t *testing.T) {
-	// TODO image is ready on hub.docker.com
-	name := "fx-test-func"
-	image := "metrue/kube-hello"
+	workdir := "./fixture"
+	name := "hello"
 	ports := []int32{32300}
 	kubeconfig := os.Getenv("KUBECONFIG")
 	if kubeconfig == "" {
@@ -21,7 +20,7 @@ func TestK8SRunner(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	if err := k8s.Deploy(ctx, name, image, ports); err != nil {
+	if err := k8s.Deploy(ctx, workdir, name, ports); err != nil {
 		t.Fatal(err)
 	}
 

@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/container"
-	dockerc "github.com/metrue/fx/container/docker"
-	"github.com/metrue/fx/container/kubernetes"
+	"github.com/metrue/fx/deploy"
+	dockerDeployer "github.com/metrue/fx/deploy/docker"
+	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/urfave/cli"
 )
 
@@ -15,20 +15,21 @@ import (
 func Destroy(cfg config.Configer) HandleFunc {
 	return func(ctx *cli.Context) (err error) {
 		services := ctx.Args()
-		var runner container.Runner
+		c := context.Background()
+		var runner deploy.Deployer
 		if os.Getenv("KUBECONFIG") != "" {
-			runner, err = kubernetes.Create()
+			runner, err = k8sDeployer.Create()
 			if err != nil {
 				return err
 			}
 		} else {
-			runner, err = dockerc.CreateClient()
+			runner, err = dockerDeployer.CreateClient(c)
 			if err != nil {
 				return err
 			}
 		}
 		for _, svc := range services {
-			if err := runner.Destroy(context.Background(), svc); err != nil {
+			if err := runner.Destroy(c, svc); err != nil {
 				return err
 			}
 		}

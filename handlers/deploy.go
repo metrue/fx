@@ -10,10 +10,9 @@ import (
 	"github.com/metrue/fx/api"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
-	"github.com/metrue/fx/container"
-	dockerc "github.com/metrue/fx/container/docker"
-	"github.com/metrue/fx/container/kubernetes"
-	"github.com/metrue/fx/image/docker"
+	"github.com/metrue/fx/deploy"
+	dockerDeployer "github.com/metrue/fx/deploy/docker"
+	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
@@ -70,50 +69,33 @@ func Deploy(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		// Build image
-		wd, err := ioutil.TempDir("/tmp", "fx-wd")
+		workdir, err := ioutil.TempDir("/tmp", "fx-wd")
 		if err != nil {
 			return err
 		}
-		if err := packer.PackIntoDir(lang, string(body), wd); err != nil {
+		if err := packer.PackIntoDir(lang, string(body), workdir); err != nil {
 			return err
 		}
-		imageBuilder, err := docker.CreateClient()
-		if err != nil {
-			return err
-		}
-		if err := imageBuilder.Build(wd, name); err != nil {
-			return err
-		}
-		log.Infof("image %s built: %v", name, constants.CheckedSymbol)
-		imageName := name
 
-		var runner container.Runner
+		var deployer deploy.Deployer
 		if os.Getenv("KUBECONFIG") != "" {
-			runner, err = kubernetes.Create()
-			if err != nil {
-				return err
-			}
-
-			imageName, err = imageBuilder.Push(name)
+			deployer, err = k8sDeployer.Create()
 			if err != nil {
 				return err
 			}
 		} else {
-			runner, err = dockerc.CreateClient()
+			bctx := context.Background()
+			deployer, err = dockerDeployer.CreateClient(bctx)
 			if err != nil {
 				return err
 			}
 		}
-
 		// TODO multiple ports support
-		if err := runner.Deploy(
+		return deployer.Deploy(
 			context.Background(),
+			workdir,
 			name,
-			imageName,
-			[]int32{int32(port)}); err != nil {
-			return err
-		}
-		return nil
+			[]int32{int32(port)},
+		)
 	}
 }

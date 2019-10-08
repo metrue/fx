@@ -7,21 +7,22 @@ import (
 )
 
 func TestDocker(t *testing.T) {
-	cli, err := CreateClient()
+	ctx := context.Background()
+	cli, err := CreateClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	name := "hello-fx"
-	image := "nginxdemos/hello"
+	workdir := "./fixture"
+	name := "helloworld"
 	ports := []int32{12345, 12346}
-	if err := cli.Deploy(context.Background(), name, image, ports); err != nil {
+	if err := cli.Deploy(ctx, workdir, name, ports); err != nil {
 		t.Fatal(err)
 	}
 
 	time.Sleep(1 * time.Second)
 
-	if err := cli.Destroy(context.Background(), name); err != nil {
+	if err := cli.Destroy(ctx, name); err != nil {
 		t.Fatal(err)
 	}
 }
