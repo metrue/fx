@@ -64,12 +64,31 @@ jobs:
           DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
           ./build/fx destroy hello
           rm ${KUBECONFIG}
-
-      # TODO enable when GITHUB fix the localhost network access issue
-      # - name: Unit Test
-      #   working-directory:
-      #   run: |
-      #     docker ps
-      #     curl http://127.0.0.1:8866/version
-      #     curl http://localhost:8866/version
-      #     go test -v ./...
+  Release:
+    runs-on: ${{ matrix.os }}
+    needs: [Test]
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+        version:
+          - latest
+          - v0.117.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          version: '1.12'
+      - name: GoReleaser
+        if: github.ref == "production"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: goreleaser/goreleaser-action@master
+        with:
+          version: ${{ matrix.version }}
+          args: release --rm-dist
