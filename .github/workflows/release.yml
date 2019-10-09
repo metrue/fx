@@ -4,6 +4,7 @@ on:
       - auto-release
     paths:
       - 'fx.go' # when release a version, fx.go has to be update the version info also
+name: release
 jobs:
   Test:
     runs-on: ubuntu-latest
