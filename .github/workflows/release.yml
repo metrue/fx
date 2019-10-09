@@ -1,9 +1,9 @@
 on:
   push:
-    tags:
-      - v*.*.*
+    branches:
+      - auto-release
     paths:
-      - 'fx.go'
+      - 'fx.go' # when release a version, fx.go has to be update the version info also
 jobs:
   Test:
     runs-on: ubuntu-latest
@@ -100,4 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          tag=$(cat fx.go| grep app.Version | awk -F"=" '{print $2}'|  sed  's/\"//g')
+          echo "taging with v"$tag
+          git tag v$tag
+          git push origin v$tag
           /usr/local/bin/goreleaser
