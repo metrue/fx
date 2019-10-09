@@ -1,7 +1,9 @@
 on:
   push:
     branches:
-      - production
+      - auto-release
+    tags:
+      - v*.*.*
 jobs:
   Test:
     runs-on: ubuntu-latest
