@@ -1,41 +1,64 @@
 #!/usr/bin/env bash
 
-fx_has() {
+set -e
+
+has() {
   type "$1" > /dev/null 2>&1
 }
 
 get_package_url() {
-    label=""
+    platform=""
     if [ "$(uname)" == "Darwin" ]; then
-        label="macOS"
+        platform="macOS"
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-        label="Tux"
+        platform="Tux"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-        label="windows"
+        platform="windows"
     elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
-        label="windows"
+        platform="windows"
     fi
 
-    curl -s https://api.github.com/repos/metrue/fx/releases/latest | grep browser_download_url | awk -F'"' '{print $4}' | grep ${label}
+    curl https://api.github.com/repos/metrue/fx/releases/latest | grep browser_download_url | awk -F'"' '{print $4}' | grep ${platform}
 }
 
 download_and_install() {
-    local url=$1
-    # TODO we can do it on one line
-    rm -rf fx.tar.gz
-    curl -o fx.tar.gz -L -O ${url} && tar -xvzf ./fx.tar.gz --exclude=*.md -C /usr/local/bin
-    rm -rf ./fx.tar.gz
+    url=$(get_package_url)
+    tarFile="fx.tar.gz"
+    targetFile=$(pwd)
+
+    userid=$(id -u)
+    if [ "$userid" != "0" ]; then
+      tarFile="$(pwd)/${tarFile}"
+    else
+      tarFile="/tmp/${tarFile}"
+      targetFile="/usr/local/bin"
+    fi
+
+    if [ -e $tarFile ]; then
+      rm -rf $tarFile
+    fi
+
+    echo "Downloading fx from $url"
+    curl -sSLf $url --output $tarFile
+    if [ "$?" == "0" ]; then
+      echo "Download complete, saved to $tarFile"
+    fi
+
+    echo "Installing fx to ${targetFile}"
+    tar -xvzf ${tarFile} --exclude=*.md -C ${targetFile}
+    echo "fx installed successfully at ${targetFile}"
+    ${targetFile}/fx -v
+
+    echo "Cleaning up ${tarFile}"
+    rm -rf ${tarFile}
 }
 
 main() {
-    if fx_has "docker"; then
-        url=$(get_package_url)
-        if [ ${url}"X" != "X" ];then
-            download_and_install ${url}
-        fi
+    if has "curl";then
+      download_and_install
     else
-        echo "No Docker found on this host"
-        echo "  - Docker installation: https://docs.docker.com/engine/installation"
+      echo "You need cURL to use this script"
+      exit 1
     fi
 }
 

@@ -51,13 +51,11 @@ brew install metrue/fx/fx
 via cURL
 
 ```shell
+# Install to local directory
 curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
-```
 
-or Wget
-
-```shell
-wget -qO- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | bash
+# Install to /usr/local/bin/
+curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | sudo bash
 ```
 
 fx will be installed into /usr/local/bin, sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available in `$PAHT`.
