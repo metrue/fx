@@ -64,3 +64,28 @@ jobs:
           DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
           ./build/fx destroy hello
           rm ${KUBECONFIG}
+  Installation:
+    runs-on: ${{ matrix.os }}
+    # needs: [Test]
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          # TODO enable window
+          # - windows-latest
+        version:
+          - latest
+          - v0.117.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: install fx
+        run: |
+          # install with non-root user
+          bash ./scripts/install.sh
+          ./fx -v
+          # install with root
+          sudo bash ./scripts/install.sh
+          ./fx -v
