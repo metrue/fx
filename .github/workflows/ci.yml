@@ -66,14 +66,14 @@ jobs:
           rm ${KUBECONFIG}
   Installation:
     runs-on: ${{ matrix.os }}
-    # needs: [Test]
+    needs: [Test]
     strategy:
       fail-fast: true
       matrix:
         os:
           - ubuntu-latest
-          - macOS-latest
-          # TODO enable window
+          # TODO enable window and mac
+          # - macOS-latest
           # - windows-latest
         version:
           - latest
