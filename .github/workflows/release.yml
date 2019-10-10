@@ -101,13 +101,13 @@ jobs:
 
           echo "workflow is running on branch ${GITHUB_REF}"
 
-          if [[ ${GITHUB_REF} == "master" ]];then
+          if [[ ${GITHUB_REF} == "refs/heads/production" ]];then
             version=${version}-alpha.${commit}
             echo "alpha release $version"
           elif [[ "${GITHUB_REF}" == *--auto-release ]];then
             version=${version}-alpha.${commit}
             echo "alpha release $version"
-          elif [[ ${GITHUB_REF} == "production" ]];then
+          elif [[ ${GITHUB_REF} == "refs/heads/production" ]];then
             echo "official release $version"
           else
             echo "skip release on $GITHUB_REF"
