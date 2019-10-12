@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -49,6 +50,10 @@ func TestK8S(t *testing.T) {
 	}
 
 	serviceName := podName + "-svc"
+	if _, err := k8s.GetService(namespace, serviceName); err == nil {
+		t.Fatalf("should get no service name %s", serviceName)
+	}
+
 	svc, err := k8s.CreateService(namespace, serviceName, "NodePort", ports, labels)
 	if err != nil {
 		t.Fatal(err)
@@ -56,6 +61,26 @@ func TestK8S(t *testing.T) {
 	if svc.Name != serviceName {
 		t.Fatalf("should get %s but got %s", serviceName, svc.Name)
 	}
+	svc, err = k8s.GetService(namespace, serviceName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if svc.Name != serviceName {
+		t.Fatalf("should get %s but got %v", serviceName, svc.Name)
+	}
+
+	selector := map[string]string{"hello": "world"}
+	svc, err = k8s.UpdateService(namespace, serviceName, "NodePort", ports, selector)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if svc.Name != serviceName {
+		t.Fatalf("should get %s but got %v", serviceName, svc.Name)
+	}
+	if !reflect.DeepEqual(svc.Spec.Selector, selector) {
+		t.Fatalf("should get %v but got %v", selector, svc.Spec.Selector)
+	}
+
 	// TODO check service status
 	if err := k8s.DeleteService(namespace, serviceName); err != nil {
 		t.Fatal(err)

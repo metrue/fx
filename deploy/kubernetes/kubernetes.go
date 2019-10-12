@@ -60,16 +60,26 @@ func (k *K8S) Deploy(
 	// By using a label selector between Pod and Service, we can link Service and Pod directly, it means a Endpoint will
 	// be created automatically, then incoming traffic to Service will be forward to Pod.
 	// Then we have no need to create Endpoint manually anymore.
-	labels := map[string]string{
-		"fx-app": "fx-app-" + uuid.New().String(),
+	selector := map[string]string{
+		"app": "fx-app-" + uuid.New().String(),
 	}
-	if _, err := k.CreatePod(
-		namespace,
-		name,
-		image,
-		labels,
-	); err != nil {
-		return err
+
+	const replicas = int32(3)
+	if _, err := k.GetDeployment(namespace, name); err != nil {
+		// TODO enable passing replica from fx CLI
+		if _, err := k.CreateDeployment(
+			namespace,
+			name,
+			image,
+			replicas,
+			selector,
+		); err != nil {
+			return err
+		}
+	} else {
+		if _, err := k.UpdateDeployment(namespace, name, image, replicas, selector); err != nil {
+			return err
+		}
 	}
 
 	// TODO fx should be able to know what's the target Kubernetes service platform
@@ -79,14 +89,27 @@ func (k *K8S) Deploy(
 	if !isOnPublicCloud {
 		typ = "NodePort"
 	}
-	if _, err := k.CreateService(
-		namespace,
-		name,
-		typ,
-		ports,
-		labels,
-	); err != nil {
-		return err
+
+	if _, err := k.GetService(namespace, name); err != nil {
+		if _, err := k.CreateService(
+			namespace,
+			name,
+			typ,
+			ports,
+			selector,
+		); err != nil {
+			return err
+		}
+	} else {
+		if _, err := k.UpdateService(
+			namespace,
+			name,
+			typ,
+			ports,
+			selector,
+		); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -102,7 +125,7 @@ func (k *K8S) Destroy(ctx context.Context, name string) error {
 	if err := k.DeleteService(namespace, name); err != nil {
 		return err
 	}
-	if err := k.DeletePod(namespace, name); err != nil {
+	if err := k.DeleteDeployment(namespace, name); err != nil {
 		return err
 	}
 	return nil
