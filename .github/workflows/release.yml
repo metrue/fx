@@ -101,7 +101,7 @@ jobs:
 
           echo "workflow is running on branch ${GITHUB_REF}"
 
-          if [[ ${GITHUB_REF} == "refs/heads/production" ]];then
+          if [[ ${GITHUB_REF} == "refs/heads/master" ]];then
             version=${version}-alpha.${commit}
             echo "alpha release $version"
           elif [[ "${GITHUB_REF}" == *--auto-release ]];then
