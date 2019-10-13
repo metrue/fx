@@ -2,10 +2,7 @@ package kubernetes
 
 import (
 	"context"
-	"fmt"
-	"os"
 
-	"github.com/google/uuid"
 	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"k8s.io/client-go/kubernetes"
@@ -19,12 +16,7 @@ type K8S struct {
 
 // Create a k8s cluster client
 func Create() (*K8S, error) {
-	kubeconfig := os.Getenv("KUBECONFIG")
-	if kubeconfig == "" {
-		return nil, fmt.Errorf("KUBECONFIG not given")
-	}
-
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	config, err := clientcmd.BuildConfigFromKubeconfigGetter("", clientcmd.NewDefaultClientConfigLoadingRules().Load)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +35,7 @@ func (k *K8S) Deploy(
 	name string,
 	ports []int32,
 ) error {
+	// TODO: should use the one specified in config file
 	namespace := "default"
 
 	dockerClient, err := runtime.CreateClient(ctx)
@@ -61,7 +54,7 @@ func (k *K8S) Deploy(
 	// be created automatically, then incoming traffic to Service will be forward to Pod.
 	// Then we have no need to create Endpoint manually anymore.
 	selector := map[string]string{
-		"app": "fx-app-" + uuid.New().String(),
+		"app": "fx-app-" + name,
 	}
 
 	const replicas = int32(3)

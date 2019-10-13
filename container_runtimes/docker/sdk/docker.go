@@ -69,10 +69,9 @@ func (d *Docker) BuildImage(ctx context.Context, workdir string, name string) er
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if os.Getenv("DEBUG") != "" {
-		defer resp.Body.Close()
-
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
