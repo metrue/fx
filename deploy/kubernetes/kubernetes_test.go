@@ -6,13 +6,15 @@ import (
 	"testing"
 )
 
-func TestK8SRunner(t *testing.T) {
+func TestK8SDeployer(t *testing.T) {
 	workdir := "./fixture"
 	name := "hello"
 	ports := []int32{32300}
 	kubeconfig := os.Getenv("KUBECONFIG")
-	if kubeconfig == "" {
-		t.Skip("skip test since no KUBECONFIG given in environment variable")
+	username := os.Getenv("DOCKER_USERNAME")
+	password := os.Getenv("DOCKER_PASSWORD")
+	if kubeconfig == "" || username == "" || password == "" {
+		t.Skip("skip test since no KUBECONFIG, DOCKER_USERNAME and DOCKER_PASSWORD given in environment variable")
 	}
 	k8s, err := Create()
 	if err != nil {
