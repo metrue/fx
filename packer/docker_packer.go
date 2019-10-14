@@ -14,7 +14,7 @@ type DockerPacker struct {
 	box packr.Box
 }
 
-func isHandler(lang string, name string) bool {
+func isHandler(name string) bool {
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
 	return nameWithoutExt == "fx" ||
@@ -39,7 +39,7 @@ func (p *DockerPacker) Pack(serviceName string, fn types.ServiceFunctionSource) 
 			}
 
 			// if preset's file is handler function of project, replace it with give one
-			if isHandler(fn.Language, name) {
+			if isHandler(name) {
 				files = append(files, types.ProjectSourceFile{
 					Path:      strings.Replace(name, prefix, "", 1),
 					Body:      fn.Source,
