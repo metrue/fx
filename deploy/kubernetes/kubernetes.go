@@ -17,6 +17,8 @@ type K8S struct {
 	*kubernetes.Clientset
 }
 
+const namespace = "default"
+
 // Create a k8s cluster client
 func Create() (*K8S, error) {
 	kubeconfig := os.Getenv("KUBECONFIG")
@@ -43,8 +45,6 @@ func (k *K8S) Deploy(
 	name string,
 	ports []int32,
 ) error {
-	namespace := "default"
-
 	dockerClient, err := runtime.CreateClient(ctx)
 	if err != nil {
 		return err
@@ -121,7 +121,6 @@ func (k *K8S) Update(ctx context.Context, name string) error {
 
 // Destroy a service
 func (k *K8S) Destroy(ctx context.Context, name string) error {
-	const namespace = "default"
 	if err := k.DeleteService(namespace, name); err != nil {
 		return err
 	}

@@ -1,5 +1,4 @@
 run:
-  concurrency: 4
   deadline: 10m
   timeout: 10m
   issues-exit-code: 1
@@ -7,21 +6,25 @@ run:
   skip-dirs:
     - examples
     - api/images
-    - test
-  # skip-files:
-
+    - test/functions
 linters:
   enable:
-    - megacheck
-    - govet
-    - deadcode
-    # - gocyclo
-    - golint
-    - varcheck
-    - structcheck
-    - errcheck
-    - dupl
-    - ineffassign
+    - goimports
+    - stylecheck
+    - gosec
     - interfacer
     - unconvert
-  enable-all: false
+    - goconst
+    - gocyclo
+    - misspell
+    - unparam
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - goconst
+        - errcheck
+        - dupl
+        - gosec

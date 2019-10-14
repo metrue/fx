@@ -22,6 +22,7 @@ func Download(filepath string, url string) (err error) {
 	}
 	defer out.Close()
 
+	// nolint: gosec
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -48,6 +49,7 @@ func Unzip(source string, target string) (err error) {
 	}
 
 	for _, file := range reader.File {
+		//nolint: gosec
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
 			if err := os.MkdirAll(path, file.Mode()); err != nil {
@@ -262,7 +264,7 @@ func PairsToParams(pairs []string) map[string]string {
 func OutputJSON(v interface{}) error {
 	bytes, err := json.MarshalIndent(v, "", "\t")
 	if err != nil {
-		return fmt.Errorf("Could marshal %v : %v", v, err)
+		return fmt.Errorf("could marshal %v : %v", v, err)
 	}
 	fmt.Println(string(bytes))
 
