@@ -39,6 +39,14 @@ jobs:
         run: |
           make build
 
+      - name: test fx-docker
+        run: |
+          cd ./contrib/docker_packer
+          make linux-build
+          make docker-build
+          make test
+          # make docker-publish #TODO in release workflow
+
       - name: lint
         run: |
           export GOBIN=$(go env GOPATH)/bin

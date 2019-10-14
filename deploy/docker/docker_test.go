@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"github.com/metrue/fx/types"
 )
 
 func TestDocker(t *testing.T) {
@@ -13,10 +15,27 @@ func TestDocker(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	workdir := "./fixture"
 	name := "helloworld"
-	ports := []int32{12345, 12346}
-	if err := cli.Deploy(ctx, workdir, name, ports); err != nil {
+	bindings := []types.PortBinding{
+		types.PortBinding{
+			ServiceBindingPort:  80,
+			ContainerExposePort: 3000,
+		},
+		types.PortBinding{
+			ServiceBindingPort:  443,
+			ContainerExposePort: 3000,
+		},
+	}
+
+	fn := types.Func{
+		Language: "node",
+		Source: `
+module.exports = (ctx) => {
+	ctx.body = 'hello world'
+}
+`,
+	}
+	if err := cli.Deploy(ctx, fn, name, bindings); err != nil {
 		t.Fatal(err)
 	}
 

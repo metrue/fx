@@ -3,6 +3,8 @@ package kubernetes
 import (
 	"os"
 	"testing"
+
+	"github.com/metrue/fx/types"
 )
 
 func TestDeployment(t *testing.T) {
@@ -27,7 +29,17 @@ func TestDeployment(t *testing.T) {
 	}
 
 	replicas := int32(2)
-	deployment, err := k8s.CreateDeployment(namespace, name, image, replicas, selector)
+	bindings := []types.PortBinding{
+		types.PortBinding{
+			ServiceBindingPort:  80,
+			ContainerExposePort: 3000,
+		},
+		types.PortBinding{
+			ServiceBindingPort:  443,
+			ContainerExposePort: 3000,
+		},
+	}
+	deployment, err := k8s.CreateDeployment(namespace, name, image, bindings, replicas, selector)
 	if err != nil {
 		t.Fatal(err)
 	}

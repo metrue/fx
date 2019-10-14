@@ -28,7 +28,7 @@ func NewDockerPacker(box packr.Box) *DockerPacker {
 }
 
 // Pack pack a single function source code to be project
-func (p *DockerPacker) Pack(serviceName string, fn types.ServiceFunctionSource) (types.Project, error) {
+func (p *DockerPacker) Pack(serviceName string, fn types.Func) (types.Project, error) {
 	var files []types.ProjectSourceFile
 	for _, name := range p.box.List() {
 		prefix := fmt.Sprintf("%s/", fn.Language)

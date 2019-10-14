@@ -3,8 +3,9 @@ package kubernetes
 import (
 	"context"
 
-	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/packer"
+	"github.com/metrue/fx/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -33,25 +34,21 @@ func Create() (*K8S, error) {
 // Deploy a image to be a service
 func (k *K8S) Deploy(
 	ctx context.Context,
-	workdir string,
+	fn types.Func,
 	name string,
-	ports []int32,
+	ports []types.PortBinding,
 ) error {
-	dockerClient, err := runtime.CreateClient(ctx)
+	// put source code of function docker project into k8s config map
+	tree, err := packer.PackIntoK8SConfigMapFile(fn)
 	if err != nil {
 		return err
 	}
-	if err := dockerClient.BuildImage(ctx, workdir, name); err != nil {
-		return err
-	}
-	image, err := dockerClient.PushImage(ctx, name)
-	if err != nil {
+	data := map[string]string{}
+	data[ConfigMap.AppMetaEnvName] = tree
+	if _, err := k.CreateOrUpdateConfigMap(namespace, name, data); err != nil {
 		return err
 	}
 
-	// By using a label selector between Pod and Service, we can link Service and Pod directly, it means a Endpoint will
-	// be created automatically, then incoming traffic to Service will be forward to Pod.
-	// Then we have no need to create Endpoint manually anymore.
 	selector := map[string]string{
 		"app": "fx-app-" + name,
 	}
@@ -59,17 +56,24 @@ func (k *K8S) Deploy(
 	const replicas = int32(3)
 	if _, err := k.GetDeployment(namespace, name); err != nil {
 		// TODO enable passing replica from fx CLI
-		if _, err := k.CreateDeployment(
+		if _, err := k.CreateDeploymentWithInitContainer(
 			namespace,
 			name,
-			image,
+			ports,
 			replicas,
 			selector,
 		); err != nil {
 			return err
 		}
 	} else {
-		if _, err := k.UpdateDeployment(namespace, name, image, replicas, selector); err != nil {
+		if _, err := k.UpdateDeployment(
+			namespace,
+			name,
+			name,
+			ports,
+			replicas,
+			selector,
+		); err != nil {
 			return err
 		}
 	}
