@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"fmt"
 
+	"github.com/metrue/fx/types"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,15 +12,15 @@ import (
 func generateDeploymentSpec(
 	name string,
 	image string,
-	containerPorts []int32,
+	bindPorts []types.PortBinding,
 	replicas int32,
 	selector map[string]string,
 ) *appsv1.Deployment {
 	ports := []apiv1.ContainerPort{}
-	for index, port := range containerPorts {
+	for index, binding := range bindPorts {
 		ports = append(ports, apiv1.ContainerPort{
 			Name:          fmt.Sprintf("fx-container-%d", index),
-			ContainerPort: port,
+			ContainerPort: binding.ContainerExposePort,
 		})
 	}
 
@@ -59,7 +60,7 @@ func (k *K8S) CreateDeployment(
 	namespace string,
 	name string,
 	image string,
-	ports []int32,
+	ports []types.PortBinding,
 	replicas int32,
 	selector map[string]string,
 ) (*appsv1.Deployment, error) {
@@ -72,7 +73,7 @@ func (k *K8S) UpdateDeployment(
 	namespace string,
 	name string,
 	image string,
-	ports []int32,
+	ports []types.PortBinding,
 	replicas int32,
 	selector map[string]string,
 ) (*appsv1.Deployment, error) {

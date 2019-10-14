@@ -14,6 +14,7 @@ import (
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
 	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/metrue/fx/packer"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -95,9 +96,15 @@ func Deploy(cfg config.Configer) HandleFunc {
 			context.Background(),
 			workdir,
 			name,
-			[]int32{
-				int32(port),
-				int32(constants.FxContainerExposePort),
+			[]types.PortBinding{
+				types.PortBinding{
+					ServiceBindingPort:  80,
+					ContainerExposePort: constants.FxContainerExposePort,
+				},
+				types.PortBinding{
+					ServiceBindingPort:  80,
+					ContainerExposePort: constants.FxContainerExposePort,
+				},
 			},
 		)
 	}

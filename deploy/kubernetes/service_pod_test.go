@@ -4,13 +4,24 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/metrue/fx/types"
 )
 
 func TestK8S(t *testing.T) {
 	namespace := "default"
 	// TODO image is ready on hub.docker.com
 	image := "metrue/kube-hello"
-	ports := []int32{32300}
+	bindings := []types.PortBinding{
+		types.PortBinding{
+			ServiceBindingPort:  80,
+			ContainerExposePort: 3000,
+		},
+		types.PortBinding{
+			ServiceBindingPort:  443,
+			ContainerExposePort: 3000,
+		},
+	}
 	podName := "test-fx-pod"
 	kubeconfig := os.Getenv("KUBECONFIG")
 	if kubeconfig == "" {
@@ -54,7 +65,7 @@ func TestK8S(t *testing.T) {
 		t.Fatalf("should get no service name %s", serviceName)
 	}
 
-	svc, err := k8s.CreateService(namespace, serviceName, "NodePort", ports, labels)
+	svc, err := k8s.CreateService(namespace, serviceName, "NodePort", bindings, labels)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +81,7 @@ func TestK8S(t *testing.T) {
 	}
 
 	selector := map[string]string{"hello": "world"}
-	svc, err = k8s.UpdateService(namespace, serviceName, "NodePort", ports, selector)
+	svc, err = k8s.UpdateService(namespace, serviceName, "NodePort", bindings, selector)
 	if err != nil {
 		t.Fatal(err)
 	}

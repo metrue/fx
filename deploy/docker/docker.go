@@ -7,6 +7,7 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 )
 
@@ -25,7 +26,7 @@ func CreateClient(ctx context.Context) (*Docker, error) {
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Docker) Deploy(ctx context.Context, workdir string, name string, ports []int32) error {
+func (d *Docker) Deploy(ctx context.Context, workdir string, name string, ports []types.PortBinding) error {
 	if err := d.client.BuildImage(ctx, workdir, name); err != nil {
 		return err
 	}
