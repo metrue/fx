@@ -27,7 +27,8 @@ func TestDeployment(t *testing.T) {
 	}
 
 	replicas := int32(2)
-	deployment, err := k8s.CreateDeployment(namespace, name, image, replicas, selector)
+	ports := []int32{3000}
+	deployment, err := k8s.CreateDeployment(namespace, name, image, ports, replicas, selector)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 
+	"github.com/metrue/fx/constants"
 	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"k8s.io/client-go/kubernetes"
@@ -57,19 +58,29 @@ func (k *K8S) Deploy(
 	}
 
 	const replicas = int32(3)
+	// Since fx exposes port 3000 as default service port
+	ports = append(ports, int32(constants.FxContainerExposePort))
 	if _, err := k.GetDeployment(namespace, name); err != nil {
 		// TODO enable passing replica from fx CLI
 		if _, err := k.CreateDeployment(
 			namespace,
 			name,
 			image,
+			ports,
 			replicas,
 			selector,
 		); err != nil {
 			return err
 		}
 	} else {
-		if _, err := k.UpdateDeployment(namespace, name, image, replicas, selector); err != nil {
+		if _, err := k.UpdateDeployment(
+			namespace,
+			name,
+			image,
+			ports,
+			replicas,
+			selector,
+		); err != nil {
 			return err
 		}
 	}

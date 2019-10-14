@@ -1,7 +1,8 @@
 package kubernetes
 
 import (
-	"github.com/metrue/fx/constants"
+	"fmt"
+
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -10,18 +11,22 @@ import (
 func generateDeploymentSpec(
 	name string,
 	image string,
+	containerPorts []int32,
 	replicas int32,
 	selector map[string]string,
 ) *appsv1.Deployment {
+	ports := []apiv1.ContainerPort{}
+	for index, port := range containerPorts {
+		ports = append(ports, apiv1.ContainerPort{
+			Name:          fmt.Sprintf("fx-container-%d", index),
+			ContainerPort: port,
+		})
+	}
+
 	container := apiv1.Container{
 		Name:  "fx-placeholder-container-name",
 		Image: image,
-		Ports: []apiv1.ContainerPort{
-			apiv1.ContainerPort{
-				Name:          "fx-container",
-				ContainerPort: constants.FxContainerExposePort,
-			},
-		},
+		Ports: ports,
 	}
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -50,14 +55,28 @@ func (k *K8S) GetDeployment(namespace string, name string) (*appsv1.Deployment, 
 }
 
 // CreateDeployment create a deployment
-func (k *K8S) CreateDeployment(namespace string, name string, image string, replicas int32, selector map[string]string) (*appsv1.Deployment, error) {
-	deployment := generateDeploymentSpec(name, image, replicas, selector)
+func (k *K8S) CreateDeployment(
+	namespace string,
+	name string,
+	image string,
+	ports []int32,
+	replicas int32,
+	selector map[string]string,
+) (*appsv1.Deployment, error) {
+	deployment := generateDeploymentSpec(name, image, ports, replicas, selector)
 	return k.AppsV1().Deployments(namespace).Create(deployment)
 }
 
 // UpdateDeployment update a deployment
-func (k *K8S) UpdateDeployment(namespace string, name string, image string, replicas int32, selector map[string]string) (*appsv1.Deployment, error) {
-	deployment := generateDeploymentSpec(name, image, replicas, selector)
+func (k *K8S) UpdateDeployment(
+	namespace string,
+	name string,
+	image string,
+	ports []int32,
+	replicas int32,
+	selector map[string]string,
+) (*appsv1.Deployment, error) {
+	deployment := generateDeploymentSpec(name, image, ports, replicas, selector)
 	return k.AppsV1().Deployments(namespace).Update(deployment)
 }
 

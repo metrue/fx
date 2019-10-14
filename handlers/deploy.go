@@ -95,7 +95,10 @@ func Deploy(cfg config.Configer) HandleFunc {
 			context.Background(),
 			workdir,
 			name,
-			[]int32{int32(port)},
+			[]int32{
+				int32(port),
+				int32(constants.FxContainerExposePort),
+			},
 		)
 	}
 }
