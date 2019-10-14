@@ -63,7 +63,7 @@ func (c *Config) Init() error {
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("Fatal error config file: %s", err)
+		return fmt.Errorf("fatal error config file: %s", err)
 	}
 	return nil
 }
