@@ -61,9 +61,14 @@ jobs:
         run: |
           export KUBECONFIG=${HOME}/.kube/aks
           echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
-          DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
-          ./build/fx destroy hello
-          rm ${KUBECONFIG}
+          if [[ -z "$DOCKER_USERNAME" || -z "$DOCKER_PASSWORD" || -z "$AKS_KUBECONFIG" ]];then
+            echo "skip deploy test since no DOCKER_USERNAME and DOCKER_PASSWORD set"
+          else
+            DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
+            ./build/fx destroy hello
+            rm ${KUBECONFIG}
+          fi
+
   Installation:
     runs-on: ${{ matrix.os }}
     needs: [Test]
