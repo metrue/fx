@@ -45,7 +45,7 @@ func TestDocker(t *testing.T) {
 	username := os.Getenv("DOCKER_USERNAME")
 	password := os.Getenv("DOCKER_PASSWORD")
 	if username == "" || password == "" {
-		t.Skip("Skip push image test since DOCKER_USERNAME and DOCKER_PASSWORD not set in enviroment variable")
+		t.Skip("Skip push image test since DOCKER_USERNAME and DOCKER_PASSWORD not set in environment variable")
 	}
 
 	img, err := cli.PushImage(ctx, name)
