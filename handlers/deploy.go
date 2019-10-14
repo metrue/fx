@@ -33,7 +33,7 @@ func Deploy(cfg config.Configer) HandleFunc {
 			}
 
 			if err != nil {
-				log.Fatalf("deploy function %s (%s) failed: %v", err)
+				log.Fatalf("deploy function %s (%s) failed: %v", name, funcFile, err)
 			}
 			log.Infof("function %s (%s) deployed successfully", name, funcFile)
 		}()
