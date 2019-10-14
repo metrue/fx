@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"os"
 	"path"
+	"regexp"
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
@@ -11,9 +15,12 @@ import (
 	"github.com/urfave/cli"
 )
 
+const version = "0.7.4"
+
 var cfg *config.Config
 
 func init() {
+	go checkForUpdate()
 	configDir := path.Join(os.Getenv("HOME"), ".fx")
 	cfg := config.New(configDir)
 
@@ -23,11 +30,40 @@ func init() {
 	}
 }
 
+func checkForUpdate() {
+	const releaseURL = "https://api.github.com/repos/metrue/fx/releases/latest"
+	resp, err := http.Get(releaseURL)
+	if err != nil {
+		log.Debugf("Failed to fetch Github release page, error %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var releaseJSON struct {
+		Tag string `json:"tag_name"`
+		URL string `json:"html_url"`
+	}
+	if err := decoder.Decode(&releaseJSON); err != nil {
+		log.Debugf("Failed to decode Github release page JSON, error %v", err)
+		return
+	}
+	if matched, err := regexp.MatchString(`^(\d+\.)(\d+\.)(\d+)$`, releaseJSON.Tag); err != nil || !matched {
+		log.Debugf("Unofficial release %s?", releaseJSON.Tag)
+		return
+	}
+	log.Debugf("Latest release tag is %s", releaseJSON.Tag)
+	if releaseJSON.Tag != version {
+		fmt.Fprintf(os.Stderr, "\nfx %s is available (you're using %s), get the latest release from: %s\n",
+			releaseJSON.Tag, version, releaseJSON.URL)
+	}
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
-	app.Version = "0.7.3"
+	app.Version = version
 
 	app.Commands = []cli.Command{
 		{

@@ -97,7 +97,7 @@ jobs:
           git config --global user.name "Minghe Huang"
 
           commit=$(git rev-parse --short HEAD)
-          version=$(cat fx.go| grep Version | awk -F'"' '{print $2}')
+          version=$(cat fx.go| grep 'const version' | awk -F'"' '{print $2}')
 
           echo "workflow is running on branch ${GITHUB_REF}"
 

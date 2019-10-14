@@ -16,9 +16,13 @@ run() {
 deploy() {
   local lang=$1
   local port=$2
-  $fx deploy --name ${service}_${lang} --port ${port} test/functions/func.${lang}
-  docker ps
-  $fx destroy ${service}_${lang}
+  if [[ -z "$DOCKER_USERNAME" || -z "$DOCKER_PASSWORD" ]];then
+    echo "skip deploy test since no DOCKER_USERNAME and DOCKER_PASSWORD set"
+  else
+    $fx deploy --name ${service}-${lang} --port ${port} test/functions/func.${lang}
+    docker ps
+    $fx destroy ${service}-${lang}
+  fi
 }
 
 build_image() {
