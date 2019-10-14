@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const Version = "0.7.3"
+const version = "0.7.3"
 
 var cfg *config.Config
 
@@ -31,8 +31,8 @@ func init() {
 }
 
 func checkForUpdate() {
-	releaseUrl := "https://api.github.com/repos/metrue/fx/releases/latest"
-	resp, err := http.Get(releaseUrl)
+	const releaseURL = "https://api.github.com/repos/metrue/fx/releases/latest"
+	resp, err := http.Get(releaseURL)
 	if err != nil {
 		log.Debugf("Failed to fetch Github release page, error %v", err)
 		return
@@ -42,7 +42,7 @@ func checkForUpdate() {
 	decoder := json.NewDecoder(resp.Body)
 	var releaseJSON struct {
 		Tag string `json:"tag_name"`
-		Url string `json:"html_url"`
+		URL string `json:"html_url"`
 	}
 	if err := decoder.Decode(&releaseJSON); err != nil {
 		log.Debugf("Failed to decode Github release page JSON, error %v", err)
@@ -53,9 +53,9 @@ func checkForUpdate() {
 		return
 	}
 	log.Debugf("Latest release tag is %s", releaseJSON.Tag)
-	if releaseJSON.Tag != Version {
+	if releaseJSON.Tag != version {
 		fmt.Fprintf(os.Stderr, "\nfx %s is available (you're using %s), get the latest release from: %s\n",
-			releaseJSON.Tag, Version, releaseJSON.Url)
+			releaseJSON.Tag, version, releaseJSON.URL)
 	}
 }
 
@@ -63,7 +63,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "fx"
 	app.Usage = "makes function as a service"
-	app.Version = Version
+	app.Version = version
 
 	app.Commands = []cli.Command{
 		{
