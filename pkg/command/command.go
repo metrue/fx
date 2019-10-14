@@ -42,8 +42,10 @@ func (l *LocalRunner) Run(script string) ([]byte, error) {
 	params := strings.Split(script, " ")
 	var cmd *exec.Cmd
 	if len(params) > 1 {
+		// nolint: gosec
 		cmd = exec.Command(params[0], params[1:]...)
 	} else {
+		// nolint: gosec
 		cmd = exec.Command(params[0])
 	}
 	return cmd.CombinedOutput()
