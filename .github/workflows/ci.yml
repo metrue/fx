@@ -39,6 +39,14 @@ jobs:
         run: |
           make build
 
+      - name: test fx-docker
+        run: |
+          cd ./contrib/docker_packer
+          make linux-build
+          make docker-build
+          make test
+          # make docker-publish #TODO in release workflow
+
       - name: lint
         run: |
           export GOBIN=$(go env GOPATH)/bin
@@ -56,13 +64,11 @@ jobs:
       - name: test AKS
         env:
           AKS_KUBECONFIG: ${{ secrets.AKS_KUBECONFIG }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           export KUBECONFIG=${HOME}/.kube/aks
           echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
-          if [[ -z "$DOCKER_USERNAME" || -z "$DOCKER_PASSWORD" || -z "$AKS_KUBECONFIG" ]];then
-            echo "skip deploy test since no DOCKER_USERNAME and DOCKER_PASSWORD set"
+          if [[ -z "$AKS_KUBECONFIG" ]];then
+            echo "skip deploy test since no valid KUBECONFIG"
           else
             DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
             ./build/fx destroy hello

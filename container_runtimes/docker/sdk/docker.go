@@ -135,27 +135,28 @@ func (d *Docker) InspectImage(ctx context.Context, name string, img interface{})
 }
 
 // StartContainer create and start a container from given image
-func (d *Docker) StartContainer(ctx context.Context, name string, image string, ports []int32) error {
-	config := &dockerTypesContainer.Config{
-		Image: image,
-		ExposedPorts: nat.PortSet{
-			"3000/tcp": struct{}{},
-		},
+func (d *Docker) StartContainer(ctx context.Context, name string, image string, ports []types.PortBinding) error {
+	portSet := nat.PortSet{}
+	portMap := nat.PortMap{}
+	for _, binding := range ports {
+		bindings := []nat.PortBinding{
+			nat.PortBinding{
+				HostIP:   types.DefaultHost,
+				HostPort: fmt.Sprintf("%d", binding.ServiceBindingPort),
+			},
+		}
+		port := nat.Port(fmt.Sprintf("%d/tcp", binding.ContainerExposePort))
+		portSet[port] = struct{}{}
+		portMap[port] = bindings
 	}
-
-	bindings := []nat.PortBinding{}
-	for _, port := range ports {
-		bindings = append(bindings, nat.PortBinding{
-			HostIP:   types.DefaultHost,
-			HostPort: fmt.Sprintf("%d", port),
-		})
+	config := &dockerTypesContainer.Config{
+		Image:        image,
+		ExposedPorts: portSet,
 	}
 
 	hostConfig := &dockerTypesContainer.HostConfig{
-		AutoRemove: true,
-		PortBindings: nat.PortMap{
-			"3000/tcp": bindings,
-		},
+		AutoRemove:   true,
+		PortBindings: portMap,
 	}
 	resp, err := d.ContainerCreate(ctx, config, hostConfig, nil, name)
 	if os.Getenv("DEBUG") != "" {

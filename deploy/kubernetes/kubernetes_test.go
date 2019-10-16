@@ -4,12 +4,22 @@ import (
 	"context"
 	"os"
 	"testing"
+
+	"github.com/metrue/fx/types"
 )
 
 func TestK8SDeployer(t *testing.T) {
-	workdir := "./fixture"
-	name := "hello"
-	ports := []int32{32300}
+	name := "hellohello"
+	bindings := []types.PortBinding{
+		types.PortBinding{
+			ServiceBindingPort:  80,
+			ContainerExposePort: 3000,
+		},
+		types.PortBinding{
+			ServiceBindingPort:  443,
+			ContainerExposePort: 3000,
+		},
+	}
 	kubeconfig := os.Getenv("KUBECONFIG")
 	username := os.Getenv("DOCKER_USERNAME")
 	password := os.Getenv("DOCKER_PASSWORD")
@@ -21,8 +31,16 @@ func TestK8SDeployer(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	fn := types.Func{
+		Language: "node",
+		Source: `
+module.exports = (ctx) => {
+	ctx.body = 'hello world'
+}
+`,
+	}
 	ctx := context.Background()
-	if err := k8s.Deploy(ctx, workdir, name, ports); err != nil {
+	if err := k8s.Deploy(ctx, fn, name, bindings); err != nil {
 		t.Fatal(err)
 	}
 

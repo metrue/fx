@@ -1,16 +1,13 @@
 package packer
 
 import (
+	"encoding/base64"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/metrue/fx/types"
 )
 
 func TestPack(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	mockSource := `
 module.exports = ({a, b}) => {
 	return a + b
@@ -56,5 +53,33 @@ module.exports = ({a, b}) => {
 				t.Fatalf("should get %v but %v", false, file.IsHandler)
 			}
 		}
+	}
+}
+
+func TestTreeAndUnTree(t *testing.T) {
+	mockSource := `
+package fx;
+
+import org.json.JSONObject;
+
+public class Fx {
+    public int handle(JSONObject input) {
+        String a = input.get("a").toString();
+        String b = input.get("b").toString();
+        return Integer.parseInt(a) + Integer.parseInt(b);
+    }
+}
+`
+	fn := types.ServiceFunctionSource{
+		Language: "java",
+		Source:   mockSource,
+	}
+	tree, err := PackIntoK8SConfigMapFile(fn.Language, fn.Source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body := base64.StdEncoding.EncodeToString([]byte(mockSource))
+	if tree["src/main/java/fx/Fx.java"] != body {
+		t.Fatalf("should get %s but got %s", body, tree["src/main/java/fx/app.java"])
 	}
 }

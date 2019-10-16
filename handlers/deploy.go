@@ -13,7 +13,7 @@ import (
 	"github.com/metrue/fx/deploy"
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
 	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
-	"github.com/metrue/fx/packer"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -69,14 +69,6 @@ func Deploy(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		workdir, err := ioutil.TempDir("/tmp", "fx-wd")
-		if err != nil {
-			return err
-		}
-		if err := packer.PackIntoDir(lang, string(body), workdir); err != nil {
-			return err
-		}
-
 		var deployer deploy.Deployer
 		if os.Getenv("KUBECONFIG") != "" {
 			deployer, err = k8sDeployer.Create()
@@ -93,9 +85,18 @@ func Deploy(cfg config.Configer) HandleFunc {
 		// TODO multiple ports support
 		return deployer.Deploy(
 			context.Background(),
-			workdir,
+			types.Func{Language: lang, Source: string(body)},
 			name,
-			[]int32{int32(port)},
+			[]types.PortBinding{
+				types.PortBinding{
+					ServiceBindingPort:  80,
+					ContainerExposePort: constants.FxContainerExposePort,
+				},
+				types.PortBinding{
+					ServiceBindingPort:  443,
+					ContainerExposePort: constants.FxContainerExposePort,
+				},
+			},
 		)
 	}
 }

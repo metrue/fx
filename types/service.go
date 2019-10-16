@@ -6,12 +6,6 @@ type ServiceRunOptions struct {
 	Port  int64
 }
 
-// ServiceFunctionSource source of service's function
-type ServiceFunctionSource struct {
-	Language string `json:"language"`
-	Source   string `json:"source"`
-}
-
 // DefaultHost default host IP
 const DefaultHost = "0.0.0.0"
 

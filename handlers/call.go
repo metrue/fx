@@ -32,7 +32,7 @@ func Call(cfg config.Configer) HandleFunc {
 		log.Info("Read Source: \u2713")
 
 		lang := utils.GetLangFromFileName(file)
-		fn := types.ServiceFunctionSource{
+		fn := types.Func{
 			Language: lang,
 			Source:   string(src),
 		}

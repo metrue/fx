@@ -76,7 +76,7 @@ func Up(cfg config.Configer) HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		fn := types.ServiceFunctionSource{
+		fn := types.Func{
 			Language: lang,
 			Source:   string(body),
 		}

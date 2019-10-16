@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"strconv"
 
-	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/types"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	intstr "k8s.io/apimachinery/pkg/util/intstr"
@@ -13,30 +13,16 @@ func generateServiceSpec(
 	namespace string,
 	name string,
 	typ string,
-	ports []int32,
+	bindings []types.PortBinding,
 	selector map[string]string,
 ) *apiv1.Service {
-	servicePorts := []apiv1.ServicePort{
-		apiv1.ServicePort{
-			Name:       "http",
-			Protocol:   apiv1.ProtocolTCP,
-			Port:       80,
-			TargetPort: intstr.FromInt(int(constants.FxContainerExposePort)),
-		},
-		apiv1.ServicePort{
-			Name:       "https",
-			Protocol:   apiv1.ProtocolTCP,
-			Port:       443,
-			TargetPort: intstr.FromInt(int(constants.FxContainerExposePort)),
-		},
-	}
-	// Append custom Port
-	for index, port := range ports {
+	servicePorts := []apiv1.ServicePort{}
+	for index, binding := range bindings {
 		servicePorts = append(servicePorts, apiv1.ServicePort{
-			Name:       "custom-port-" + strconv.Itoa(index),
+			Name:       "port-" + strconv.Itoa(index),
 			Protocol:   apiv1.ProtocolTCP,
-			Port:       port,
-			TargetPort: intstr.FromInt(int(3000)),
+			Port:       binding.ServiceBindingPort,
+			TargetPort: intstr.FromInt(int(binding.ContainerExposePort)),
 		})
 	}
 
@@ -58,10 +44,10 @@ func (k *K8S) CreateService(
 	namespace string,
 	name string,
 	typ string,
-	ports []int32,
+	bindings []types.PortBinding,
 	selector map[string]string,
 ) (*apiv1.Service, error) {
-	service := generateServiceSpec(namespace, name, typ, ports, selector)
+	service := generateServiceSpec(namespace, name, typ, bindings, selector)
 	createdService, err := k.CoreV1().Services(namespace).Create(service)
 	if err != nil {
 		return nil, err
@@ -76,7 +62,7 @@ func (k *K8S) UpdateService(
 	namespace string,
 	name string,
 	typ string,
-	ports []int32,
+	bindings []types.PortBinding,
 	selector map[string]string,
 ) (*apiv1.Service, error) {
 	svc, err := k.GetService(namespace, name)

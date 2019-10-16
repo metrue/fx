@@ -12,6 +12,7 @@ import (
 	api "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/provision"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
@@ -41,7 +42,7 @@ func BuildImage(cfg config.Configer) HandleFunc {
 		tarFile := fmt.Sprintf("%s.%s.tar", pwd, tag)
 		defer os.RemoveAll(tarFile)
 
-		if err := packer.PackIntoTar(lang, string(body), tarFile); err != nil {
+		if err := packer.PackIntoTar(types.Func{Language: lang, Source: string(body)}, tarFile); err != nil {
 			log.Fatalf("could not pack function: %v", err)
 			return err
 		}
@@ -95,7 +96,7 @@ func ExportImage() HandleFunc {
 		}
 		lang := utils.GetLangFromFileName(funcFile)
 
-		if err := packer.PackIntoDir(lang, string(body), outputDir); err != nil {
+		if err := packer.PackIntoDir(types.Func{Language: lang, Source: string(body)}, outputDir); err != nil {
 			log.Fatalf("write source code to file failed: %v", constants.UncheckedSymbol)
 			return err
 		}
