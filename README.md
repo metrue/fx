@@ -304,32 +304,53 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/metrue" target="_blank">
             <img alt="metrue" src="https://avatars2.githubusercontent.com/u/1001246?v=4&s=50" width="50">
         </a>
-        <a href="https://github.com/pplam" target="_blank">
-            <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
-        </a>
         <a href="https://github.com/muka" target="_blank">
             <img alt="muka" src="https://avatars2.githubusercontent.com/u/1021269?v=4&s=50" width="50">
         </a>
-        <a href="https://github.com/xwjdsh" target="_blank">
-            <img alt="xwjdsh" src="https://avatars2.githubusercontent.com/u/11025519?v=4&s=50" width="50">
+        <a href="https://github.com/pplam" target="_blank">
+            <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
         </a>
-        <a href="https://github.com/mbesancon" target="_blank">
-            <img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?v=4&s=50" width="50">
-        </a>
-        <a href="https://github.com/avelino" target="_blank">
-            <img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">
-        </a>
-        <a href="https://github.com/DaidoujiChen" target="_blank">
-            <img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">
+        <a href="https://github.com/matbesancon" target="_blank">
+            <img alt="mbesancon" src="https://avatars2.githubusercontent.com/u/7623090?s=60&v=4" width="50">
         </a>
         <a href="https://github.com/chlins" target="_blank">
             <img alt="chlins" src="https://avatars2.githubusercontent.com/u/31262637?v=4&s=50" width="50">
         </a>
+        <a href="https://github.com/xwjdsh" target="_blank">
+            <img alt="xwjdsh" src="https://avatars2.githubusercontent.com/u/11025519?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/DaidoujiChen" target="_blank">
+            <img alt="DaidoujiChen" src="https://avatars0.githubusercontent.com/u/670441?v=4&s=50" width="50">
+        </a>
+        <a href="https://github.com/avelino" target="_blank">
+            <img alt="avelino" src="https://avatars2.githubusercontent.com/u/31996?v=4&s=50" width="50">
+        </a>
         <a href="https://github.com/andre2007" target="_blank">
             <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/1451047?s=50&v=4" width="50">
         </a>
+        <a href="https://github.com/polyrabbit" target="_blank">
+            <img alt="polyrabbit" src="https://avatars0.githubusercontent.com/u/2657334?s=60&v=4" width="50">
+        </a>
+        <a href="https://github.com/johnlunney" target="_blank">
+            <img alt="johnlunney" src="https://avatars3.githubusercontent.com/u/536947?s=60&v=4" width="50">
+        </a>
+        <a href="https://github.com/tbrand" target="_blank">
+            <img alt="tbrand" src="https://avatars0.githubusercontent.com/u/3483230?s=60&v=4" width="50">
+        </a>
         <a href="https://github.com/steventhanna" target="_blank">
             <img alt="andre2007" src="https://avatars1.githubusercontent.com/u/2541678?s=50&v=4" width="50">
+        </a>
+        <a href="https://github.com/border-radius" target="_blank">
+            <img alt="border-radius" src="https://avatars0.githubusercontent.com/u/3204785?s=60&v=4" width="50">
+        </a>
+        <a href="https://github.com/Russtopia" target="_blank">
+            <img alt="Russtopia" src="https://avatars1.githubusercontent.com/u/2966177?s=60&v=4<Paste>" width="50">
+        </a>
+        <a href="https://github.com/FrontMage" target="_blank">
+            <img alt="FrontMage" src="https://avatars2.githubusercontent.com/u/17007026?s=60&v=4" width="50">
+        </a>
+        <a href="https://github.com/DropNib" target="_blank">
+            <img alt="DropNib" src="https://avatars0.githubusercontent.com/u/32019589?s=60&v=4" width="50">
         </a>
     </tr>
   </tbody>
