@@ -70,24 +70,13 @@ func Deploy(cfg config.Configer) HandleFunc {
 		lang := utils.GetLangFromFileName(funcFile)
 
 		var deployer deploy.Deployer
+		var bindings []types.PortBinding
 		if os.Getenv("KUBECONFIG") != "" {
 			deployer, err = k8sDeployer.Create()
 			if err != nil {
 				return err
 			}
-		} else {
-			bctx := context.Background()
-			deployer, err = dockerDeployer.CreateClient(bctx)
-			if err != nil {
-				return err
-			}
-		}
-		// TODO multiple ports support
-		return deployer.Deploy(
-			context.Background(),
-			types.Func{Language: lang, Source: string(body)},
-			name,
-			[]types.PortBinding{
+			bindings = []types.PortBinding{
 				types.PortBinding{
 					ServiceBindingPort:  80,
 					ContainerExposePort: constants.FxContainerExposePort,
@@ -96,7 +85,25 @@ func Deploy(cfg config.Configer) HandleFunc {
 					ServiceBindingPort:  443,
 					ContainerExposePort: constants.FxContainerExposePort,
 				},
-			},
+			}
+		} else {
+			bctx := context.Background()
+			deployer, err = dockerDeployer.CreateClient(bctx)
+			if err != nil {
+				return err
+			}
+			bindings = []types.PortBinding{
+				types.PortBinding{
+					ServiceBindingPort:  int32(port),
+					ContainerExposePort: constants.FxContainerExposePort,
+				},
+			}
+		}
+		return deployer.Deploy(
+			context.Background(),
+			types.Func{Language: lang, Source: string(body)},
+			name,
+			bindings,
 		)
 	}
 }
