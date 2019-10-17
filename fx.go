@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.7.5"
+const version = "0.7.51"
 
 var cfg *config.Config
 
