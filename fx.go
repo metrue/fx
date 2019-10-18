@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.7.51"
+const version = "0.8.0"
 
 var cfg *config.Config
 
@@ -193,46 +193,11 @@ func main() {
 			},
 		},
 		{
-			Name:      "deploy",
-			Usage:     "deploy a function or a group of functions",
-			ArgsUsage: "[func.go func.js func.py func.rb ...]",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "name, n",
-					Value: uuid.New().String(),
-					Usage: "service name",
-				},
-				cli.IntFlag{
-					Name:  "port, p",
-					Usage: "port number",
-				},
-				cli.BoolFlag{
-					Name:  "healthcheck, hc",
-					Usage: "do a health check after service up",
-				},
-				cli.BoolFlag{
-					Name:  "force, f",
-					Usage: "force deploy a function or functions",
-				},
-			},
-			Action: func(c *cli.Context) error {
-				return handlers.Deploy(cfg)(c)
-			},
-		},
-		{
 			Name:      "down",
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
 				return handlers.Down(cfg)(c)
-			},
-		},
-		{
-			Name:      "destroy",
-			Usage:     "destroy a service",
-			ArgsUsage: "[service 1, service 2, ....]",
-			Action: func(c *cli.Context) error {
-				return handlers.Destroy(cfg)(c)
 			},
 		},
 		{

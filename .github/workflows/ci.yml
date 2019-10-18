@@ -70,8 +70,8 @@ jobs:
           if [[ -z "$AKS_KUBECONFIG" ]];then
             echo "skip deploy test since no valid KUBECONFIG"
           else
-            DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
-            ./build/fx destroy hello
+            DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
+            ./build/fx down hello
             rm ${KUBECONFIG}
           fi
 

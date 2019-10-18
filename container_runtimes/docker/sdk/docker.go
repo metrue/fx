@@ -70,14 +70,11 @@ func (d *Docker) BuildImage(ctx context.Context, workdir string, name string) er
 		return err
 	}
 	defer resp.Body.Close()
-
-	if os.Getenv("DEBUG") != "" {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		log.Info(string(body))
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
 	}
+	log.Info(string(body))
 
 	return nil
 }
