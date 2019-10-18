@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.7.51"
+const version = "0.8.0"
 
 var cfg *config.Config
 
@@ -198,14 +198,6 @@ func main() {
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
 				return handlers.Down(cfg)(c)
-			},
-		},
-		{
-			Name:      "destroy",
-			Usage:     "destroy a service",
-			ArgsUsage: "[service 1, service 2, ....]",
-			Action: func(c *cli.Context) error {
-				return handlers.Destroy(cfg)(c)
 			},
 		},
 		{

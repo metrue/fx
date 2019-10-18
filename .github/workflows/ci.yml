@@ -71,7 +71,7 @@ jobs:
             echo "skip deploy test since no valid KUBECONFIG"
           else
             DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
-            ./build/fx destroy hello
+            ./build/fx down hello
             rm ${KUBECONFIG}
           fi
 
