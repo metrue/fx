@@ -66,8 +66,8 @@ jobs:
         run: |
           export KUBECONFIG=${HOME}/.kube/aks
           echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
-          DEBUG=true ./build/fx deploy -n hello -p 12345 examples/functions/JavaScript/func.js
-          ./build/fx destroy hello
+          DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
+          ./build/fx down hello
           rm ${KUBECONFIG}
   Release:
     runs-on: ${{ matrix.os }}
