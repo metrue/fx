@@ -1,57 +1,70 @@
-on:
-  schedule:
-    - cron: '0 12 * * *'
+on: [push]
+  # schedule:
+  #   - cron: '0 12 * * *'
 name: docker
 jobs:
   Docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker_version:
+          - 18.09
+          # - 19.03
+          # - 19.09
+        docker_channel:
+          - stable
+          # - test
     steps:
       - uses: actions/checkout@master
+      - name: setup docker
+        uses: docker-practice/actions-setup-docker@master
+        with:
+          docker_version: ${{ matrix.docker_version }}
+          docker_channel: ${{ matrix.docker_channel }}
 
-      - name: login
-        uses: actions/docker/login@8cdf801b322af5f369e00d85e9cf3a7122f49108
+      - name: login docker hub
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
 
-      - name: build-fx-go-image
-        uses: actions/docker/cli@master
-        with:
-          args: build -t metrue/fx-go-base:latest -f api/asserts/dockerfiles/base/go/Dockerfile
-            api/asserts/dockerfiles/base/go
+      - name: build and publish fx d image
+        if: always()
+        run: |
+          docker build -t metrue/fx-d-base:latest -f ./assets/dockerfiles/base/d/Dockerfile ./assets/dockerfiles/base/d
+          docker push metrue/fx-d-base:latest
 
-      - name: push-fx-go-image
-        uses: actions/docker/cli@master
+      # - name: build and publish fx java image
+      #   run: |
+      #     docker build -t metrue/fx-go-base:latest -f ./assets/dockerfiles/base/java/Dockerfile ./assets/dockerfiles/base/java
+      #     docker push metrue/fx-java-base:latest
+
+      - name: build and publish fx node image
+        if: always()
+        run: |
+          docker build -t metrue/fx-node-base:latest -f ./assets/dockerfiles/base/node/Dockerfile ./assets/dockerfiles/base/node
+          docker push metrue/fx-node-base:latest
+
+      - name: build and publish fx python image
+        if: always()
+        run: |
+          docker build -t metrue/fx-python-base:latest -f ./assets/dockerfiles/base/python/Dockerfile ./assets/dockerfiles/base/python
+      - name: publish fx python image
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        with:
-          args: push metrue/fx-go-base:latest
+        run: |
+          docker push metrue/fx-python-base:latest
 
-      - name: build-fx-rust-image
-        uses: actions/docker/cli@master
-        with:
-          args: build -t metrue/fx-rust-base:latest -f api/asserts/dockerfiles/base/rust/Dockerfile
-            api/asserts/dockerfiles/base/rust
+      # - name: build and publish fx rust image
+      #   if: always()
+      #   run: |
+      #     docker build -t metrue/fx-rust-base:latest -f ./assets/dockerfiles/base/rust/Dockerfile ./assets/dockerfiles/base/python
+      #     docker push metrue/fx-rust-base:latest
 
-      - name: push-fx-rust-image
-        uses: actions/docker/cli@master
-        env:
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        with:
-          args: push metrue/fx-rust-base:latest
-
-      - name: build-fx-node-image
-        uses: actions/docker/cli@master
-        with:
-          args: build -t metrue/fx-node-base:latest -f api/asserts/dockerfiles/base/node/Dockerfile
-            api/asserts/dockerfiles/base/node
-
-      - name: push-fx-node-image
-        uses: actions/docker/cli@master
-        env:
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        with:
-          args: push metrue/fx-node-base:latest
+      - name: build and publish fx julia image
+        if: always()
+        run: |
+          docker build -t metrue/fx-julia-base:latest -f ./assets/dockerfiles/base/julia/Dockerfile ./assets/dockerfiles/base/julia
+          docker push metrue/fx-julia-base:latest
