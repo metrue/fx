@@ -35,6 +35,54 @@ func New(host config.Host) *Provisionor {
 	return p
 }
 
+// IsFxAgentRunning check if fx-agent is running on host
+func (p *Provisionor) IsFxAgentRunning() bool {
+	script := fmt.Sprintf("docker inspect %s", constants.AgentContainerName)
+	var cmd *command.Command
+	if p.host.IsRemote() {
+		cmd = command.New("inspect fx-agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("inspect fx-agent", script, command.NewLocalRunner())
+	}
+	if _, err := cmd.Exec(); err != nil {
+		return false
+	}
+	return true
+}
+
+// StartFxAgent start fx agent
+func (p *Provisionor) StartFxAgent() error {
+	script := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	var cmd *command.Command
+	if p.host.IsRemote() {
+		cmd = command.New("start fx-agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("start fx-agent", script, command.NewLocalRunner())
+	}
+	if output, err := cmd.Exec(); err != nil {
+		log.Warnf(string(output))
+		return err
+	}
+	return nil
+}
+
+// StopFxAgent stop fx agent
+func (p *Provisionor) StopFxAgent() error {
+	script := fmt.Sprintf("docker stop %s", constants.AgentContainerName)
+	var cmd *command.Command
+	if p.host.IsRemote() {
+		cmd = command.New("stop fx agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("stop fx agent", script, command.NewLocalRunner())
+	}
+	if output, err := cmd.Exec(); err != nil {
+		fmt.Println("--->", output, err)
+		log.Warnf(string(output))
+		return err
+	}
+	return nil
+}
+
 // Start start provision progress
 func (p *Provisionor) Start() error {
 	startFxAgent := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
