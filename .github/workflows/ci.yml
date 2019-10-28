@@ -56,6 +56,10 @@ jobs:
 
 
       - name: test fx cli
+        env:
+          REMOTE_HOST_ADDR: ${{secrets.DOCKER_REMOTE_HOST_ADDR}}
+          REMOTE_HOST_USER: ${{secrets.DOCKER_REMOTE_HOST_USER}}
+          REMOTE_HOST_PASSWORD: ${{secrets.DOCKER_REMOTE_HOST_PASSWORD}}
         run: |
           echo $KUBECONFIG
           unset KUBECONFIG
