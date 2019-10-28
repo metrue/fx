@@ -8,10 +8,12 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
+	"github.com/metrue/fx/constants"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/packer"
+	"github.com/metrue/fx/provision"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
@@ -35,10 +37,18 @@ func CreateClient(ctx context.Context) (*Docker, error) {
 func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports []types.PortBinding) error {
 	// if DOCKER_REMOTE_HOST and DOCKER_REMOTE_PORT given
 	// it means user is going to deploy service to remote host
-	host := os.Getenv("DOCKER_REMOTE_HOST")
-	port := os.Getenv("DOCKER_REMOTE_PORT")
-	if port != "" && host != "" {
-		httpClient, err := dockerHTTP.Create(host, port)
+	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
+	user := os.Getenv("DOCKER_REMOTE_HOST_USER")
+	passord := os.Getenv("DOCKER_REMOTE_HOST_PASSWORD")
+	if host != "" && user != "" {
+		provisioner := provision.NewWithHost(host, user, passord)
+		if !provisioner.IsFxAgentRunning() {
+			if err := provisioner.StartFxAgent(); err != nil {
+				return err
+			}
+		}
+
+		httpClient, err := dockerHTTP.Create(host, constants.AgentPort)
 		if err != nil {
 			return err
 		}

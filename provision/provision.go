@@ -35,6 +35,23 @@ func New(host config.Host) *Provisionor {
 	return p
 }
 
+// NewWithHost create a provisionor with host, user, and password
+func NewWithHost(host string, user string, password string) *Provisionor {
+	p := &Provisionor{
+		host: config.Host{
+			Host:     host,
+			Password: password,
+			User:     user,
+		},
+	}
+	if p.host.IsRemote() {
+		p.sshClient = ssh.New(host).
+			WithUser(user).
+			WithPassword(password)
+	}
+	return p
+}
+
 // IsFxAgentRunning check if fx-agent is running on host
 func (p *Provisionor) IsFxAgentRunning() bool {
 	script := fmt.Sprintf("docker inspect %s", constants.AgentContainerName)
