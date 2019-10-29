@@ -2,12 +2,14 @@ package api
 
 import (
 	"testing"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/provision"
 	"github.com/metrue/fx/types"
+	"github.com/metrue/fx/utils"
 )
 
 func TestDockerHTTP(t *testing.T) {
@@ -15,13 +17,22 @@ func TestDockerHTTP(t *testing.T) {
 	const user = ""
 	const passord = ""
 	provisioner := provision.NewWithHost(addr, user, passord)
-	if !provisioner.IsFxAgentRunning() {
-		if err := provisioner.StartFxAgent(); err != nil {
-			log.Fatalf("could not start fx agent on host: %s", err)
-			t.Fatal(err)
+	if err := utils.RunWithRetry(func() error {
+		if !provisioner.IsFxAgentRunning() {
+			if err := provisioner.StartFxAgent(); err != nil {
+				log.Infof("could not start fx agent on host: %s", err)
+				return err
+			}
+			log.Infof("fx agent started")
+		} else {
+			log.Infof("fx agent is running")
 		}
+		return nil
+	}, 2*time.Second, 10); err != nil {
+		t.Fatal(err)
+	} else {
+		defer provisioner.StopFxAgent()
 	}
-	defer provisioner.StopFxAgent()
 
 	host := config.Host{Host: "127.0.0.1"}
 	api, err := Create(host.Host, constants.AgentPort)
@@ -74,10 +85,6 @@ module.exports = (input) => {
 	}
 
 	service, err := api.Build(project)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	if err != nil {
 		t.Fatal(err)
 	}

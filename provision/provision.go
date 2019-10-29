@@ -2,7 +2,7 @@ package provision
 
 import (
 	"fmt"
-	"strings"
+	"os"
 	"sync"
 
 	"github.com/apex/log"
@@ -61,7 +61,11 @@ func (p *Provisionor) IsFxAgentRunning() bool {
 	} else {
 		cmd = command.New("inspect fx-agent", script, command.NewLocalRunner())
 	}
-	if _, err := cmd.Exec(); err != nil {
+	output, err := cmd.Exec()
+	if os.Getenv("DEBUG") != "" {
+		log.Infof(string(output))
+	}
+	if err != nil {
 		return false
 	}
 	return true
@@ -77,7 +81,7 @@ func (p *Provisionor) StartFxAgent() error {
 		cmd = command.New("start fx-agent", script, command.NewLocalRunner())
 	}
 	if output, err := cmd.Exec(); err != nil {
-		log.Warnf(string(output))
+		log.Info(string(output))
 		return err
 	}
 	return nil
@@ -93,8 +97,7 @@ func (p *Provisionor) StopFxAgent() error {
 		cmd = command.New("stop fx agent", script, command.NewLocalRunner())
 	}
 	if output, err := cmd.Exec(); err != nil {
-		fmt.Println("--->", output, err)
-		log.Warnf(string(output))
+		log.Infof(string(output))
 		return err
 	}
 	return nil
@@ -102,8 +105,6 @@ func (p *Provisionor) StopFxAgent() error {
 
 // Start start provision progress
 func (p *Provisionor) Start() error {
-	startFxAgent := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
-	stopFxAgent := fmt.Sprintf("docker stop %s", constants.AgentContainerName)
 	scripts := map[string]string{
 		"pull java Docker base image":   "docker pull metrue/fx-java-base",
 		"pull julia Docker base image":  "docker pull metrue/fx-julia-base",
@@ -111,29 +112,6 @@ func (p *Provisionor) Start() error {
 		"pull node Docker base image":   "docker pull metrue/fx-node-base",
 		"pull d Docker base image":      "docker pull metrue/fx-d-base",
 		"pull go Docker base image":     "docker pull metrue/fx-go-base",
-	}
-
-	agentStartupCmds := []*command.Command{}
-	if p.host.IsRemote() {
-		agentStartupCmds = append(agentStartupCmds,
-			command.New("stop current fx agent", stopFxAgent, command.NewRemoteRunner(p.sshClient)),
-			command.New("start fx agent", startFxAgent, command.NewRemoteRunner(p.sshClient)),
-		)
-	} else {
-		agentStartupCmds = append(agentStartupCmds,
-			command.New("stop current fx agent", stopFxAgent, command.NewLocalRunner()),
-			command.New("start fx agent", startFxAgent, command.NewLocalRunner()),
-		)
-	}
-	for _, cmd := range agentStartupCmds {
-		if output, err := cmd.Exec(); err != nil {
-			if strings.Contains(string(output), "No such container: fx-agent") {
-				// Skip stop a fx-agent error when there is not agent running
-			} else {
-				log.Fatalf("Provision:%s: %s, %s", cmd.Name, err, output)
-				return err
-			}
-		}
 	}
 
 	var wg sync.WaitGroup
