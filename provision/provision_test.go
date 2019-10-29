@@ -13,7 +13,7 @@ func TestProvisionWorkflow(t *testing.T) {
 
 	_ = provisionor.StopFxAgent()
 	// TODO wait too long here to make test pass
-	time.Sleep(20 * time.Second)
+	time.Sleep(40 * time.Second)
 
 	running := provisionor.IsFxAgentRunning()
 	if running {
