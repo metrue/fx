@@ -6,15 +6,7 @@ import (
 	"github.com/metrue/fx/config"
 )
 
-func TestStart(t *testing.T) {
-	host := config.Host{Host: "127.0.0.1"}
-	provisionor := New(host)
-	if err := provisionor.Start(); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestIsFxAgentRunning(t *testing.T) {
+func TestProvisionWorkflow(t *testing.T) {
 	host := config.Host{Host: "127.0.0.1"}
 	provisionor := New(host)
 	running := provisionor.IsFxAgentRunning()
@@ -29,6 +21,10 @@ func TestIsFxAgentRunning(t *testing.T) {
 	running = provisionor.IsFxAgentRunning()
 	if !running {
 		t.Fatalf("fx-agent should be running")
+	}
+
+	if err := provisionor.Start(); err != nil {
+		t.Fatal(err)
 	}
 
 	if err := provisionor.StopFxAgent(); err != nil {
