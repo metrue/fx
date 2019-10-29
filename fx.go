@@ -67,63 +67,10 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "infra",
-			Usage: "manage infrastructure of fx",
-			Subcommands: []cli.Command{
-				{
-					Name:  "add",
-					Usage: "add a new machine",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "name, N",
-							Usage: "a alias name for this machine",
-						},
-						cli.StringFlag{
-							Name:  "host, H",
-							Usage: "host name or IP address of a machine",
-						},
-						cli.StringFlag{
-							Name:  "user, U",
-							Usage: "user name required for SSH login",
-						},
-						cli.StringFlag{
-							Name:  "password, P",
-							Usage: "password required for SSH login",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						return handlers.AddHost(cfg)(c)
-					},
-				},
-				{
-					Name:  "remove",
-					Usage: "remove an existing machine",
-					Action: func(c *cli.Context) error {
-						return handlers.RemoveHost(cfg)(c)
-					},
-				},
-				{
-					Name:    "list",
-					Aliases: []string{"ls"},
-					Usage:   "list machines",
-					Action: func(c *cli.Context) error {
-						return handlers.ListHosts(cfg)(c)
-					},
-				},
-				{
-					Name:  "activate",
-					Usage: "enable a machine be a host of fx infrastructure",
-					Action: func(c *cli.Context) error {
-						return handlers.Activate(cfg)(c)
-					},
-				},
-				{
-					Name:  "deactivate",
-					Usage: "disable a machine be a host of fx infrastructure",
-					Action: func(c *cli.Context) error {
-						return handlers.Deactivate(cfg)(c)
-					},
-				},
+			Name:  "init",
+			Usage: "start fx agent on host",
+			Action: func(c *cli.Context) error {
+				return handlers.Init()(c)
 			},
 		},
 		{
