@@ -3,12 +3,26 @@ package api
 import (
 	"testing"
 
+	"github.com/apex/log"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/provision"
 	"github.com/metrue/fx/types"
 )
 
 func TestDockerHTTP(t *testing.T) {
+	const addr = "127.0.0.1"
+	const user = ""
+	const passord = ""
+	provisioner := provision.NewWithHost(addr, user, passord)
+	if !provisioner.IsFxAgentRunning() {
+		if err := provisioner.StartFxAgent(); err != nil {
+			log.Fatalf("could not start fx agent on host: %s", err)
+			t.Fatal(err)
+		}
+	}
+	defer provisioner.StopFxAgent()
+
 	host := config.Host{Host: "127.0.0.1"}
 	api, err := Create(host.Host, constants.AgentPort)
 	if err != nil {
@@ -85,5 +99,18 @@ module.exports = (input) => {
 
 	if err := api.Stop(serviceName); err != nil {
 		t.Fatal(err)
+	}
+
+	const network = "fx-net"
+	if err := api.CreateNetwork(network); err != nil {
+		t.Fatal(err)
+	}
+
+	nws, err := api.GetNetwork(network)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if nws[0].Name != network {
+		t.Fatalf("should get %s but got %s", network, nws[0].Name)
 	}
 }
