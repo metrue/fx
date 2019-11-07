@@ -35,7 +35,6 @@ export_image() {
 # clean up
 docker stop fx-agent || true && docker rm fx-agent || true
 
-$fx infra activate localhost
 port=20000
 for lang in 'js' 'rb' 'py' 'go' 'php' 'java' 'd'; do
   run $lang $port
