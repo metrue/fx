@@ -1,6 +1,8 @@
 package handlers
 
-import "github.com/urfave/cli"
+import (
+	"github.com/metrue/fx/context"
+)
 
 // HandleFunc command handle function
-type HandleFunc func(ctx *cli.Context) error
+type HandleFunc func(ctx *context.Context) error

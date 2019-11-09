@@ -11,7 +11,9 @@ import (
 	"github.com/apex/log"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
+	"github.com/metrue/fx/middlewares"
 	"github.com/urfave/cli"
 )
 
@@ -70,7 +72,7 @@ func main() {
 			Name:  "init",
 			Usage: "start fx agent on host",
 			Action: func(c *cli.Context) error {
-				return handlers.Init()(c)
+				return handlers.Init()(context.FromCliContext(c))
 			},
 		},
 		{
@@ -87,7 +89,11 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return handlers.BuildImage(cfg)(c)
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.Setup); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.BuildImage()(ctx)
 					},
 				},
 				{
@@ -100,7 +106,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return handlers.ExportImage()(c)
+						return handlers.ExportImage()(context.FromCliContext(c))
 					},
 				},
 			},
@@ -109,7 +115,7 @@ func main() {
 			Name:  "doctor",
 			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
-				return handlers.Doctor(cfg)(c)
+				return handlers.Doctor(cfg)(context.FromCliContext(c))
 			},
 		},
 		{
@@ -136,7 +142,14 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Up(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				if err := ctx.Use(middlewares.Binding); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.Up()(ctx)
 			},
 		},
 		{
@@ -144,7 +157,11 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return handlers.Down(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.Down(cfg)(ctx)
 			},
 		},
 		{
@@ -152,7 +169,11 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
 			Action: func(c *cli.Context) error {
-				return handlers.List(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.List()(ctx)
 			},
 		},
 		{
@@ -165,7 +186,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Call(cfg)(c)
+				return handlers.Call(cfg)(context.FromCliContext(c))
 			},
 		},
 	}

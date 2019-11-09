@@ -10,7 +10,7 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/metrue/fx/constants"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
-	runtime "github.com/metrue/fx/container_runtimes/docker/sdk"
+	dockerSDK "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/provision"
@@ -21,16 +21,16 @@ import (
 
 // Docker manage container
 type Docker struct {
-	localClient *runtime.Docker
+	cli *dockerSDK.Docker
 }
 
 // CreateClient create a docker instance
 func CreateClient(ctx context.Context) (*Docker, error) {
-	cli, err := runtime.CreateClient(ctx)
+	cli, err := dockerSDK.CreateClient(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &Docker{localClient: cli}, nil
+	return &Docker{cli: cli}, nil
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
@@ -74,13 +74,13 @@ func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports [
 		log.Fatalf("could not pack function %v: %v", fn, err)
 		return err
 	}
-	if err := d.localClient.BuildImage(ctx, workdir, name); err != nil {
+	if err := d.cli.BuildImage(ctx, workdir, name); err != nil {
 		log.Fatalf("could not build image: %v", err)
 		return err
 	}
 
 	nameWithTag := name + ":latest"
-	if err := d.localClient.ImageTag(ctx, name, nameWithTag); err != nil {
+	if err := d.cli.ImageTag(ctx, name, nameWithTag); err != nil {
 		log.Fatalf("could not tag image: %v", err)
 		return err
 	}
@@ -91,12 +91,12 @@ func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports [
 	// But it takes some times waiting image ready after image built, we retry to make sure it ready here
 	var imgInfo dockerTypes.ImageInspect
 	if err := utils.RunWithRetry(func() error {
-		return d.localClient.InspectImage(ctx, name, &imgInfo)
+		return d.cli.InspectImage(ctx, name, &imgInfo)
 	}, time.Second*1, 5); err != nil {
 		return err
 	}
 
-	return d.localClient.StartContainer(ctx, name, name, ports)
+	return d.cli.StartContainer(ctx, name, name, ports)
 }
 
 // Update a container
@@ -106,12 +106,18 @@ func (d *Docker) Update(ctx context.Context, name string) error {
 
 // Destroy stop and remove container
 func (d *Docker) Destroy(ctx context.Context, name string) error {
-	return d.localClient.ContainerStop(ctx, name, nil)
+	return d.cli.ContainerStop(ctx, name, nil)
 }
 
 // GetStatus get status of container
 func (d *Docker) GetStatus(ctx context.Context, name string) error {
 	return nil
+}
+
+// List services
+func (d *Docker) List(ctx context.Context, name string) ([]types.Service, error) {
+	// FIXME support remote host
+	return d.cli.ListContainer(ctx, name)
 }
 
 var (

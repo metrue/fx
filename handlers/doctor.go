@@ -4,13 +4,13 @@ import (
 	"github.com/apex/log"
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/doctor"
-	"github.com/urfave/cli"
 )
 
 // Doctor command handle
 func Doctor(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) error {
+	return func(ctx *context.Context) error {
 		hosts, err := cfg.ListMachines()
 		if err != nil {
 			log.Fatalf("list machines failed %v", err)

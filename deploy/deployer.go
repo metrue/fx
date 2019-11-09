@@ -12,4 +12,5 @@ type Deployer interface {
 	Destroy(ctx context.Context, name string) error
 	Update(ctx context.Context, name string) error
 	GetStatus(ctx context.Context, name string) error
+	List(ctx context.Context, name string) ([]types.Service, error)
 }

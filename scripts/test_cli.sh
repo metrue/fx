@@ -3,7 +3,7 @@
 set -e
 
 fx="./build/fx"
-service='fx-service-abc'
+service='fx-service'
 
 run() {
   local lang=$1
@@ -14,9 +14,13 @@ run() {
   DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} \
   DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} \
   DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} \
+  # force destroy it first
+  echo 'stopping ...'
+  $fx down ${service}_${lang} || true
+
   ./build/fx up -p 1234 test/functions/func.js
   $fx list # | jq ''
-  $fx down ${service}_${lang} # | grep "Down Service ${service}"
+  # $fx down ${service}_${lang}
 }
 
 build_image() {
@@ -33,7 +37,7 @@ export_image() {
 
 # main
 # clean up
-docker stop fx-agent || true && docker rm fx-agent || true
+# docker stop fx-agent || true && docker rm fx-agent || true
 
 port=20000
 for lang in 'js' 'rb' 'py' 'go' 'php' 'java' 'd'; do

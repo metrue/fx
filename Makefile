@@ -7,6 +7,9 @@ lint:
 generate:
 	packr
 
+b:
+	go build -o ${OUTPUT_DIR}/fx fx.go
+
 build:
 	go build -o ${OUTPUT_DIR}/fx fx.go
 

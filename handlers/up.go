@@ -1,21 +1,15 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/apex/log"
-	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
-	dockerDeployer "github.com/metrue/fx/deploy/docker"
-	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
-	"github.com/urfave/cli"
 )
 
 // PortRange usable port range https: //en.wikipedia.org/wiki/Ephemeral_port
@@ -28,11 +22,12 @@ var PortRange = struct {
 }
 
 // Up command handle
-func Up(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) (err error) {
-		funcFile := ctx.Args().First()
-		name := ctx.String("name")
-		port := ctx.Int("port")
+func Up() HandleFunc {
+	return func(ctx *context.Context) (err error) {
+		cli := ctx.GetCliContext()
+		funcFile := cli.Args().First()
+		name := cli.String("name")
+		port := cli.Int("port")
 
 		defer func() {
 			if r := recover(); r != nil {
@@ -54,38 +49,10 @@ func Up(cfg config.Configer) HandleFunc {
 			return errors.Wrap(err, "read source failed")
 		}
 		lang := utils.GetLangFromFileName(funcFile)
-		var deployer deploy.Deployer
-		var bindings []types.PortBinding
-		if os.Getenv("KUBECONFIG") != "" {
-			deployer, err = k8sDeployer.Create()
-			if err != nil {
-				return err
-			}
-			bindings = []types.PortBinding{
-				types.PortBinding{
-					ServiceBindingPort:  80,
-					ContainerExposePort: constants.FxContainerExposePort,
-				},
-				types.PortBinding{
-					ServiceBindingPort:  443,
-					ContainerExposePort: constants.FxContainerExposePort,
-				},
-			}
-		} else {
-			bctx := context.Background()
-			deployer, err = dockerDeployer.CreateClient(bctx)
-			if err != nil {
-				return err
-			}
-			bindings = []types.PortBinding{
-				types.PortBinding{
-					ServiceBindingPort:  int32(port),
-					ContainerExposePort: constants.FxContainerExposePort,
-				},
-			}
-		}
+		deployer := ctx.Get("deployer").(deploy.Deployer)
+		bindings := ctx.Get("bindings").([]types.PortBinding)
 		return deployer.Deploy(
-			context.Background(),
+			ctx.Context,
 			types.Func{Language: lang, Source: string(body)},
 			name,
 			bindings,

@@ -4,13 +4,13 @@ import (
 	"os"
 
 	"github.com/apex/log"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/provision"
-	"github.com/urfave/cli"
 )
 
 // Init start fx-agent
 func Init() HandleFunc {
-	return func(ctx *cli.Context) error {
+	return func(ctx *context.Context) error {
 		host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
 		user := os.Getenv("DOCKER_REMOTE_HOST_USER")
 		passord := os.Getenv("DOCKER_REMOTE_HOST_PASSWORD")

@@ -131,6 +131,11 @@ func (k *K8S) GetStatus(ctx context.Context, name string) error {
 	return nil
 }
 
+// List services
+func (k *K8S) List(ctx context.Context, name string) ([]types.Service, error) {
+	return []types.Service{}, nil
+}
+
 var (
 	_ deploy.Deployer = &K8S{}
 )

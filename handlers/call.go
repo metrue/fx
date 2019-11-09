@@ -8,22 +8,23 @@ import (
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	api "github.com/metrue/fx/container_runtimes/docker/http"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
-	"github.com/urfave/cli"
 )
 
 // Call command handle
 func Call(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) error {
-		params := strings.Join(ctx.Args()[1:], " ")
+	return func(ctx *context.Context) error {
+		cli := ctx.GetCliContext()
+		params := strings.Join(cli.Args()[1:], " ")
 		hosts, err := cfg.ListActiveMachines()
 		if err != nil {
 			log.Fatalf("list active machines failed: %v", err)
 		}
 
-		file := ctx.Args().First()
+		file := cli.Args().First()
 		src, err := ioutil.ReadFile(file)
 		if err != nil {
 			log.Fatalf("Read Source: %v", err)

@@ -116,8 +116,8 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 	return nil
 }
 
-// List list service
-func (api *API) list(name string) ([]types.Service, error) {
+// ListContainer list service
+func (api *API) ListContainer(name string) ([]types.Service, error) {
 	if name != "" {
 		info, err := api.inspect(name)
 		if err != nil {
@@ -141,7 +141,7 @@ func (api *API) list(name string) ([]types.Service, error) {
 	}
 
 	type filterItem struct {
-		Status []string `json:"url,omitempty"`
+		Status []string `json:"status,omitempty"`
 		Label  []string `json:"label,omitempty"`
 		Name   []string `json:"name,omitempty"`
 	}

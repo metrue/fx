@@ -96,7 +96,7 @@ module.exports = (input) => {
 		t.Fatal(err)
 	}
 
-	services, err := api.list(serviceName)
+	services, err := api.ListContainer(serviceName)
 	if err != nil {
 		t.Fatal(err)
 	}
