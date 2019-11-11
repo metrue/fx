@@ -51,6 +51,7 @@ jobs:
         run: |
           export GOBIN=$(go env GOPATH)/bin
           export PATH=$PATH:$GOBIN
+          export GOPROXY=proxy.golang.org
           go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
           golangci-lint run
 
