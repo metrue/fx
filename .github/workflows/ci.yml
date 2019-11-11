@@ -13,6 +13,13 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
+      - name: lint
+        uses: matoous/golangci-lint-action@v1.1.0
+        with:
+          config: .golangci.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: setup docker
         run: |
           ./scripts/provision.sh
@@ -46,14 +53,6 @@ jobs:
           make docker-build
           make test
           # make docker-publish #TODO in release workflow
-
-      # - name: lint
-      #   run: |
-      #     export GOBIN=$(go env GOPATH)/bin
-      #     export PATH=$PATH:$GOBIN
-      #     export GOPROXY=https://proxy.golang.org
-      #     go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-      #     golangci-lint run
 
       - name: test fx cli
         env:
