@@ -1,7 +1,6 @@
 package packer
 
 import (
-	"encoding/base64"
 	"testing"
 
 	"github.com/metrue/fx/types"
@@ -13,7 +12,7 @@ module.exports = ({a, b}) => {
 	return a + b
 }
 `
-	fn := types.ServiceFunctionSource{
+	fn := types.Func{
 		Language: "node",
 		Source:   mockSource,
 	}
@@ -70,16 +69,12 @@ public class Fx {
     }
 }
 `
-	fn := types.ServiceFunctionSource{
+	fn := types.Func{
 		Language: "java",
 		Source:   mockSource,
 	}
-	tree, err := PackIntoK8SConfigMapFile(fn.Language, fn.Source)
+	_, err := PackIntoK8SConfigMapFile(fn)
 	if err != nil {
 		t.Fatal(err)
-	}
-	body := base64.StdEncoding.EncodeToString([]byte(mockSource))
-	if tree["src/main/java/fx/Fx.java"] != body {
-		t.Fatalf("should get %s but got %s", body, tree["src/main/java/fx/app.java"])
 	}
 }

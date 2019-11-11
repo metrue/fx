@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/metrue/fx/constants"
+	containerruntimes "github.com/metrue/fx/container_runtimes"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	dockerSDK "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/context"
@@ -30,19 +31,19 @@ func Setup(ctx *context.Context) (err error) {
 
 	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
 	user := os.Getenv("DOCKER_REMOTE_HOST_USER")
+	var docker containerruntimes.ContainerRuntime
 	if host != "" && user != "" {
-		httpClient, err := dockerHTTP.Create(host, constants.AgentPort)
+		docker, err = dockerHTTP.Create(host, constants.AgentPort)
 		if err != nil {
 			return err
 		}
-		ctx.Set("docker_http", httpClient)
 	} else {
-		cli, err := dockerSDK.CreateClient(ctx)
+		docker, err = dockerSDK.CreateClient(ctx)
 		if err != nil {
 			return err
 		}
-		ctx.Set("docker_sdk", cli)
 	}
+	ctx.Set("docker", docker)
 
 	return nil
 }

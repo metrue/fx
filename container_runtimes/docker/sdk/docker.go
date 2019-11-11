@@ -133,6 +133,11 @@ func (d *Docker) InspectImage(ctx context.Context, name string, img interface{})
 	return json.NewDecoder(rdr).Decode(&img)
 }
 
+// TagImage tag image
+func (d *Docker) TagImage(ctx context.Context, name string, tag string) error {
+	return d.ImageTag(ctx, name, tag)
+}
+
 // StartContainer create and start a container from given image
 func (d *Docker) StartContainer(ctx context.Context, name string, image string, ports []types.PortBinding) error {
 	portSet := nat.PortSet{}

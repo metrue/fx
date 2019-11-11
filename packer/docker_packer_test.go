@@ -20,7 +20,7 @@ module.exports = ({a, b}) => {
 	return a + b
 }
 `
-	fn := types.ServiceFunctionSource{
+	fn := types.Func{
 		Language: "node",
 		Source:   mockSource,
 	}
