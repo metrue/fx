@@ -10,17 +10,8 @@ run() {
   local port=$2
   # localhost
   $fx up --name ${service}_${lang} --port ${port} --healthcheck test/functions/func.${lang}
-  # remote host
-  DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} \
-  DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} \
-  DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} \
-  # force destroy it first
-  echo 'stopping ...'
-  $fx down ${service}_${lang} || true
-
-  ./build/fx up -p 1234 test/functions/func.js
   $fx list # | jq ''
-  # $fx down ${service}_${lang}
+  $fx down ${service}_${lang} || true
 }
 
 build_image() {

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
 	"github.com/metrue/fx/constants"
-	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
-	dockerSDK "github.com/metrue/fx/container_runtimes/docker/sdk"
+	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/types"
@@ -27,6 +27,9 @@ func BuildImage() HandleFunc {
 			tag = uuid.New().String()
 		}
 
+		workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
+		defer os.RemoveAll(workdir)
+
 		body, err := ioutil.ReadFile(funcFile)
 		if err != nil {
 			log.Fatalf("function code load failed: %v", err)
@@ -34,31 +37,18 @@ func BuildImage() HandleFunc {
 		}
 		log.Infof("function code loaded: %v", constants.CheckedSymbol)
 		lang := utils.GetLangFromFileName(funcFile)
-		pwd, err := os.Getwd()
-		if err != nil {
-			log.Fatalf("could not get current work directory: %v", err)
+
+		fn := types.Func{Language: lang, Source: string(body)}
+
+		if err := packer.PackIntoDir(fn, workdir); err != nil {
+			log.Fatalf("could not pack function %v: %v", fn, err)
 			return err
 		}
-		tarFile := fmt.Sprintf("%s.%s.tar", pwd, tag)
-		defer os.RemoveAll(tarFile)
 
-		if err := packer.PackIntoTar(types.Func{Language: lang, Source: string(body)}, tarFile); err != nil {
-			log.Fatalf("could not pack function: %v", err)
-			return err
-		}
-		log.Infof("function packed: %v", constants.CheckedSymbol)
-
-		dockerAPI, ok := ctx.Get("docker_http").(*dockerHTTP.API)
+		docker, ok := ctx.Get("docker").(containerruntimes.ContainerRuntime)
 		if ok {
-			if err := dockerAPI.BuildImage(tarFile, tag, map[string]string{}); err != nil {
-				return err
-			}
-			log.Infof("image built: %v", constants.CheckedSymbol)
-			return nil
-		}
-		dockerCli, ok := ctx.Get("docker_sdk").(*dockerSDK.Docker)
-		if ok {
-			if err := dockerCli.BuildImage(ctx.Context, pwd, tag); err != nil {
+			nameWithTag := tag + ":latest"
+			if err := docker.BuildImage(ctx.Context, workdir, nameWithTag); err != nil {
 				return err
 			}
 			log.Infof("image built: %v", constants.CheckedSymbol)
