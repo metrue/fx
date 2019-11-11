@@ -55,7 +55,6 @@ jobs:
       #     go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
       #     golangci-lint run
 
-
       - name: test fx cli
         env:
           REMOTE_HOST_ADDR: ${{secrets.DOCKER_REMOTE_HOST_ADDR}}
