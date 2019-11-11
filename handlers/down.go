@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
 )
 
 // Down command handle
-func Down(cfg config.Configer) HandleFunc {
+func Down() HandleFunc {
 	return func(ctx *context.Context) (err error) {
 		cli := ctx.GetCliContext()
 		services := cli.Args()
