@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path"
 	"regexp"
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
 	"github.com/metrue/fx/middlewares"
@@ -19,17 +17,8 @@ import (
 
 const version = "0.8.0"
 
-var cfg *config.Config
-
 func init() {
 	go checkForUpdate()
-	configDir := path.Join(os.Getenv("HOME"), ".fx")
-	cfg := config.New(configDir)
-
-	if err := cfg.Init(); err != nil {
-		log.Fatalf("Init config failed %s", err)
-		os.Exit(1)
-	}
 }
 
 func checkForUpdate() {
@@ -115,7 +104,7 @@ func main() {
 			Name:  "doctor",
 			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
-				return handlers.Doctor(cfg)(context.FromCliContext(c))
+				return handlers.Doctor()(context.FromCliContext(c))
 			},
 		},
 		{
@@ -161,7 +150,7 @@ func main() {
 				if err := ctx.Use(middlewares.Setup); err != nil {
 					log.Fatalf("%v", err)
 				}
-				return handlers.Down(cfg)(ctx)
+				return handlers.Down()(ctx)
 			},
 		},
 		{
@@ -186,7 +175,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Call(cfg)(context.FromCliContext(c))
+				return handlers.Call()(context.FromCliContext(c))
 			},
 		},
 	}

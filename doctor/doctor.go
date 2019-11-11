@@ -2,7 +2,6 @@ package doctor
 
 import (
 	"github.com/apex/log"
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/pkg/command"
 	"github.com/metrue/go-ssh-client"
@@ -10,16 +9,23 @@ import (
 
 // Doctor health checking
 type Doctor struct {
-	host config.Host
+	host string
 
 	sshClient ssh.Client
 }
 
+func isLocal(host string) bool {
+	if host == "" {
+		return false
+	}
+	return host == "127.0.0.1" || host == "localhost" || host == "0.0.0.0"
+}
+
 // New a doctor
-func New(host config.Host) *Doctor {
-	sshClient := ssh.New(host.Host).
-		WithUser(host.User).
-		WithPassword(host.Password)
+func New(host, user, password string) *Doctor {
+	sshClient := ssh.New(host).
+		WithUser(user).
+		WithPassword(password)
 	return &Doctor{
 		host:      host,
 		sshClient: sshClient,
@@ -32,7 +38,7 @@ func (d *Doctor) Start() error {
 	checkAgent := "docker inspect " + constants.AgentContainerName
 
 	cmds := []*command.Command{}
-	if d.host.IsRemote() {
+	if !isLocal(d.host) {
 		cmds = append(cmds,
 			command.New("check if dockerd is running", checkDocker, command.NewRemoteRunner(d.sshClient)),
 			command.New("check if fx agent is running", checkAgent, command.NewRemoteRunner(d.sshClient)),
