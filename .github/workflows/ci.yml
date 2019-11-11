@@ -33,7 +33,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
-          DEBUG=true go test -v ./provision/... ./container_runtimes/... ./deploy/...
+          DEBUG=true go test -v ./...
 
       - name: build fx
         run: |
