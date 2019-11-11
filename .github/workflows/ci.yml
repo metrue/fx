@@ -19,8 +19,8 @@ jobs:
 
       - name: lint
         run: |
-          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint golangci-lint run -v
-
+          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
+          golangci-lint run -v
 
       - name: setup k8s and kind
         run: |
