@@ -18,16 +18,14 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
-      - name: lint
-        uses: matoous/golangci-lint-action@v1.1.0
-        with:
-          config: .golangci.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: setup docker
         run: |
           ./scripts/provision.sh
+
+      - name: lint
+        run: |
+          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint golangci-lint run -v
+
 
       - name: setup k8s and kind
         run: |
