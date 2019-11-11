@@ -52,6 +52,7 @@ func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports [
 		log.Fatalf("could not pack function %v: %v", fn, err)
 		return err
 	}
+
 	if err := d.cli.BuildImage(ctx, workdir, name); err != nil {
 		log.Fatalf("could not build image: %v", err)
 		return err

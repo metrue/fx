@@ -239,7 +239,6 @@ func (api *API) BuildImage(ctx context.Context, workdir string, name string) err
 		"belong-to": "fx",
 	})
 	q := buildQuery{
-		Tags:       fmt.Sprintf("%s,%s", imageID, name),
 		Labels:     string(labelsJSON),
 		Dockerfile: "Dockerfile",
 	}
@@ -248,6 +247,8 @@ func (api *API) BuildImage(ctx context.Context, workdir string, name string) err
 	if err != nil {
 		return err
 	}
+	qs.Add("t", name)
+	qs.Add("t", imageID)
 
 	path := "/build"
 	url := fmt.Sprintf("%s%s?%s", api.endpoint, path, qs.Encode())
