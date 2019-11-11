@@ -15,9 +15,6 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
-// Version binary version
-var Version = "0.0.1"
-
 func init() {
 	// TODO clean it up
 	os.Setenv("DEBUG", "true")
@@ -43,6 +40,7 @@ docker_packer <encrypt_docker_project_source_tree> <image_name>
 	}
 
 	var tree map[string]string
+	//nolint
 	if err := json.Unmarshal([]byte(str), &tree); err != nil {
 		log.Fatalf("could not unmarshal meta: %s", meta)
 		os.Exit(1)
