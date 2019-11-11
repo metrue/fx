@@ -4,28 +4,31 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
-	api "github.com/metrue/fx/container_runtimes/docker/http"
+	containerruntimes "github.com/metrue/fx/container_runtimes"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
-	"github.com/metrue/fx/provision"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
-	"github.com/urfave/cli"
 )
 
 // BuildImage build image
-func BuildImage(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) error {
-		funcFile := ctx.Args().First()
-		tag := ctx.String("tag")
+func BuildImage() HandleFunc {
+	return func(ctx *context.Context) error {
+		cli := ctx.GetCliContext()
+		funcFile := cli.Args().First()
+		tag := cli.String("tag")
 		if tag == "" {
 			tag = uuid.New().String()
 		}
+
+		workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
+		defer os.RemoveAll(workdir)
 
 		body, err := ioutil.ReadFile(funcFile)
 		if err != nil {
@@ -34,57 +37,33 @@ func BuildImage(cfg config.Configer) HandleFunc {
 		}
 		log.Infof("function code loaded: %v", constants.CheckedSymbol)
 		lang := utils.GetLangFromFileName(funcFile)
-		pwd, err := os.Getwd()
-		if err != nil {
-			log.Fatalf("could not get current work directory: %v", err)
+
+		fn := types.Func{Language: lang, Source: string(body)}
+
+		if err := packer.PackIntoDir(fn, workdir); err != nil {
+			log.Fatalf("could not pack function %v: %v", fn, err)
 			return err
 		}
-		tarFile := fmt.Sprintf("%s.%s.tar", pwd, tag)
-		defer os.RemoveAll(tarFile)
 
-		if err := packer.PackIntoTar(types.Func{Language: lang, Source: string(body)}, tarFile); err != nil {
-			log.Fatalf("could not pack function: %v", err)
-			return err
-		}
-		log.Infof("function packed: %v", constants.CheckedSymbol)
-
-		hosts, err := cfg.ListActiveMachines()
-		if err != nil {
-			log.Fatalf("could not list active machine: %v", err)
-			return errors.Wrap(err, "list active machines failed")
-		}
-
-		if len(hosts) == 0 {
-			log.Warnf("no active machines")
-			return nil
-		}
-		for n, host := range hosts {
-			if !host.Provisioned {
-				provisionor := provision.New(host)
-				if err := provisionor.Start(); err != nil {
-					return errors.Wrapf(err, "could not provision %s", n)
-				}
-				log.Infof("provision machine %v: %s", n, constants.CheckedSymbol)
-				if err := cfg.UpdateProvisionedStatus(n, true); err != nil {
-					return errors.Wrap(err, "update machine provision status failed")
-				}
-			}
-
-			if err := api.MustCreate(host.Host, constants.AgentPort).
-				BuildImage(tarFile, tag, map[string]string{}); err != nil {
+		docker, ok := ctx.Get("docker").(containerruntimes.ContainerRuntime)
+		if ok {
+			nameWithTag := tag + ":latest"
+			if err := docker.BuildImage(ctx.Context, workdir, nameWithTag); err != nil {
 				return err
 			}
-			log.Infof("image built on machine %s: %v", n, constants.CheckedSymbol)
+			log.Infof("image built: %v", constants.CheckedSymbol)
+			return nil
 		}
-		return nil
+		return fmt.Errorf("no available docker cli")
 	}
 }
 
 // ExportImage export service's code into a directory
 func ExportImage() HandleFunc {
-	return func(ctx *cli.Context) (err error) {
-		funcFile := ctx.Args().First()
-		outputDir := ctx.String("output")
+	return func(ctx *context.Context) (err error) {
+		cli := ctx.GetCliContext()
+		funcFile := cli.Args().First()
+		outputDir := cli.String("output")
 		if outputDir == "" {
 			log.Fatalf("output directory required")
 			return nil

@@ -1,25 +1,28 @@
 package handlers
 
 import (
-	"github.com/apex/log"
-	"github.com/metrue/fx/config"
-	"github.com/metrue/fx/constants"
-	api "github.com/metrue/fx/container_runtimes/docker/http"
-	"github.com/urfave/cli"
+	"github.com/metrue/fx/context"
+	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/utils"
 )
 
 // List command handle
-func List(cfg config.Configer) HandleFunc {
-	return func(ctx *cli.Context) error {
-		hosts, err := cfg.ListActiveMachines()
+func List() HandleFunc {
+	return func(ctx *context.Context) error {
+		cli := ctx.GetCliContext()
+		deployer := ctx.Get("deployer").(deploy.Deployer)
+
+		services, err := deployer.List(ctx.Context, cli.Args().First())
 		if err != nil {
-			log.Fatalf("list active machines failed: %v", err)
+			return err
 		}
-		for name, host := range hosts {
-			if err := api.MustCreate(host.Host, constants.AgentPort).List(ctx.Args().First()); err != nil {
-				log.Fatalf("list functions on machine %s failed: %v", name, err)
+
+		for _, service := range services {
+			if err := utils.OutputJSON(service); err != nil {
+				return err
 			}
 		}
+
 		return nil
 	}
 }

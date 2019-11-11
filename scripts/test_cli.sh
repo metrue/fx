@@ -3,14 +3,15 @@
 set -e
 
 fx="./build/fx"
-service='fx-service-abc'
+service='fx-service'
 
 run() {
   local lang=$1
   local port=$2
+  # localhost
   $fx up --name ${service}_${lang} --port ${port} --healthcheck test/functions/func.${lang}
   $fx list # | jq ''
-  $fx down ${service}_${lang} # | grep "Down Service ${service}"
+  $fx down ${service}_${lang} || true
 }
 
 build_image() {
@@ -27,9 +28,8 @@ export_image() {
 
 # main
 # clean up
-docker stop fx-agent || true && docker rm fx-agent || true
+# docker stop fx-agent || true && docker rm fx-agent || true
 
-$fx infra activate localhost
 port=20000
 for lang in 'js' 'rb' 'py' 'go' 'php' 'java' 'd'; do
   run $lang $port

@@ -5,29 +5,20 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path"
 	"regexp"
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
-	"github.com/metrue/fx/config"
+	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
+	"github.com/metrue/fx/middlewares"
 	"github.com/urfave/cli"
 )
 
 const version = "0.8.0"
 
-var cfg *config.Config
-
 func init() {
 	go checkForUpdate()
-	configDir := path.Join(os.Getenv("HOME"), ".fx")
-	cfg := config.New(configDir)
-
-	if err := cfg.Init(); err != nil {
-		log.Fatalf("Init config failed %s", err)
-		os.Exit(1)
-	}
 }
 
 func checkForUpdate() {
@@ -67,63 +58,10 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "infra",
-			Usage: "manage infrastructure of fx",
-			Subcommands: []cli.Command{
-				{
-					Name:  "add",
-					Usage: "add a new machine",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "name, N",
-							Usage: "a alias name for this machine",
-						},
-						cli.StringFlag{
-							Name:  "host, H",
-							Usage: "host name or IP address of a machine",
-						},
-						cli.StringFlag{
-							Name:  "user, U",
-							Usage: "user name required for SSH login",
-						},
-						cli.StringFlag{
-							Name:  "password, P",
-							Usage: "password required for SSH login",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						return handlers.AddHost(cfg)(c)
-					},
-				},
-				{
-					Name:  "remove",
-					Usage: "remove an existing machine",
-					Action: func(c *cli.Context) error {
-						return handlers.RemoveHost(cfg)(c)
-					},
-				},
-				{
-					Name:    "list",
-					Aliases: []string{"ls"},
-					Usage:   "list machines",
-					Action: func(c *cli.Context) error {
-						return handlers.ListHosts(cfg)(c)
-					},
-				},
-				{
-					Name:  "activate",
-					Usage: "enable a machine be a host of fx infrastructure",
-					Action: func(c *cli.Context) error {
-						return handlers.Activate(cfg)(c)
-					},
-				},
-				{
-					Name:  "deactivate",
-					Usage: "disable a machine be a host of fx infrastructure",
-					Action: func(c *cli.Context) error {
-						return handlers.Deactivate(cfg)(c)
-					},
-				},
+			Name:  "init",
+			Usage: "start fx agent on host",
+			Action: func(c *cli.Context) error {
+				return handlers.Init()(context.FromCliContext(c))
 			},
 		},
 		{
@@ -140,7 +78,11 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return handlers.BuildImage(cfg)(c)
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.Setup); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.BuildImage()(ctx)
 					},
 				},
 				{
@@ -153,7 +95,7 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
-						return handlers.ExportImage()(c)
+						return handlers.ExportImage()(context.FromCliContext(c))
 					},
 				},
 			},
@@ -162,7 +104,7 @@ func main() {
 			Name:  "doctor",
 			Usage: "health check for fx",
 			Action: func(c *cli.Context) error {
-				return handlers.Doctor(cfg)(c)
+				return handlers.Doctor()(context.FromCliContext(c))
 			},
 		},
 		{
@@ -189,7 +131,14 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Up(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				if err := ctx.Use(middlewares.Binding); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.Up()(ctx)
 			},
 		},
 		{
@@ -197,7 +146,11 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: func(c *cli.Context) error {
-				return handlers.Down(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.Down()(ctx)
 			},
 		},
 		{
@@ -205,7 +158,11 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
 			Action: func(c *cli.Context) error {
-				return handlers.List(cfg)(c)
+				ctx := context.FromCliContext(c)
+				if err := ctx.Use(middlewares.Setup); err != nil {
+					log.Fatalf("%v", err)
+				}
+				return handlers.List()(ctx)
 			},
 		},
 		{
@@ -218,7 +175,7 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				return handlers.Call(cfg)(c)
+				return handlers.Call()(context.FromCliContext(c))
 			},
 		},
 	}

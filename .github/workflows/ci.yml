@@ -33,7 +33,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
-          DEBUG=true go test -v ./container_runtimes/... ./deploy/...
+          DEBUG=true go test -v ./...
 
       - name: build fx
         run: |
@@ -47,15 +47,19 @@ jobs:
           make test
           # make docker-publish #TODO in release workflow
 
-      - name: lint
-        run: |
-          export GOBIN=$(go env GOPATH)/bin
-          export PATH=$PATH:$GOBIN
-          go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-          golangci-lint run
-
+      # - name: lint
+      #   run: |
+      #     export GOBIN=$(go env GOPATH)/bin
+      #     export PATH=$PATH:$GOBIN
+      #     export GOPROXY=https://proxy.golang.org
+      #     go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+      #     golangci-lint run
 
       - name: test fx cli
+        env:
+          REMOTE_HOST_ADDR: ${{secrets.DOCKER_REMOTE_HOST_ADDR}}
+          REMOTE_HOST_USER: ${{secrets.DOCKER_REMOTE_HOST_USER}}
+          REMOTE_HOST_PASSWORD: ${{secrets.DOCKER_REMOTE_HOST_PASSWORD}}
         run: |
           echo $KUBECONFIG
           unset KUBECONFIG

@@ -9,10 +9,12 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/apex/log"
 	dockerTypes "github.com/docker/docker/api/types"
 	dockerTypesContainer "github.com/docker/docker/api/types/container"
+	dockerFilters "github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/uuid"
@@ -131,6 +133,11 @@ func (d *Docker) InspectImage(ctx context.Context, name string, img interface{})
 	return json.NewDecoder(rdr).Decode(&img)
 }
 
+// TagImage tag image
+func (d *Docker) TagImage(ctx context.Context, name string, tag string) error {
+	return d.ImageTag(ctx, name, tag)
+}
+
 // StartContainer create and start a container from given image
 func (d *Docker) StartContainer(ctx context.Context, name string, image string, ports []types.PortBinding) error {
 	portSet := nat.PortSet{}
@@ -181,6 +188,40 @@ func (d *Docker) StopContainer(ctx context.Context, name string) error {
 // InspectContainer inspect a container
 func (d *Docker) InspectContainer(ctx context.Context, name string, container interface{}) error {
 	return nil
+}
+
+// ListContainer list containers
+func (d *Docker) ListContainer(ctx context.Context, name string) ([]types.Service, error) {
+	args := dockerFilters.NewArgs(
+		dockerFilters.Arg("label", "belong-to=fx"),
+	)
+	containers, err := d.ContainerList(ctx, dockerTypes.ContainerListOptions{
+		Filters: args,
+	})
+	if err != nil {
+		return []types.Service{}, err
+	}
+
+	svs := make(map[string]types.Service)
+	for _, container := range containers {
+		// container name have extra forward slash
+		// https://github.com/moby/moby/issues/6705
+		if strings.HasPrefix(container.Names[0], fmt.Sprintf("/%s", name)) {
+			svs[container.Image] = types.Service{
+				Name:  container.Names[0],
+				Image: container.Image,
+				ID:    container.ID,
+				Host:  container.Ports[0].IP,
+				Port:  int(container.Ports[0].PublicPort),
+				State: container.State,
+			}
+		}
+	}
+	services := []types.Service{}
+	for _, s := range svs {
+		services = append(services, s)
+	}
+	return services, nil
 }
 
 var (
