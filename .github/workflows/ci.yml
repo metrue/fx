@@ -39,6 +39,12 @@ jobs:
         run: |
           export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
           DEBUG=true go test -v ./...
+      - name: code cov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+          bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
       - name: build fx
         run: |
