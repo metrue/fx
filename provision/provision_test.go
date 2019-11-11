@@ -3,13 +3,10 @@ package provision
 import (
 	"testing"
 	"time"
-
-	"github.com/metrue/fx/config"
 )
 
 func TestProvisionWorkflow(t *testing.T) {
-	host := config.Host{Host: "127.0.0.1"}
-	provisionor := New(host)
+	provisionor := NewWithHost("127.0.0.1", "", "")
 
 	_ = provisionor.StopFxAgent()
 	// TODO wait too long here to make test pass
