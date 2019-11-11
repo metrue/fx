@@ -22,6 +22,11 @@ jobs:
         run: |
           ./scripts/provision.sh
 
+      - name: lint
+        run: |
+          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
+          golangci-lint run -v
+
       - name: setup k8s and kind
         run: |
           export GOBIN=$(go env GOPATH)/bin
@@ -43,14 +48,6 @@ jobs:
       - name: build fx
         run: |
           make build
-
-      - name: lint
-        run: |
-          export GOBIN=$(go env GOPATH)/bin
-          export PATH=$PATH:$GOBIN
-          go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-          golangci-lint run
-
 
       - name: test fx cli
         run: |

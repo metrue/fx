@@ -4,6 +4,7 @@ Poor man's function as a service.
 <br/>
 ![ci](https://github.com/metrue/fx/workflows/ci/badge.svg)
 ![build](https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmetrue%2Ffx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmetrue%2Ffx?ref=badge_shield)
 [![codecov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
