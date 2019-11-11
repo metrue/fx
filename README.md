@@ -307,6 +307,7 @@ Thank you to all the people who already contributed to fx!
         <a href="https://github.com/muka" target="_blank">
             <img alt="muka" src="https://avatars2.githubusercontent.com/u/1021269?v=4&s=50" width="50">
         </a>
+<a href="https://app.fossa.io/projects/git%2Bgithub.com%2Fmetrue%2Ffx?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmetrue%2Ffx.svg?type=shield"/></a>
         <a href="https://github.com/pplam" target="_blank">
             <img alt="pplam" src="https://avatars2.githubusercontent.com/u/12783579?v=4&s=50" width="50">
         </a>
@@ -355,3 +356,7 @@ Thank you to all the people who already contributed to fx!
     </tr>
   </tbody>
 </table>
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmetrue%2Ffx.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmetrue%2Ffx?ref=badge_large)
