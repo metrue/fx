@@ -2,10 +2,8 @@ fx
 ------
 Poor man's function as a service.
 <br/>
-![ci](https://github.com/metrue/fx/workflows/ci/badge.svg)
-![build](https://circleci.com/gh/metrue/fx.svg?style=svg&circle-token=bd62abac47802f8504faa4cf8db43e4f117e7cd7)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmetrue%2Ffx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmetrue%2Ffx?ref=badge_shield)
-[![codecov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
+![CI](https://github.com/metrue/fx/workflows/ci/badge.svg)
+[![CodeCov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
 ![](https://img.shields.io/github/license/metrue/fx.svg)
@@ -20,7 +18,7 @@ Poor man's function as a service.
 
 ## Introduction
 
-fx is a tool to help you do Function as a Service on your own server. fx can make your stateless function a service in seconds. The most exciting thing is that you can write your functions with most programming languages.
+fx is a tool to help you do Function as a Service on your own server, fx can make your stateless function a service in seconds, both Docker host and Kubernetes cluster supported. The most exciting thing is that you can write your functions with most programming languages.
 
 Feel free hacking fx to support the languages not listed. Welcome to tweet me [@_metrue](https://twitter.com/_metrue) on Twitter, [@metrue](https://www.weibo.com/u/2165714507) on Weibo.
 
@@ -77,16 +75,16 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.6.0
+   0.8.1
 
 COMMANDS:
-   infra     manage infrastructure of fx
-   image     manage image of service
-   doctor    health check for fx
-   up        deploy a function or a group of functions
+   init      start fx agent on host
+   up        deploy a function
    down      destroy a service
    list, ls  list deployed services
    call      run a function instantly
+   image     manage image of service
+   doctor    health check for fx
    help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -94,62 +92,7 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-1. List your current machines and activate you machine
-
-```shell
-$ fx infra ls     # list machines
-
-{
-	"localhost": {
-		"Host": "localhost",
-		"User": "",
-		"Password": "",
-		"Enabled": true,
-		"Provisioned": false
-	}
-}
-
-$ fx infra activate localhost    # activate 'localhost'
-
-2019/08/10 13:21:20  info Provision:pull python Docker base iamge: ✓
-2019/08/10 13:21:21  info Provision:pull d Docker base image: ✓
-2019/08/10 13:21:23  info Provision:pull java Docker base image: ✓
-2019/08/10 13:21:28  info Provision:pull julia Docker base image: ✓
-2019/08/10 13:21:31  info Provision:pull node Docker base image: ✓
-2019/08/10 13:22:09  info Provision:pull go Docker base image: ✓
-2019/08/10 13:22:09  info provision machine localhost: ✓
-2019/08/10 13:22:09  info enble machine localhost: ✓
-```
-It may take seconds since `fx` needs to download some basic resources
-
-*Note* you can add a remote host as fx machine also,
-```
-$ fx infra add --name my_aws_vm --host 13.121.202.227 --user root --password yourpassword
-
-$ fx infra list
-{
-	"my_aws_vm": {
-		"Host": "13.121.202.227",
-		"User": "root",
-		"Password": "yourpassword",
-		"Enabled": false,
-		"Provisioned": false
-	},
-	"localhost": {
-		"Host": "localhost",
-		"User": "",
-		"Password": "",
-		"Enabled": true,
-		"Provisioned": true
-	}
-}
-
-$ fx infra activate my_aws_vm
-
-```
-then your function will be deployed onto remote host also.
-
-2. Write a function
+1. Write a function
 
 You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
 
@@ -160,7 +103,7 @@ module.exports = (ctx) => {
 ```
 Then save it to a file `func.js`.
 
-3. Deploy your function as a service
+2. Deploy your function as a service
 
 Give your service a port with `--port`, and name with `--name`, heath checking with `--healthcheck` if you want.
 
@@ -181,7 +124,7 @@ $ fx image export -o <path of dir> func.js
 2019/09/25 19:31:19  info exported to <path of dir>: ✓
 ```
 
-4. Test your service
+3. Test your service
 
 then you can test your service:
 
@@ -210,7 +153,12 @@ hello world
 
 ## Docker
 
-  TODO
+**fx** is originally designed to turn a function into a runnable Docker container in a easiest way, on a host with Docker running, you can just deploy your function with `fx up` command,
+
+```shell
+fx up --name hello-svc --port 7777 hello.js # onto localhost
+DOCKER_REMOTE_HOST_ADDR=xx.xx.xx.xx DOCKER_REMOTE_HOST_USER=xxxx DOCKER_REMOTE_HOST_PASSWORD=xxxx fx up --name hello-svc --port 7777 hello.js # onto remote host
+```
 
 ## Kubernetes
 
