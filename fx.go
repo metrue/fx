@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.8.0"
+const version = "0.8.1"
 
 func init() {
 	go checkForUpdate()
@@ -65,51 +65,8 @@ func main() {
 			},
 		},
 		{
-			Name:  "image",
-			Usage: "manage image of service",
-			Subcommands: []cli.Command{
-				{
-					Name:  "build",
-					Usage: "build a image",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "tag, t",
-							Usage: "image tag",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						ctx := context.FromCliContext(c)
-						if err := ctx.Use(middlewares.Setup); err != nil {
-							log.Fatalf("%v", err)
-						}
-						return handlers.BuildImage()(ctx)
-					},
-				},
-				{
-					Name:  "export",
-					Usage: "export the Docker project of service",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "output, o",
-							Usage: "output directory",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						return handlers.ExportImage()(context.FromCliContext(c))
-					},
-				},
-			},
-		},
-		{
-			Name:  "doctor",
-			Usage: "health check for fx",
-			Action: func(c *cli.Context) error {
-				return handlers.Doctor()(context.FromCliContext(c))
-			},
-		},
-		{
 			Name:      "up",
-			Usage:     "deploy a function or a group of functions",
+			Usage:     "deploy a function",
 			ArgsUsage: "[func.go func.js func.py func.rb ...]",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -176,6 +133,49 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				return handlers.Call()(context.FromCliContext(c))
+			},
+		},
+		{
+			Name:  "image",
+			Usage: "manage image of service",
+			Subcommands: []cli.Command{
+				{
+					Name:  "build",
+					Usage: "build a image",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "tag, t",
+							Usage: "image tag",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.Setup); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.BuildImage()(ctx)
+					},
+				},
+				{
+					Name:  "export",
+					Usage: "export the Docker project of service",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "output, o",
+							Usage: "output directory",
+						},
+					},
+					Action: func(c *cli.Context) error {
+						return handlers.ExportImage()(context.FromCliContext(c))
+					},
+				},
+			},
+		},
+		{
+			Name:  "doctor",
+			Usage: "health check for fx",
+			Action: func(c *cli.Context) error {
+				return handlers.Doctor()(context.FromCliContext(c))
 			},
 		},
 	}
