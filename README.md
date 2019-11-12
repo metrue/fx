@@ -18,7 +18,7 @@ Poor man's function as a service.
 
 ## Introduction
 
-[!workflow](https://github.com/metrue/fx/blob/master/docs/fx-workflow.png)
+![workflow](https://raw.githubusercontent.com/metrue/fx/master/docs/fx-workflow.png)
 
 fx is a tool to help you do Function as a Service on your own server, fx can make your stateless function a service in seconds, both Docker host and Kubernetes cluster supported. The most exciting thing is that you can write your functions with most programming languages.
 
