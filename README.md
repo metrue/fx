@@ -40,6 +40,8 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet me [@
 
 # Installation
 
+Binaries are available for Windows, MacOS and Linux/Unix on x86. For other architectures and platforms, follow instructions to [build fx from source](#buildtest).
+
 * MacOS
 
 ```
@@ -229,6 +231,7 @@ fx uses [Project](https://github.com/metrue/fx/projects/4) to manage the develop
 Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
 
 
+<a name="buildtest"></a>
 #### Build & Test
 
 ```
