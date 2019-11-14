@@ -59,9 +59,9 @@ curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh |
 curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | sudo bash
 ```
 
-fx will be installed into /usr/local/bin, sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available in `$PAHT`.
+fx will be installed into /usr/local/bin, sometimes you may need `source ~/.zshrc` or `source ~/.bashrc` to make fx available in `$PATH`.
 
-* Window
+* Windows
 
 You can go the release page to [download](https://github.com/metrue/fx/releases) fx manually;
 
