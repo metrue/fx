@@ -1,10 +1,12 @@
 package spinner
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/briandowns/spinner"
+	aurora "github.com/logrusorgru/aurora"
 )
 
 var s *spinner.Spinner
@@ -35,6 +37,15 @@ func Start(task string) {
 }
 
 // Stop spinner
-func Stop() {
+func Stop(err error) {
+	if err != nil {
+		fmt.Println(aurora.Red("\u2717"))
+		fmt.Println(aurora.Red("*****************"))
+		fmt.Println(err)
+		fmt.Println(aurora.Red("*****************"))
+	}
+
+	s.Restart()
+	time.Sleep(100 * time.Millisecond)
 	s.Stop()
 }

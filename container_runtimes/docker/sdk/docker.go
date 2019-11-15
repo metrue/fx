@@ -76,7 +76,9 @@ func (d *Docker) BuildImage(ctx context.Context, workdir string, name string) er
 	if err != nil {
 		return err
 	}
-	log.Info(string(body))
+	if os.Getenv("DEBUG") != "" {
+		log.Info(string(body))
+	}
 
 	return nil
 }

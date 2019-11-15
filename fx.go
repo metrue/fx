@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.8.2"
+const version = "0.8.3"
 
 func init() {
 	go checkForUpdate()
@@ -181,6 +181,6 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		log.Fatalf("fx startup with fatal: %v", err)
+		os.Exit(1)
 	}
 }
