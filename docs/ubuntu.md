@@ -1,4 +1,4 @@
-# fx on Amazon Lightsai
+# fx on Ubuntu
 
 > The guide is verified on Amazon Lightsail ubuntu 18.08 instance
 
@@ -18,7 +18,7 @@ docker run hello-world
 ## Install fx
 
 ```shell
-curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | sudo bash
+$ curl -o- https://raw.githubusercontent.com/metrue/fx/master/scripts/install.sh | sudo bash
 ```
 
 ## Deploy a function onto localhost
@@ -30,8 +30,8 @@ module.exports = (ctx) => {
   ctx.body = 'hello world'
 }
 
-# fx up -n test -p 2000 func.js
-# curl 127.0.0.1:2000
+$ fx up -n test -p 2000 func.js
+$ curl 127.0.0.1:2000
 ```
 
 ##  Deploy a function onto remote host
