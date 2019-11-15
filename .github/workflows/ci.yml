@@ -1,0 +1,109 @@
+on: [push, pull_request]
+name: ci
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Go 1.12
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.12
+        id: go
+
+      - name: check out
+        uses: actions/checkout@master
+
+      - name: setup docker
+        run: |
+          ./scripts/provision.sh
+
+      - name: lint
+        run: |
+          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
+          golangci-lint run -v
+
+      - name: setup k8s and kind
+        run: |
+          export GOBIN=$(go env GOPATH)/bin
+          export PATH=$PATH:$GOBIN
+          mkdir -p $GOBIN
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+          chmod +x kubectl && mv kubectl $GOBIN
+          wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 && chmod +x kind-linux-amd64 && mv kind-linux-amd64 $GOBIN/kind
+          ./scripts/setup_kind.sh
+
+      - name: unit test
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
+          DEBUG=true go test -v ./...
+      - name: code cov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          ./scripts/coverage.sh
+          bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+
+      - name: build fx
+        run: |
+          make build
+
+      - name: test fx-docker
+        run: |
+          cd ./contrib/docker_packer
+          make linux-build
+          make docker-build
+          make test
+          # make docker-publish #TODO in release workflow
+
+      - name: test fx cli
+        env:
+          REMOTE_HOST_ADDR: ${{secrets.DOCKER_REMOTE_HOST_ADDR}}
+          REMOTE_HOST_USER: ${{secrets.DOCKER_REMOTE_HOST_USER}}
+          REMOTE_HOST_PASSWORD: ${{secrets.DOCKER_REMOTE_HOST_PASSWORD}}
+        run: |
+          echo $KUBECONFIG
+          unset KUBECONFIG
+          make cli-test
+
+      - name: test AKS
+        env:
+          AKS_KUBECONFIG: ${{ secrets.AKS_KUBECONFIG }}
+        run: |
+          export KUBECONFIG=${HOME}/.kube/aks
+          echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
+          if [[ -z "$AKS_KUBECONFIG" ]];then
+            echo "skip deploy test since no valid KUBECONFIG"
+          else
+            DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
+            ./build/fx down hello
+            rm ${KUBECONFIG}
+          fi
+
+  Installation:
+    runs-on: ${{ matrix.os }}
+    needs: [Test]
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          # TODO enable window and mac
+          # - macOS-latest
+          # - windows-latest
+        version:
+          - latest
+          - v0.117.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: install fx
+        run: |
+          # install with non-root user
+          bash ./scripts/install.sh
+          ./fx -v
+          # install with root
+          sudo bash ./scripts/install.sh
+          ./fx -v

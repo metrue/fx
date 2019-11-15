@@ -1,0 +1,114 @@
+on:
+  push:
+    branches:
+      - '*--auto-release'
+      - master
+      - production
+name: release
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Go 1.12
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.12
+        id: go
+
+      - name: check out
+        uses: actions/checkout@master
+
+      - name: setup docker
+        run: |
+          ./scripts/provision.sh
+
+      - name: lint
+        run: |
+          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
+          golangci-lint run -v
+
+      - name: setup k8s and kind
+        run: |
+          export GOBIN=$(go env GOPATH)/bin
+          export PATH=$PATH:$GOBIN
+          mkdir -p $GOBIN
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+          chmod +x kubectl && mv kubectl $GOBIN
+          wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 && chmod +x kind-linux-amd64 && mv kind-linux-amd64 $GOBIN/kind
+          ./scripts/setup_kind.sh
+
+      - name: unit test
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
+          DEBUG=true go test -v ./container_runtimes/... ./deploy/...
+
+      - name: build fx
+        run: |
+          make build
+
+      - name: test fx cli
+        run: |
+          echo $KUBECONFIG
+          unset KUBECONFIG
+          make cli-test
+
+      - name: test AKS
+        env:
+          AKS_KUBECONFIG: ${{ secrets.AKS_KUBECONFIG }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          export KUBECONFIG=${HOME}/.kube/aks
+          echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
+          DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
+          ./build/fx down hello
+          rm ${KUBECONFIG}
+  Release:
+    runs-on: ${{ matrix.os }}
+    needs: [Test]
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          # - macOS-latest
+          # - windows-latest
+        version:
+          - latest
+          # - v0.117.0
+    steps:
+      - name: setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.12'
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "h.minghe@gmail.com"
+          git config --global user.name "Minghe Huang"
+
+          commit=$(git rev-parse --short HEAD)
+          version=$(cat fx.go| grep 'const version' | awk -F'"' '{print $2}')
+
+          echo "workflow is running on branch ${GITHUB_REF}"
+
+          if [[ ${GITHUB_REF} == "refs/heads/master" ]];then
+            version=${version}-alpha.${commit}
+            echo "alpha release $version"
+          elif [[ "${GITHUB_REF}" == *--auto-release ]];then
+            version=${version}-alpha.${commit}
+            echo "alpha release $version"
+          elif [[ ${GITHUB_REF} == "refs/heads/production" ]];then
+            echo "official release $version"
+          else
+            echo "skip release on $GITHUB_REF"
+            exit 0
+          fi
+          git tag -a ${version} -m "auto release"
+          curl -sL https://git.io/goreleaser | bash -s  -- --skip-validate

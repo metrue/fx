@@ -23,3 +23,12 @@ var ConfigPath = path.Join(os.Getenv("HOME"), ".fx")
 
 // AgentContainerName fx agent name
 const AgentContainerName = "fx-agent"
+
+// CheckedSymbol check symbol ✓
+const CheckedSymbol = "\u2713"
+
+// UncheckedSymbol uncheck ✗
+const UncheckedSymbol = "\u2717"
+
+// FxContainerExposePort each fx container expose a default port 3000
+const FxContainerExposePort = 3000

@@ -2,11 +2,10 @@ package provision
 
 import (
 	"fmt"
-	"strings"
+	"os"
 	"sync"
 
 	"github.com/apex/log"
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/pkg/command"
 	ssh "github.com/metrue/go-ssh-client"
@@ -20,25 +19,82 @@ type Provisioner interface {
 // Provisionor provision-or
 type Provisionor struct {
 	sshClient ssh.Client
-
-	host config.Host
+	host      string
 }
 
-// New new provision
-func New(host config.Host) *Provisionor {
-	p := &Provisionor{host: host}
-	if host.IsRemote() {
-		p.sshClient = ssh.New(host.Host).
-			WithUser(host.User).
-			WithPassword(host.Password)
+func isLocal(host string) bool {
+	if host == "" {
+		return false
+	}
+	return host == "127.0.0.1" || host == "localhost" || host == "0.0.0.0"
+}
+
+// NewWithHost create a provisionor with host, user, and password
+func NewWithHost(host string, user string, password string) *Provisionor {
+	p := &Provisionor{
+		host: host,
+	}
+	if !isLocal(host) {
+		p.sshClient = ssh.New(host).
+			WithUser(user).
+			WithPassword(password)
 	}
 	return p
 }
 
+// IsFxAgentRunning check if fx-agent is running on host
+func (p *Provisionor) IsFxAgentRunning() bool {
+	script := fmt.Sprintf("docker inspect %s", constants.AgentContainerName)
+	var cmd *command.Command
+	if !isLocal(p.host) {
+		cmd = command.New("inspect fx-agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("inspect fx-agent", script, command.NewLocalRunner())
+	}
+	output, err := cmd.Exec()
+	if os.Getenv("DEBUG") != "" {
+		log.Infof(string(output))
+	}
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+// StartFxAgent start fx agent
+func (p *Provisionor) StartFxAgent() error {
+	script := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	var cmd *command.Command
+	if !isLocal(p.host) {
+		cmd = command.New("start fx-agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("start fx-agent", script, command.NewLocalRunner())
+	}
+	if output, err := cmd.Exec(); err != nil {
+		log.Info(string(output))
+		return err
+	}
+	return nil
+}
+
+// StopFxAgent stop fx agent
+func (p *Provisionor) StopFxAgent() error {
+	script := fmt.Sprintf("docker stop %s", constants.AgentContainerName)
+	var cmd *command.Command
+	if !isLocal(p.host) {
+		cmd = command.New("stop fx agent", script, command.NewRemoteRunner(p.sshClient))
+	} else {
+		cmd = command.New("stop fx agent", script, command.NewLocalRunner())
+	}
+	if output, err := cmd.Exec(); err != nil {
+		log.Infof(string(output))
+		return err
+	}
+	return nil
+}
+
 // Start start provision progress
 func (p *Provisionor) Start() error {
-	startFxAgent := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
-	stopFxAgent := fmt.Sprintf("docker stop %s", constants.AgentContainerName)
 	scripts := map[string]string{
 		"pull java Docker base image":   "docker pull metrue/fx-java-base",
 		"pull julia Docker base image":  "docker pull metrue/fx-julia-base",
@@ -48,35 +104,12 @@ func (p *Provisionor) Start() error {
 		"pull go Docker base image":     "docker pull metrue/fx-go-base",
 	}
 
-	agentStartupCmds := []*command.Command{}
-	if p.host.IsRemote() {
-		agentStartupCmds = append(agentStartupCmds,
-			command.New("stop current fx agent", stopFxAgent, command.NewRemoteRunner(p.sshClient)),
-			command.New("start fx agent", startFxAgent, command.NewRemoteRunner(p.sshClient)),
-		)
-	} else {
-		agentStartupCmds = append(agentStartupCmds,
-			command.New("stop current fx agent", stopFxAgent, command.NewLocalRunner()),
-			command.New("start fx agent", startFxAgent, command.NewLocalRunner()),
-		)
-	}
-	for _, cmd := range agentStartupCmds {
-		if output, err := cmd.Exec(); err != nil {
-			if strings.Contains(string(output), "No such container: fx-agent") {
-				// Skip stop a fx-agent error when there is not agent running
-			} else {
-				log.Fatalf("Provision:%s: %s, %s", cmd.Name, err, output)
-				return err
-			}
-		}
-	}
-
 	var wg sync.WaitGroup
 	for n, s := range scripts {
 		wg.Add(1)
 		go func(name, script string) {
 			var cmd *command.Command
-			if p.host.IsRemote() {
+			if !isLocal(p.host) {
 				cmd = command.New(name, script, command.NewRemoteRunner(p.sshClient))
 			} else {
 				cmd = command.New(name, script, command.NewLocalRunner())
