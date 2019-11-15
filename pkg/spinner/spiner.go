@@ -28,6 +28,7 @@ func Start(task string) {
 	}
 
 	rand.Seed(time.Now().UnixNano())
+	// nolint
 	s.Color(colors[rand.Intn(len(colors))])
 	s.Prefix = task + " "
 	s.Start()
