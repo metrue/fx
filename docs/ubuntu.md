@@ -39,12 +39,6 @@ $ curl 127.0.0.1:2000
 * make sure your instance can be ssh login
 * make sure your instance accept port 8866
 
-
-If you're first time to deploy a function to remote host, you need init it first
-```shell
-DOCKER_REMOTE_HOST_ADDR=<your host> DOCKER_REMOTE_HOST_USER=<your user> DOCKER_REMOTE_HOST_PASSWORD=<your password> fx init
-```
-
 then you can deploy function to remote host
 
 ```shell
