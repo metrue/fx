@@ -10,7 +10,9 @@ import (
 func Down() HandleFunc {
 	return func(ctx *context.Context) (err error) {
 		spinner.Start("deploying")
-		defer spinner.Stop()
+		defer func() {
+			spinner.Stop(err)
+		}()
 
 		cli := ctx.GetCliContext()
 		services := cli.Args()

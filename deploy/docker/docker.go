@@ -3,7 +3,6 @@ package docker
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -49,18 +48,15 @@ func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports [
 	defer os.RemoveAll(workdir)
 
 	if err := packer.PackIntoDir(fn, workdir); err != nil {
-		log.Fatalf("could not pack function %v: %v", fn, err)
 		return err
 	}
 
 	if err := d.cli.BuildImage(ctx, workdir, name); err != nil {
-		log.Fatalf("could not build image: %v", err)
 		return err
 	}
 
 	nameWithTag := name + ":latest"
 	if err := d.cli.TagImage(ctx, name, nameWithTag); err != nil {
-		log.Fatalf("could not tag image: %v", err)
 		return err
 	}
 

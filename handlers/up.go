@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/apex/log"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/pkg/spinner"
@@ -26,23 +25,14 @@ var PortRange = struct {
 func Up() HandleFunc {
 	return func(ctx *context.Context) (err error) {
 		spinner.Start("deploying")
-		defer spinner.Stop()
+		defer func() {
+			spinner.Stop(err)
+		}()
 
 		cli := ctx.GetCliContext()
 		funcFile := cli.Args().First()
 		name := cli.String("name")
 		port := cli.Int("port")
-
-		defer func() {
-			if r := recover(); r != nil {
-				log.Fatalf("fatal error happened: %v", r)
-			}
-
-			if err != nil {
-				log.Fatalf("deploy function %s (%s) failed: %v", err)
-			}
-			log.Infof("function %s (%s) deployed successfully", name, funcFile)
-		}()
 
 		if port < PortRange.min || port > PortRange.max {
 			return fmt.Errorf("invalid port number: %d, port number should in range of %d -  %d", port, PortRange.min, PortRange.max)

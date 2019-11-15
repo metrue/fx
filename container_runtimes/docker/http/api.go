@@ -377,8 +377,6 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		return fmt.Errorf("container id is missing")
 	}
 
-	log.Infof("container %s created", name)
-
 	// start container
 	path = fmt.Sprintf("/containers/%s/start", createRes.ID)
 	url := fmt.Sprintf("%s%s", api.endpoint, path)
@@ -402,7 +400,6 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		msg := fmt.Sprintf("start container met issue: %s", string(b))
 		return errors.New(msg)
 	}
-	log.Infof("container %s started", name)
 
 	if _, err = api.inspect(createRes.ID); err != nil {
 		msg := fmt.Sprintf("inspect container %s error", name)

@@ -9,9 +9,11 @@ import (
 
 // List command handle
 func List() HandleFunc {
-	return func(ctx *context.Context) error {
+	return func(ctx *context.Context) (err error) {
 		spinner.Start("deploying")
-		defer spinner.Stop()
+		defer func() {
+			spinner.Stop(err)
+		}()
 
 		cli := ctx.GetCliContext()
 		deployer := ctx.Get("deployer").(deploy.Deployer)
