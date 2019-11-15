@@ -7,6 +7,7 @@ import (
 	"github.com/apex/log"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
@@ -24,6 +25,9 @@ var PortRange = struct {
 // Up command handle
 func Up() HandleFunc {
 	return func(ctx *context.Context) (err error) {
+		spinner.Start("deploying")
+		defer spinner.Stop()
+
 		cli := ctx.GetCliContext()
 		funcFile := cli.Args().First()
 		name := cli.String("name")
