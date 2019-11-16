@@ -35,7 +35,7 @@ module.exports = (ctx) => {
 }
 `,
 	}
-	if err := cli.Deploy(ctx, fn, name, bindings); err != nil {
+	if err := cli.Deploy(ctx, fn, name, name, bindings); err != nil {
 		t.Fatal(err)
 	}
 
