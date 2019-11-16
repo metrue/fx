@@ -23,24 +23,24 @@ func Build(ctx *context.Context) (err error) {
 	cli := ctx.GetCliContext()
 	name := cli.String("name")
 	fn := ctx.Get("fn").(types.Func)
+	docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
+	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
+	defer os.RemoveAll(workdir)
+
+	if err := packer.PackIntoDir(fn, workdir); err != nil {
+		return err
+	}
+	if err := docker.BuildImage(ctx.Context, workdir, name); err != nil {
+		return err
+	}
+
+	nameWithTag := name + ":latest"
+	if err := docker.TagImage(ctx, name, nameWithTag); err != nil {
+		return err
+	}
+	ctx.Set("image", nameWithTag)
+
 	if os.Getenv("K3S") != "" {
-		docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
-		workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
-		defer os.RemoveAll(workdir)
-
-		if err := packer.PackIntoDir(fn, workdir); err != nil {
-			return err
-		}
-		if err := docker.BuildImage(ctx.Context, workdir, name); err != nil {
-			return err
-		}
-
-		nameWithTag := name + ":latest"
-		if err := docker.TagImage(ctx, name, nameWithTag); err != nil {
-			return err
-		}
-		ctx.Set("image", nameWithTag)
-
 		name := cli.String("name")
 		username := os.Getenv("DOCKER_USERNAME")
 		password := os.Getenv("DOCKER_PASSWORD")
