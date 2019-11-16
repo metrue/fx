@@ -10,6 +10,7 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
+	k3sDeployer "github.com/metrue/fx/deploy/k3s"
 	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/provision"
@@ -17,9 +18,10 @@ import (
 
 // Setup create k8s or docker cli
 func Setup(ctx *context.Context) (err error) {
-	spinner.Start("setup")
+	const task = "setup"
+	spinner.Start(task)
 	defer func() {
-		spinner.Stop(err)
+		spinner.Stop(task, err)
 	}()
 
 	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
@@ -47,7 +49,12 @@ func Setup(ctx *context.Context) (err error) {
 	ctx.Set("docker", docker)
 
 	var deployer deploy.Deployer
-	if os.Getenv("KUBECONFIG") != "" {
+	if os.Getenv("K3S") != "" {
+		deployer, err = k3sDeployer.Create()
+		if err != nil {
+			return err
+		}
+	} else if os.Getenv("KUBECONFIG") != "" {
 		deployer, err = k8sDeployer.Create()
 		if err != nil {
 			return err
