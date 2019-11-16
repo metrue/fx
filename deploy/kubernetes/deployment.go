@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/metrue/fx/types"
 	appsv1 "k8s.io/api/apps/v1"
@@ -25,11 +26,16 @@ func generateDeploymentSpec(
 		})
 	}
 
+	username := os.Getenv("DOCKER_USERNAME")
+	if username != "" {
+		image = username + "/" + image
+	}
+
 	container := apiv1.Container{
 		Name:            "fx-placeholder-container-name",
 		Image:           image,
 		Ports:           ports,
-		ImagePullPolicy: v1.PullNever,
+		ImagePullPolicy: v1.PullIfNotPresent,
 	}
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -98,6 +104,5 @@ func (k *K8S) CreateDeploymentWithInitContainer(
 ) (*appsv1.Deployment, error) {
 	deployment := generateDeploymentSpec(name, name, ports, replicas, selector)
 	updatedDeployment := injectInitContainer(name, deployment)
-	fmt.Println(updatedDeployment)
 	return k.AppsV1().Deployments(namespace).Create(updatedDeployment)
 }
