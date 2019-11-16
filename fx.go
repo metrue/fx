@@ -95,6 +95,12 @@ func main() {
 				if err := ctx.Use(middlewares.Binding); err != nil {
 					log.Fatalf("%v", err)
 				}
+				if err := ctx.Use(middlewares.Parse); err != nil {
+					log.Fatalf("%v", err)
+				}
+				if err := ctx.Use(middlewares.Build); err != nil {
+					log.Fatalf("%v", err)
+				}
 				return handlers.Up()(ctx)
 			},
 		},

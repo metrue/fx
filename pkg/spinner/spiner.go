@@ -33,19 +33,20 @@ func Start(task string) {
 	// nolint
 	s.Color(colors[rand.Intn(len(colors))])
 	s.Prefix = task + " "
-	s.Start()
+	if s.Active() {
+		s.Restart()
+	} else {
+		s.Start()
+	}
 }
 
 // Stop spinner
-func Stop(err error) {
+func Stop(task string, err error) {
 	if err != nil {
 		fmt.Println(aurora.Red("\u2717"))
 		fmt.Println(aurora.Red("*****************"))
 		fmt.Println(err)
 		fmt.Println(aurora.Red("*****************"))
 	}
-
-	s.Restart()
-	time.Sleep(100 * time.Millisecond)
 	s.Stop()
 }

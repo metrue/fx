@@ -10,9 +10,10 @@ import (
 // List command handle
 func List() HandleFunc {
 	return func(ctx *context.Context) (err error) {
-		spinner.Start("deploying")
+		const task = "deploying"
+		spinner.Start(task)
 		defer func() {
-			spinner.Stop(err)
+			spinner.Stop(task, err)
 		}()
 
 		cli := ctx.GetCliContext()

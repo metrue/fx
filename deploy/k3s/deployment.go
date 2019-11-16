@@ -1,4 +1,4 @@
-package kubernetes
+package k3s
 
 import (
 	"fmt"
@@ -53,12 +53,12 @@ func generateDeploymentSpec(
 }
 
 // GetDeployment get a deployment
-func (k *K8S) GetDeployment(namespace string, name string) (*appsv1.Deployment, error) {
+func (k *K3S) GetDeployment(namespace string, name string) (*appsv1.Deployment, error) {
 	return k.AppsV1().Deployments(namespace).Get(name, metav1.GetOptions{})
 }
 
 // CreateDeployment create a deployment
-func (k *K8S) CreateDeployment(
+func (k *K3S) CreateDeployment(
 	namespace string,
 	name string,
 	image string,
@@ -71,7 +71,7 @@ func (k *K8S) CreateDeployment(
 }
 
 // UpdateDeployment update a deployment
-func (k *K8S) UpdateDeployment(
+func (k *K3S) UpdateDeployment(
 	namespace string,
 	name string,
 	image string,
@@ -84,12 +84,12 @@ func (k *K8S) UpdateDeployment(
 }
 
 // DeleteDeployment delete a deployment
-func (k *K8S) DeleteDeployment(namespace string, name string) error {
+func (k *K3S) DeleteDeployment(namespace string, name string) error {
 	return k.AppsV1().Deployments(namespace).Delete(name, &metav1.DeleteOptions{})
 }
 
 // CreateDeploymentWithInitContainer create a deployment which will wait InitContainer to do the image build before function container start
-func (k *K8S) CreateDeploymentWithInitContainer(
+func (k *K3S) CreateDeploymentWithInitContainer(
 	namespace string,
 	name string,
 	ports []types.PortBinding,
