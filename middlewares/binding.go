@@ -17,6 +17,14 @@ func Binding(ctx *context.Context) error {
 	if os.Getenv("KUBECONFIG") != "" {
 		bindings = []types.PortBinding{
 			types.PortBinding{
+				ServiceBindingPort:  80,
+				ContainerExposePort: constants.FxContainerExposePort,
+			},
+			types.PortBinding{
+				ServiceBindingPort:  443,
+				ContainerExposePort: constants.FxContainerExposePort,
+			},
+			types.PortBinding{
 				ServiceBindingPort:  int32(port),
 				ContainerExposePort: constants.FxContainerExposePort,
 			},

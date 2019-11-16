@@ -9,9 +9,10 @@ import (
 // Down command handle
 func Down() HandleFunc {
 	return func(ctx *context.Context) (err error) {
-		spinner.Start("deploying")
+		const task = "destroying"
+		spinner.Start(task)
 		defer func() {
-			spinner.Stop(err)
+			spinner.Stop(task, err)
 		}()
 
 		cli := ctx.GetCliContext()

@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/metrue/fx/types"
 	appsv1 "k8s.io/api/apps/v1"
@@ -24,11 +23,6 @@ func generateDeploymentSpec(
 			Name:          fmt.Sprintf("fx-container-%d", index),
 			ContainerPort: binding.ContainerExposePort,
 		})
-	}
-
-	username := os.Getenv("DOCKER_USERNAME")
-	if username != "" {
-		image = username + "/" + image
 	}
 
 	container := apiv1.Container{

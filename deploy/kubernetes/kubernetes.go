@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/metrue/fx/deploy"
@@ -38,6 +37,7 @@ func (k *K8S) Deploy(
 	ctx context.Context,
 	fn types.Func,
 	name string,
+	image string,
 	ports []types.PortBinding,
 ) error {
 	// put source code of function docker project into k8s config map
@@ -56,7 +56,6 @@ func (k *K8S) Deploy(
 	}
 
 	const replicas = int32(3)
-	fmt.Println("---->", ports)
 	if _, err := k.GetDeployment(namespace, name); err != nil {
 		// TODO enable passing replica from fx CLI
 		if _, err := k.CreateDeploymentWithInitContainer(
