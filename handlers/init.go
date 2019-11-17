@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func setup(host string, user string, passwd string, script string) (err error) {
+func setup(host string, user string, script string) (err error) {
 	task := fmt.Sprintf("setup %s@%s", user, host)
 	spinner.Start(task)
 	defer func() {
@@ -46,7 +46,6 @@ func Init() HandleFunc {
 		master := cli.String("master")
 		// TODO support different user on master and node
 		acount := cli.String("user")
-		passwd := cli.String("password")
 		agents := strings.Split(cli.String("agents"), ",")
 		if acount == "" {
 			acount = "root"
@@ -54,7 +53,7 @@ func Init() HandleFunc {
 		if master != "" {
 			// TODO install k3sup first
 			script := fmt.Sprintf("k3sup install --ip %s --user %s", master, acount)
-			if err := setup(master, acount, passwd, script); err != nil {
+			if err := setup(master, acount, script); err != nil {
 				return err
 			}
 		}
@@ -62,12 +61,13 @@ func Init() HandleFunc {
 			var wg sync.WaitGroup
 			for _, agent := range agents {
 				wg.Add(1)
-				go func(host string) error {
+				go func(host string) {
 					script := fmt.Sprintf("k3sup join --ip %s  --server-ip %s  --user %s", host, master, acount)
-					err := setup(host, acount, passwd, script)
+					if err := setup(host, acount, script); err != nil {
+						fmt.Println("setup agent error: ", err)
+					}
 					wg.Done()
-					return err
-				}(agent)
+				}(agent) //nolint
 			}
 			wg.Wait()
 		}
