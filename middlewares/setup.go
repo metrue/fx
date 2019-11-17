@@ -11,7 +11,7 @@ import (
 	"github.com/metrue/fx/deploy"
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
 	k3sDeployer "github.com/metrue/fx/deploy/k3s"
-	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
+	k8sDeployer "github.com/metrue/fx/deploy/k8s"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/provision"
 )

@@ -1,4 +1,4 @@
-package kubernetes
+package k8s
 
 // ConfigMap is the key to function docker project source code in configmap
 var ConfigMap = struct {
