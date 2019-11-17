@@ -60,7 +60,6 @@ func Init() HandleFunc {
 		}
 		if master != "" && len(agents) > 0 {
 			var wg sync.WaitGroup
-			fmt.Println("===>", agents)
 			for _, agent := range agents {
 				wg.Add(1)
 				go func(host string) error {
