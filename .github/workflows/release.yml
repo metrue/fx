@@ -61,11 +61,12 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          export KUBECONFIG=${HOME}/.kube/aks
-          echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
-          DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
-          ./build/fx down hello
-          rm ${KUBECONFIG}
+          echo "skip since aks environment not ready yet"
+          # export KUBECONFIG=${HOME}/.kube/aks
+          # echo ${AKS_KUBECONFIG} | base64 -d > $KUBECONFIG
+          # DEBUG=true ./build/fx up -n hello -p 12345 examples/functions/JavaScript/func.js
+          # ./build/fx down hello
+          # rm ${KUBECONFIG}
   Release:
     runs-on: ${{ matrix.os }}
     needs: [Test]
