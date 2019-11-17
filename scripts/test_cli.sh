@@ -33,6 +33,7 @@ export_image() {
 port=20000
 for lang in 'js' 'rb' 'py' 'go' 'php' 'java' 'd'; do
   run $lang $port
+  docker ps | grep port
   ((port++))
 
   build_image $lang "test-fx-image-build-${lang}"
