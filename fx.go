@@ -60,6 +60,24 @@ func main() {
 		{
 			Name:  "init",
 			Usage: "start fx agent on host",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "master",
+					Usage: "master node",
+				},
+				cli.StringFlag{
+					Name:  "agents",
+					Usage: "agent nodes",
+				},
+				cli.StringFlag{
+					Name:  "user",
+					Usage: "user acount name for SSH login",
+				},
+				cli.StringFlag{
+					Name:  "password",
+					Usage: "password for SSH login",
+				},
+			},
 			Action: func(c *cli.Context) error {
 				return handlers.Init()(context.FromCliContext(c))
 			},
