@@ -22,8 +22,9 @@ require (
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
-	github.com/metrue/go-ssh-client v0.0.0-20190810064746-98a7a27048f3
+	github.com/metrue/go-ssh-client v0.0.0-20191118075827-4f8a85823809
 	github.com/mholt/archiver v3.1.1+incompatible
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
@@ -38,6 +39,7 @@ require (
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/urfave/cli v1.22.1
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
+	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
 	gopkg.in/h2non/gock.v1 v1.0.15
 	gopkg.in/inf.v0 v0.9.1 // indirect

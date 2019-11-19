@@ -69,17 +69,54 @@ func main() {
 					Name:  "agents",
 					Usage: "agent nodes",
 				},
-				cli.StringFlag{
-					Name:  "user",
-					Usage: "user acount name for SSH login",
-				},
-				cli.StringFlag{
-					Name:  "password",
-					Usage: "password for SSH login",
-				},
 			},
 			Action: func(c *cli.Context) error {
 				return handlers.Init()(context.FromCliContext(c))
+			},
+		},
+		{
+			Name:  "infra",
+			Usage: "manage infrastructure",
+			Subcommands: []cli.Command{
+				{
+					Name:  "setup",
+					Usage: "setup a infra for fx service",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "type, t",
+							Value: "docker",
+							Usage: "infracture type, 'docker', 'k8s' and 'k3s' support",
+						},
+						cli.StringFlag{
+							Name:  "name, n",
+							Usage: "name to identify the infrastructure",
+						},
+						cli.StringFlag{
+							Name:  "host",
+							Usage: "user and ip of your host, eg. 'root@182.12.1.12'",
+						},
+						cli.StringFlag{
+							Name:  "master",
+							Usage: "serve as master node in K3S cluster, eg. 'root@182.12.1.12'",
+						},
+						cli.StringFlag{
+							Name:  "agents",
+							Usage: "serve as agent node in K3S cluster, eg. 'root@187.1. 2. 3,root@123.3.2.1'",
+						},
+					},
+
+					Action: func(c *cli.Context) error {
+						return handlers.Setup(context.FromCliContext(c))
+					},
+				},
+				{
+					Name:  "remove",
+					Usage: "remove an existing template",
+					Action: func(c *cli.Context) error {
+						fmt.Println("removed task template: ", c.Args().First())
+						return nil
+					},
+				},
 			},
 		},
 		{
