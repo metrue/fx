@@ -84,7 +84,6 @@ func main() {
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "type, t",
-							Value: "docker",
 							Usage: "infracture type, 'docker', 'k8s' and 'k3s' support",
 						},
 						cli.StringFlag{
