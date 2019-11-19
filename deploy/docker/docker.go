@@ -2,20 +2,14 @@ package docker
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"os"
-	"time"
 
-	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	dockerSDK "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
-	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/types"
-	"github.com/metrue/fx/utils"
 )
 
 // Docker manage container
@@ -44,38 +38,8 @@ func CreateClient(ctx context.Context) (d *Docker, err error) {
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, ports []types.PortBinding) error {
-	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
-	defer os.RemoveAll(workdir)
-
-	if err := packer.PackIntoDir(fn, workdir); err != nil {
-		log.Fatalf("could not pack function %v: %v", fn, err)
-		return err
-	}
-
-	if err := d.cli.BuildImage(ctx, workdir, name); err != nil {
-		log.Fatalf("could not build image: %v", err)
-		return err
-	}
-
-	nameWithTag := name + ":latest"
-	if err := d.cli.TagImage(ctx, name, nameWithTag); err != nil {
-		log.Fatalf("could not tag image: %v", err)
-		return err
-	}
-
-	// when deploy a function on a bare Docker running without Kubernetes,
-	// image would be built on-demand on host locally, so there is no need to
-	// pull image from remote.
-	// But it takes some times waiting image ready after image built, we retry to make sure it ready here
-	var imgInfo dockerTypes.ImageInspect
-	if err := utils.RunWithRetry(func() error {
-		return d.cli.InspectImage(ctx, name, &imgInfo)
-	}, time.Second*1, 5); err != nil {
-		return err
-	}
-
-	return d.cli.StartContainer(ctx, name, name, ports)
+func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) error {
+	return d.cli.StartContainer(ctx, name, image, ports)
 }
 
 // Update a container

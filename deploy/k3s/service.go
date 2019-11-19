@@ -1,4 +1,4 @@
-package kubernetes
+package k3s
 
 import (
 	"strconv"
@@ -40,7 +40,7 @@ func generateServiceSpec(
 }
 
 // CreateService create a service
-func (k *K8S) CreateService(
+func (k *K3S) CreateService(
 	namespace string,
 	name string,
 	typ string,
@@ -58,7 +58,7 @@ func (k *K8S) CreateService(
 
 // UpdateService update a service
 // TODO this method is not perfect yet, should refactor later
-func (k *K8S) UpdateService(
+func (k *K3S) UpdateService(
 	namespace string,
 	name string,
 	typ string,
@@ -75,13 +75,13 @@ func (k *K8S) UpdateService(
 }
 
 // DeleteService a service
-func (k *K8S) DeleteService(namespace string, name string) error {
+func (k *K3S) DeleteService(namespace string, name string) error {
 	// TODO figure out the elegant way to delete a service
 	options := &metav1.DeleteOptions{}
 	return k.CoreV1().Services(namespace).Delete(name, options)
 }
 
 // GetService get a service
-func (k *K8S) GetService(namespace string, name string) (*apiv1.Service, error) {
+func (k *K3S) GetService(namespace string, name string) (*apiv1.Service, error) {
 	return k.CoreV1().Services(namespace).Get(name, metav1.GetOptions{})
 }

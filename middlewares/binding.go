@@ -24,6 +24,10 @@ func Binding(ctx *context.Context) error {
 				ServiceBindingPort:  443,
 				ContainerExposePort: constants.FxContainerExposePort,
 			},
+			types.PortBinding{
+				ServiceBindingPort:  int32(port),
+				ContainerExposePort: constants.FxContainerExposePort,
+			},
 		}
 	} else {
 		bindings = []types.PortBinding{

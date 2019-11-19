@@ -1,4 +1,4 @@
-package kubernetes
+package k8s
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func generateDeploymentSpec(
 		Name:            "fx-placeholder-container-name",
 		Image:           image,
 		Ports:           ports,
-		ImagePullPolicy: v1.PullNever,
+		ImagePullPolicy: v1.PullIfNotPresent,
 	}
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -98,6 +98,5 @@ func (k *K8S) CreateDeploymentWithInitContainer(
 ) (*appsv1.Deployment, error) {
 	deployment := generateDeploymentSpec(name, name, ports, replicas, selector)
 	updatedDeployment := injectInitContainer(name, deployment)
-	fmt.Println(updatedDeployment)
 	return k.AppsV1().Deployments(namespace).Create(updatedDeployment)
 }

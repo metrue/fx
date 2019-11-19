@@ -1,4 +1,4 @@
-package kubernetes
+package k8s
 
 import (
 	"context"
@@ -40,7 +40,7 @@ module.exports = (ctx) => {
 `,
 	}
 	ctx := context.Background()
-	if err := k8s.Deploy(ctx, fn, name, bindings); err != nil {
+	if err := k8s.Deploy(ctx, fn, name, name, bindings); err != nil {
 		t.Fatal(err)
 	}
 

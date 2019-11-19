@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.8.2"
+const version = "0.8.4"
 
 func init() {
 	go checkForUpdate()
@@ -60,6 +60,24 @@ func main() {
 		{
 			Name:  "init",
 			Usage: "start fx agent on host",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "master",
+					Usage: "master node",
+				},
+				cli.StringFlag{
+					Name:  "agents",
+					Usage: "agent nodes",
+				},
+				cli.StringFlag{
+					Name:  "user",
+					Usage: "user acount name for SSH login",
+				},
+				cli.StringFlag{
+					Name:  "password",
+					Usage: "password for SSH login",
+				},
+			},
 			Action: func(c *cli.Context) error {
 				return handlers.Init()(context.FromCliContext(c))
 			},
@@ -93,6 +111,12 @@ func main() {
 					log.Fatalf("%v", err)
 				}
 				if err := ctx.Use(middlewares.Binding); err != nil {
+					log.Fatalf("%v", err)
+				}
+				if err := ctx.Use(middlewares.Parse); err != nil {
+					log.Fatalf("%v", err)
+				}
+				if err := ctx.Use(middlewares.Build); err != nil {
 					log.Fatalf("%v", err)
 				}
 				return handlers.Up()(ctx)
@@ -181,6 +205,6 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		log.Fatalf("fx startup with fatal: %v", err)
+		os.Exit(1)
 	}
 }

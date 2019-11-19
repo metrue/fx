@@ -222,6 +222,14 @@ But we would suggest you run `kubectl config current-context` to check if the cu
 * Google Kubernetes Engine (GKET)
   TODO
 
+* Setup your own Kubernetes cluster
+
+![init workflow](https://raw.githubusercontent.com/metrue/fx/master/docs/fx-init-cluster.png)
+
+```shell
+fx init --master <host ip> --agents "<host ip 1>,<host ip 2>" --user <user> --password <password>
+```
+
 ## Contribute
 
 fx uses [Project](https://github.com/metrue/fx/projects/4) to manage the development.

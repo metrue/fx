@@ -3,12 +3,19 @@ package handlers
 import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/utils"
 )
 
 // List command handle
 func List() HandleFunc {
-	return func(ctx *context.Context) error {
+	return func(ctx *context.Context) (err error) {
+		const task = "deploying"
+		spinner.Start(task)
+		defer func() {
+			spinner.Stop(task, err)
+		}()
+
 		cli := ctx.GetCliContext()
 		deployer := ctx.Get("deployer").(deploy.Deployer)
 

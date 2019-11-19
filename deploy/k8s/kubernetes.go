@@ -1,7 +1,8 @@
-package kubernetes
+package k8s
 
 import (
 	"context"
+	"os"
 
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/packer"
@@ -36,6 +37,7 @@ func (k *K8S) Deploy(
 	ctx context.Context,
 	fn types.Func,
 	name string,
+	image string,
 	ports []types.PortBinding,
 ) error {
 	// put source code of function docker project into k8s config map
@@ -80,10 +82,9 @@ func (k *K8S) Deploy(
 
 	// TODO fx should be able to know what's the target Kubernetes service platform
 	// it's going to deploy to
-	const isOnPublicCloud = true
 	typ := "LoadBalancer"
-	if !isOnPublicCloud {
-		typ = "NodePort"
+	if os.Getenv("SERVICE_TYPE") != "" {
+		typ = os.Getenv("SERVICE_TYPE")
 	}
 
 	if _, err := k.GetService(namespace, name); err != nil {

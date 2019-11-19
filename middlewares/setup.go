@@ -3,7 +3,6 @@ package middlewares
 import (
 	"os"
 
-	"github.com/apex/log"
 	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
@@ -11,12 +10,20 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
-	k8sDeployer "github.com/metrue/fx/deploy/kubernetes"
+	k3sDeployer "github.com/metrue/fx/deploy/k3s"
+	k8sDeployer "github.com/metrue/fx/deploy/k8s"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/provision"
 )
 
 // Setup create k8s or docker cli
 func Setup(ctx *context.Context) (err error) {
+	const task = "setup"
+	spinner.Start(task)
+	defer func() {
+		spinner.Stop(task, err)
+	}()
+
 	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
 	user := os.Getenv("DOCKER_REMOTE_HOST_USER")
 	passord := os.Getenv("DOCKER_REMOTE_HOST_PASSWORD")
@@ -25,10 +32,8 @@ func Setup(ctx *context.Context) (err error) {
 		provisioner := provision.NewWithHost(host, user, passord)
 		if !provisioner.IsFxAgentRunning() {
 			if err := provisioner.StartFxAgent(); err != nil {
-				log.Fatalf("could not start fx agent on host: %s", err)
 				return err
 			}
-			log.Info("fx agent started")
 		}
 
 		docker, err = dockerHTTP.Create(host, constants.AgentPort)
@@ -44,7 +49,12 @@ func Setup(ctx *context.Context) (err error) {
 	ctx.Set("docker", docker)
 
 	var deployer deploy.Deployer
-	if os.Getenv("KUBECONFIG") != "" {
+	if os.Getenv("K3S") != "" {
+		deployer, err = k3sDeployer.Create()
+		if err != nil {
+			return err
+		}
+	} else if os.Getenv("KUBECONFIG") != "" {
 		deployer, err = k8sDeployer.Create()
 		if err != nil {
 			return err
