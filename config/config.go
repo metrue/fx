@@ -8,7 +8,7 @@ import (
 
 	"github.com/metrue/fx/utils"
 	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 // Cloud define cloud infrastructure
@@ -16,8 +16,8 @@ type Cloud map[string]string
 
 // Config config of fx
 type Config struct {
-	Clouds       map[string]Cloud
-	CurrentCloud string
+	Clouds       map[string]Cloud `json:"clouds"`
+	CurrentCloud string           `json:"current_cloud"`
 }
 
 // New create a config
@@ -32,17 +32,13 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	ext := "yaml"
-	name := "config"
-	viper.SetConfigType(ext)
-	viper.SetConfigName(name)
-	viper.SetConfigFile(configFile)
-
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		if err := utils.EnsureFile(configFile); err != nil {
 			return nil, err
 		}
-		writeDefaultConfig()
+		if err := writeDefaultConfig(configFile); err != nil {
+			return nil, err
+		}
 	}
 
 	return load()
@@ -91,27 +87,34 @@ func View() ([]byte, error) {
 }
 
 func load() (*Config, error) {
-	if err := viper.ReadInConfig(); err != nil {
+	configFile, err := getConfigFile()
+	if err != nil {
 		return nil, err
 	}
-	config := &Config{}
-
-	config.CurrentCloud = viper.GetString("current_cloud")
-	clouds := make(map[string]Cloud)
-
-	cloudList := viper.Get("clouds").(map[string]Cloud)
-	for n, c := range cloudList {
-		clouds[n] = c
+	conf, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		return nil, err
 	}
-	config.Clouds = clouds
-
-	return config, nil
+	var c Config
+	if err := yaml.Unmarshal(conf, &c); err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func save(c *Config) error {
-	viper.Set("clouds", c.Clouds)
-	viper.Set("current_cloud", c.CurrentCloud)
-	return viper.WriteConfig()
+	conf, err := yaml.Marshal(c)
+	if err != nil {
+		return err
+	}
+	configFile, err := getConfigFile()
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(configFile, conf, 0666); err != nil {
+		return err
+	}
+	return nil
 }
 
 func getConfigFile() (string, error) {
@@ -126,21 +129,30 @@ func getConfigFile() (string, error) {
 	return configFile, nil
 }
 
-func writeDefaultConfig() error {
+func writeDefaultConfig(configFile string) error {
 	me, err := user.Current()
 	if err != nil {
 		return err
 	}
-	viper.Set("current_cloud", "default")
-	viper.Set("clouds", map[string]Cloud{
-		"default": Cloud{
-			"type": "docker",
-			"host": "127.0.0.1",
-			"user": me.Username,
+	conf := Config{
+		Clouds: map[string]Cloud{
+			"default": Cloud{
+				"type": "docker",
+				"host": "127.0.0.1",
+				"user": me.Username,
+			},
 		},
-	})
-	if err := viper.WriteConfig(); err != nil {
+		CurrentCloud: "default",
+	}
+
+	y, err := yaml.Marshal(conf)
+	if err != nil {
 		return err
 	}
+
+	if err := ioutil.WriteFile(configFile, y, 0666); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -109,11 +109,10 @@ func main() {
 					},
 				},
 				{
-					Name:  "remove",
-					Usage: "remove an existing template",
+					Name:  "list",
+					Usage: "list all infrastructures",
 					Action: func(c *cli.Context) error {
-						fmt.Println("removed task template: ", c.Args().First())
-						return nil
+						return handlers.ListInfra(context.FromCliContext(c))
 					},
 				},
 			},
