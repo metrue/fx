@@ -22,6 +22,18 @@ func init() {
 	go checkForUpdate()
 }
 
+func handle(fns ...handlers.HandleFunc) func(ctx *cli.Context) error {
+	return func(c *cli.Context) error {
+		ctx := context.FromCliContext(c)
+		for _, fn := range fns {
+			if err := fn(ctx); err != nil {
+				panic(err)
+			}
+		}
+		return nil
+	}
+}
+
 func checkForUpdate() {
 	const releaseURL = "https://api.github.com/repos/metrue/fx/releases/latest"
 	resp, err := http.Get(releaseURL)
@@ -57,31 +69,22 @@ func main() {
 	app.Usage = "makes function as a service"
 	app.Version = version
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(aurora.Red("*****************"))
+			fmt.Println(r)
+			fmt.Println(aurora.Red("*****************"))
+		}
+	}()
+
 	app.Commands = []cli.Command{
-		{
-			Name:  "init",
-			Usage: "start fx agent on host",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "master",
-					Usage: "master node",
-				},
-				cli.StringFlag{
-					Name:  "agents",
-					Usage: "agent nodes",
-				},
-			},
-			Action: func(c *cli.Context) error {
-				return handlers.Init()(context.FromCliContext(c))
-			},
-		},
 		{
 			Name:  "infra",
 			Usage: "manage infrastructure",
 			Subcommands: []cli.Command{
 				{
-					Name:  "setup",
-					Usage: "setup a infra for fx service",
+					Name:  "create",
+					Usage: "create a infra for fx service",
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "type, t",
@@ -105,35 +108,26 @@ func main() {
 						},
 					},
 
-					Action: func(c *cli.Context) error {
-						ctx := context.FromCliContext(c)
-						if err := ctx.Use(middlewares.LoadConfig); err != nil {
-							log.Fatalf("%v", err)
-						}
-						return handlers.Setup(ctx)
-					},
+					Action: handle(
+						middlewares.LoadConfig,
+						handlers.Setup,
+					),
 				},
 				{
 					Name:  "list",
 					Usage: "list all infrastructures",
-					Action: func(c *cli.Context) error {
-						ctx := context.FromCliContext(c)
-						if err := ctx.Use(middlewares.LoadConfig); err != nil {
-							log.Fatalf("%v", err)
-						}
-						return handlers.ListInfra(ctx)
-					},
+					Action: handle(
+						middlewares.LoadConfig,
+						handlers.ListInfra,
+					),
 				},
 				{
 					Name:  "use",
 					Usage: "set current context to target cloud with given name",
-					Action: func(c *cli.Context) error {
-						ctx := context.FromCliContext(c)
-						if err := ctx.Use(middlewares.LoadConfig); err != nil {
-							log.Fatalf("%v", err)
-						}
-						return handlers.UseInfra(ctx)
-					},
+					Action: handle(
+						middlewares.LoadConfig,
+						handlers.UseInfra,
+					),
 				},
 			},
 		},
@@ -160,46 +154,28 @@ func main() {
 					Usage: "force deploy a function or functions",
 				},
 			},
-			Action: func(c *cli.Context) error {
-				ctx := context.FromCliContext(c)
-				if err := ctx.Use(middlewares.Setup); err != nil {
-					log.Fatalf("%v", err)
-				}
-				if err := ctx.Use(middlewares.Binding); err != nil {
-					log.Fatalf("%v", err)
-				}
-				if err := ctx.Use(middlewares.Parse); err != nil {
-					log.Fatalf("%v", err)
-				}
-				if err := ctx.Use(middlewares.Build); err != nil {
-					log.Fatalf("%v", err)
-				}
-				return handlers.Up()(ctx)
-			},
+			Action: handle(
+				middlewares.Setup,
+				middlewares.Binding,
+				middlewares.Parse,
+				middlewares.Build,
+				handlers.Up,
+			),
 		},
 		{
 			Name:      "down",
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
-			Action: func(c *cli.Context) error {
-				ctx := context.FromCliContext(c)
-				if err := ctx.Use(middlewares.Setup); err != nil {
-					log.Fatalf("%v", err)
-				}
-				return handlers.Down()(ctx)
-			},
+			Action: handle(
+				middlewares.Setup,
+				handlers.Down,
+			),
 		},
 		{
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
-			Action: func(c *cli.Context) error {
-				ctx := context.FromCliContext(c)
-				if err := ctx.Use(middlewares.Setup); err != nil {
-					log.Fatalf("%v", err)
-				}
-				return handlers.List()(ctx)
-			},
+			Action:  handle(middlewares.Setup, handlers.List),
 		},
 		{
 			Name:  "call",
@@ -210,9 +186,7 @@ func main() {
 					Usage: "fx server host, default is localhost",
 				},
 			},
-			Action: func(c *cli.Context) error {
-				return handlers.Call()(context.FromCliContext(c))
-			},
+			Action: handle(handlers.Call),
 		},
 		{
 			Name:  "image",
@@ -227,13 +201,7 @@ func main() {
 							Usage: "image tag",
 						},
 					},
-					Action: func(c *cli.Context) error {
-						ctx := context.FromCliContext(c)
-						if err := ctx.Use(middlewares.Setup); err != nil {
-							log.Fatalf("%v", err)
-						}
-						return handlers.BuildImage()(ctx)
-					},
+					Action: handle(middlewares.Setup, handlers.BuildImage),
 				},
 				{
 					Name:  "export",
@@ -244,25 +212,18 @@ func main() {
 							Usage: "output directory",
 						},
 					},
-					Action: func(c *cli.Context) error {
-						return handlers.ExportImage()(context.FromCliContext(c))
-					},
+					Action: handle(handlers.ExportImage),
 				},
 			},
 		},
 		{
-			Name:  "doctor",
-			Usage: "health check for fx",
-			Action: func(c *cli.Context) error {
-				return handlers.Doctor()(context.FromCliContext(c))
-			},
+			Name:   "doctor",
+			Usage:  "health check for fx",
+			Action: handle(handlers.Doctor),
 		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Println(aurora.Red("*****************"))
-		fmt.Println(err)
-		fmt.Println(aurora.Red("*****************"))
 		os.Exit(1)
 	}
 }

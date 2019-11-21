@@ -19,32 +19,30 @@ var PortRange = struct {
 }
 
 // Up command handle
-func Up() HandleFunc {
-	return func(ctx *context.Context) (err error) {
-		const task = "deploying"
-		spinner.Start(task)
-		defer func() {
-			spinner.Stop(task, err)
-		}()
+func Up(ctx *context.Context) (err error) {
+	const task = "deploying"
+	spinner.Start(task)
+	defer func() {
+		spinner.Stop(task, err)
+	}()
 
-		cli := ctx.GetCliContext()
-		name := cli.String("name")
-		port := cli.Int("port")
+	cli := ctx.GetCliContext()
+	name := cli.String("name")
+	port := cli.Int("port")
 
-		if port < PortRange.min || port > PortRange.max {
-			return fmt.Errorf("invalid port number: %d, port number should in range of %d -  %d", port, PortRange.min, PortRange.max)
-		}
-
-		fn := ctx.Get("fn").(types.Func)
-		image := ctx.Get("image").(string)
-		deployer := ctx.Get("deployer").(deploy.Deployer)
-		bindings := ctx.Get("bindings").([]types.PortBinding)
-		return deployer.Deploy(
-			ctx.Context,
-			fn,
-			name,
-			image,
-			bindings,
-		)
+	if port < PortRange.min || port > PortRange.max {
+		return fmt.Errorf("invalid port number: %d, port number should in range of %d -  %d", port, PortRange.min, PortRange.max)
 	}
+
+	fn := ctx.Get("fn").(types.Func)
+	image := ctx.Get("image").(string)
+	deployer := ctx.Get("deployer").(deploy.Deployer)
+	bindings := ctx.Get("bindings").([]types.PortBinding)
+	return deployer.Deploy(
+		ctx.Context,
+		fn,
+		name,
+		image,
+		bindings,
+	)
 }
