@@ -105,14 +105,22 @@ func main() {
 					},
 
 					Action: func(c *cli.Context) error {
-						return handlers.Setup(context.FromCliContext(c))
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.LoadConfig); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.Setup(ctx)
 					},
 				},
 				{
 					Name:  "list",
 					Usage: "list all infrastructures",
 					Action: func(c *cli.Context) error {
-						return handlers.ListInfra(context.FromCliContext(c))
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.LoadConfig); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.ListInfra(ctx)
 					},
 				},
 			},

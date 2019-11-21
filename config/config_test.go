@@ -13,9 +13,7 @@ func TestConfig(t *testing.T) {
 			t.Fatal(err)
 		}
 	}()
-
-	os.Setenv("FX_CONFIG", configPath)
-	c, err := Load()
+	c, err := Load(configPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,19 +23,31 @@ func TestConfig(t *testing.T) {
 	}
 
 	name := "fx_cluster_1"
-	if err := Use(name); err == nil {
+	if err := c.Use(name); err == nil {
 		t.Fatal("should get no such cloud error")
 	}
 
-	if err := AddK8SCloud(name, []byte("sampe kubeconfg")); err != nil {
+	if err := c.AddK8SCloud(name, []byte("sampe kubeconfg")); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := Use(name); err != nil {
+	if err := c.Use(name); err != nil {
 		t.Fatal(err)
 	}
 
-	body, err := View()
+	if c.CurrentCloud != name {
+		t.Fatalf("should get %s but got %s", name, c.CurrentCloud)
+	}
+
+	conf, err := Load(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if conf.CurrentCloud != name {
+		t.Fatalf("should get %s but got %s", name, c.CurrentCloud)
+	}
+
+	body, err := c.View()
 	if err != nil {
 		t.Fatal(err)
 	}

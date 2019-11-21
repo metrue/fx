@@ -9,11 +9,8 @@ import (
 
 // ListInfra list infra
 func ListInfra(ctx *context.Context) (err error) {
-	if _, err := config.Load(); err != nil {
-		return err
-	}
-
-	conf, err := config.View()
+	fxConfig := ctx.Get("config").(*config.Config)
+	conf, err := fxConfig.View()
 	if err != nil {
 		return err
 	}

@@ -91,19 +91,21 @@ func Setup(ctx *context.Context) (err error) {
 		return fmt.Errorf("invalid type, 'docker', 'k3s' and 'k8s' support")
 	}
 
+	fxConfig := ctx.Get("config").(*config.Config)
+
 	switch strings.ToLower(typ) {
 	case "k3s":
 		kubeconf, err := setupK3S(cli.String("master"), cli.String("agents"))
 		if err != nil {
 			return err
 		}
-		return config.AddK8SCloud(name, kubeconf)
+		return fxConfig.AddK8SCloud(name, kubeconf)
 	case "docker":
 		host, user, err := setupDocker(cli.String("host"))
 		if err != nil {
 			return err
 		}
-		return config.AddDockerCloud(name, host, user)
+		return fxConfig.AddDockerCloud(name, host, user)
 	case "k8s":
 		fmt.Println("WIP")
 	}
