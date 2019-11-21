@@ -9,6 +9,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/google/uuid"
+	aurora "github.com/logrusorgru/aurora"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
 	"github.com/metrue/fx/middlewares"
@@ -121,6 +122,17 @@ func main() {
 							log.Fatalf("%v", err)
 						}
 						return handlers.ListInfra(ctx)
+					},
+				},
+				{
+					Name:  "use",
+					Usage: "set current context to target cloud with given name",
+					Action: func(c *cli.Context) error {
+						ctx := context.FromCliContext(c)
+						if err := ctx.Use(middlewares.LoadConfig); err != nil {
+							log.Fatalf("%v", err)
+						}
+						return handlers.UseInfra(ctx)
 					},
 				},
 			},
@@ -248,6 +260,9 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
+		fmt.Println(aurora.Red("*****************"))
+		fmt.Println(err)
+		fmt.Println(aurora.Red("*****************"))
 		os.Exit(1)
 	}
 }
