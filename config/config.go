@@ -11,13 +11,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Cloud define cloud infrastructure
-type Cloud map[string]string
-
 // Config config of fx
 type Config struct {
-	Clouds       map[string]Cloud `json:"clouds"`
-	CurrentCloud string           `json:"current_cloud"`
+	Clouds       map[string]interface{} `json:"clouds"`
+	CurrentCloud string                 `json:"current_cloud"`
 }
 
 // New create a config
@@ -45,7 +42,7 @@ func Load() (*Config, error) {
 }
 
 // AddCloud add a cloud
-func AddCloud(name string, cloud Cloud) error {
+func AddCloud(name string, cloud interface{}) error {
 	config, err := load()
 	if err != nil {
 		return err
@@ -54,6 +51,35 @@ func AddCloud(name string, cloud Cloud) error {
 	config.Clouds[name] = cloud
 
 	return save(config)
+}
+
+// AddDockerCloud add docker cloud
+func AddDockerCloud(name string, host string, user string) error {
+	cloud := DockerCloud{
+		Host: host,
+		User: user,
+	}
+	return AddCloud(name, cloud)
+}
+
+// AddK8SCloud add k8s cloud
+func AddK8SCloud(name string, kubeconfig []byte) error {
+	configFile, err := homedir.Expand("~/.fx/" + name + ".kubeconfig")
+	if err != nil {
+		return err
+	}
+	if err := utils.EnsureFile(configFile); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(configFile, kubeconfig, 0666); err != nil {
+		return err
+	}
+
+	cloud := K8SCloud{
+		KubeConfig: configFile,
+	}
+
+	return AddCloud(name, cloud)
 }
 
 // Use set cloud instance with name as current context
@@ -135,11 +161,10 @@ func writeDefaultConfig(configFile string) error {
 		return err
 	}
 	conf := Config{
-		Clouds: map[string]Cloud{
-			"default": Cloud{
-				"type": "docker",
-				"host": "127.0.0.1",
-				"user": me.Username,
+		Clouds: map[string]interface{}{
+			"default": DockerCloud{
+				Host: "127.0.0.1",
+				User: me.Username,
 			},
 		},
 		CurrentCloud: "default",

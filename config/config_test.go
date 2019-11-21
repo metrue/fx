@@ -29,11 +29,7 @@ func TestConfig(t *testing.T) {
 		t.Fatal("should get no such cloud error")
 	}
 
-	cloud := Cloud{
-		"type":   "k8s",
-		"config": "./kubeconfig",
-	}
-	if err := AddCloud(name, cloud); err != nil {
+	if err := AddK8SCloud(name, []byte("sampe kubeconfg")); err != nil {
 		t.Fatal(err)
 	}
 
