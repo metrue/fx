@@ -7,9 +7,9 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	configPath := "./config.yml"
+	configPath := "./tmp/config.yml"
 	defer func() {
-		if err := os.RemoveAll(configPath); err != nil {
+		if err := os.RemoveAll("./tmp"); err != nil {
 			t.Fatal(err)
 		}
 	}()

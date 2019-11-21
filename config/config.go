@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
+	"path"
 	"sync"
 
 	"github.com/metrue/fx/utils"
@@ -86,19 +87,17 @@ func (c *Config) AddK8SCloud(name string, kubeconfig []byte) error {
 	c.mux.Lock()
 	defer c.mux.Unlock()
 
-	configFile, err := homedir.Expand("~/.fx/" + name + ".kubeconfig")
-	if err != nil {
+	dir := path.Dir(c.configFile)
+	kubecfg := path.Join(dir, name+".kubeconfig")
+	if err := utils.EnsureFile(kubecfg); err != nil {
 		return err
 	}
-	if err := utils.EnsureFile(configFile); err != nil {
-		return err
-	}
-	if err := ioutil.WriteFile(configFile, kubeconfig, 0666); err != nil {
+	if err := ioutil.WriteFile(kubecfg, kubeconfig, 0666); err != nil {
 		return err
 	}
 
 	cloud := K8SCloud{
-		KubeConfig: configFile,
+		KubeConfig: kubecfg,
 	}
 
 	return c.addCloud(name, cloud)
