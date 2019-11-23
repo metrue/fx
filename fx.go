@@ -22,7 +22,7 @@ func init() {
 	go checkForUpdate()
 }
 
-func handle(fns ...handlers.HandleFunc) func(ctx *cli.Context) error {
+func handle(fns ...func(ctx *context.Context) error) func(ctx *cli.Context) error {
 	return func(c *cli.Context) error {
 		ctx := context.FromCliContext(c)
 		for _, fn := range fns {
@@ -175,7 +175,10 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
-			Action:  handle(middlewares.Setup, handlers.List),
+			Action: handle(
+				middlewares.Setup,
+				handlers.List,
+			),
 		},
 		{
 			Name:  "call",
@@ -201,7 +204,10 @@ func main() {
 							Usage: "image tag",
 						},
 					},
-					Action: handle(middlewares.Setup, handlers.BuildImage),
+					Action: handle(
+						middlewares.Setup,
+						handlers.BuildImage,
+					),
 				},
 				{
 					Name:  "export",
