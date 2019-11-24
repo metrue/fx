@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -28,6 +29,15 @@ func TestConfig(t *testing.T) {
 	}
 
 	if err := c.AddK8SCloud(name, []byte("sampe kubeconfg")); err != nil {
+		t.Fatal(err)
+	}
+
+	config := map[string]string{
+		"ip":   "127.0.0.1",
+		"user": "use1",
+	}
+	configData, _ := json.Marshal(config)
+	if err := c.AddDockerCloud("docker-1", configData); err != nil {
 		t.Fatal(err)
 	}
 

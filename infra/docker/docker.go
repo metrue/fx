@@ -1,9 +1,11 @@
 package docker
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/infra"
 	sshOperator "github.com/metrue/go-ssh-client"
 	"github.com/mitchellh/go-homedir"
 )
@@ -20,6 +22,30 @@ func New(ip string, user string) *Docker {
 		IP:   ip,
 		User: user,
 	}
+}
+
+// Provision provision a host, install docker and start dockerd
+func (d *Docker) Provision() ([]byte, error) {
+	if err := d.Install(); err != nil {
+		return nil, err
+	}
+	if err := d.StartDockerd(); err != nil {
+		return nil, err
+	}
+	if err := d.StartFxAgent(); err != nil {
+		return nil, err
+	}
+	config, _ := json.Marshal(map[string]string{
+		"ip":   d.IP,
+		"user": d.User,
+	})
+	return config, nil
+}
+
+// HealthCheck check healthy status of host
+func (d *Docker) HealthCheck() (bool, error) {
+	// TODO
+	return true, nil
 }
 
 // Install docker on host
@@ -88,3 +114,5 @@ func (d *Docker) StartFxAgent() error {
 	}
 	return nil
 }
+
+var _ infra.Infra = &Docker{}

@@ -33,35 +33,18 @@ func setupK3S(masterInfo string, agentsInfo string) ([]byte, error) {
 		})
 	}
 	k3sOperator := k3s.New(master, agents)
-	if err := k3sOperator.SetupMaster(); err != nil {
-		return nil, err
-	}
-	if err := k3sOperator.SetupAgent(); err != nil {
-		return nil, err
-	}
-	return k3sOperator.GetKubeConfig()
+	return k3sOperator.Provision()
 }
 
-func setupDocker(hostInfo string) (host string, user string, err error) {
+func setupDocker(hostInfo string) ([]byte, error) {
 	info := strings.Split(hostInfo, "@")
 	if len(info) != 2 {
-		return "", "", fmt.Errorf("incorrect master info, should be <user>@<ip> format")
+		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
 	}
-	user = info[1]
-	host = info[0]
+	user := info[1]
+	host := info[0]
 	dockr := docker.New(user, host)
-	if err := dockr.Install(); err != nil {
-		return "", "", err
-	}
-
-	if err := dockr.StartDockerd(); err != nil {
-		return "", "", err
-	}
-
-	if err := dockr.StartFxAgent(); err != nil {
-		return "", "", err
-	}
-	return host, user, nil
+	return dockr.Provision()
 }
 
 // Setup infra
@@ -101,11 +84,11 @@ func Setup(ctx *context.Context) (err error) {
 		}
 		return fxConfig.AddK8SCloud(name, kubeconf)
 	case "docker":
-		host, user, err := setupDocker(cli.String("host"))
+		config, err := setupDocker(cli.String("host"))
 		if err != nil {
 			return err
 		}
-		return fxConfig.AddDockerCloud(name, host, user)
+		return fxConfig.AddDockerCloud(name, config)
 	case "k8s":
 		fmt.Println("WIP")
 	}

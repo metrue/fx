@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/metrue/fx/infra"
 	sshOperator "github.com/metrue/go-ssh-client"
 	"github.com/mitchellh/go-homedir"
 )
@@ -36,6 +37,23 @@ func New(master MasterNode, agents []AgentNode) *K3S {
 		master: master,
 		agents: agents,
 	}
+}
+
+// Provision provision k3s cluster
+func (k *K3S) Provision() ([]byte, error) {
+	if err := k.SetupMaster(); err != nil {
+		return nil, err
+	}
+	if err := k.SetupAgent(); err != nil {
+		return nil, err
+	}
+	return k.GetKubeConfig()
+}
+
+// HealthCheck check healthy status of host
+func (k *K3S) HealthCheck() (bool, error) {
+	// TODO
+	return true, nil
 }
 
 // SetupMaster setup master node
@@ -131,3 +149,5 @@ func rewriteKubeconfig(kubeconfig string, ip string, context string) []byte {
 
 	return []byte(kubeconfigReplacer.Replace(kubeconfig))
 }
+
+var _ infra.Infra = &K3S{}

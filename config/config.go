@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -71,13 +72,19 @@ func (c *Config) addCloud(name string, cloud interface{}) error {
 }
 
 // AddDockerCloud add docker cloud
-func (c *Config) AddDockerCloud(name string, host string, user string) error {
+func (c *Config) AddDockerCloud(name string, config []byte) error {
 	c.mux.Lock()
 	defer c.mux.Unlock()
 
+	var conf map[string]string
+	err := json.Unmarshal(config, &conf)
+	if err != nil {
+		return err
+	}
+
 	cloud := DockerCloud{
-		Host: host,
-		User: user,
+		Host: conf["ip"],
+		User: conf["user"],
 	}
 	return c.addCloud(name, cloud)
 }
