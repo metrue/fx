@@ -110,7 +110,6 @@ func (k *K3S) SetupAgent() error {
 			fmt.Println("================")
 			return err
 		}
-		return nil
 	}
 
 	return nil
