@@ -57,6 +57,11 @@ jobs:
           make docker-build
           make test
           # make docker-publish #TODO in release workflow
+      - name: test fx docker cloud
+        run: |
+          make start_docker_infra
+          make test_docker_infra
+          stop_docker_infra
 
       - name: test fx cli
         env:
