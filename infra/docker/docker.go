@@ -55,7 +55,8 @@ func (d *Docker) Install() error {
 	}
 	installCmd := fmt.Sprintf("curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz -o docker.tgz && tar zxvf docker.tgz && %s mv docker/* /usr/bin && rm -rf docker docker.tgz", sudo)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
-	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile)
+	sshPort := infra.GetSSHPort()
+	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
 	stdout, stderr, err := ssh.RunCommand(installCmd)
 	if err != nil {
 		fmt.Println("install docker failed \n================")
@@ -76,7 +77,8 @@ func (d *Docker) StartDockerd() error {
 	}
 	installCmd := fmt.Sprintf("%s, dockerd >/dev/null 2>&1 & sleep 2", sudo)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
-	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile)
+	sshPort := infra.GetSSHPort()
+	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
 	stdout, stderr, err := ssh.RunCommand(installCmd)
 	if err != nil {
 		fmt.Println("start dockerd failed \n================")
@@ -93,7 +95,8 @@ func (d *Docker) StartDockerd() error {
 func (d *Docker) StartFxAgent() error {
 	startCmd := fmt.Sprintf("sleep 3 && docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
-	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile)
+	sshPort := infra.GetSSHPort()
+	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
 	stdout, stderr, err := ssh.RunCommand(startCmd)
 	if err != nil {
 		fmt.Println("start fx agent failed \n================")

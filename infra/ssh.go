@@ -24,3 +24,12 @@ func GetSSHKeyFile() (string, error) {
 	}
 	return key, nil
 }
+
+// GetSSHPort get ssh port
+func GetSSHPort() string {
+	port := os.Getenv("SSH_PORT")
+	if port != "" {
+		return port
+	}
+	return "22"
+}
