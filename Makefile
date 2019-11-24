@@ -39,3 +39,11 @@ http-test:
 zip:
 	zip -r images.zip images/
 .PHONY: test build start list clean generate
+
+start_docker_infra:
+	docker build -t fx-docker-infra -f test/Dockerfile ./test
+	docker run --rm --name fx-docker-infra -p 22:22 -v /var/run/docker.sock:/var/run/docker.sock -d fx-docker-infra
+test_docker_infra:
+	SSH_KEY_FILE=./test/id_rsa ./build/fx infra create --name docker-local -t docker --host root@127.0.0.1
+stop_docker_infra:
+	docker stop fx-docker-infra
