@@ -61,7 +61,7 @@ jobs:
         run: |
           make start_docker_infra
           make test_docker_infra
-          stop_docker_infra
+          make stop_docker_infra
 
       - name: test fx cli
         env:
