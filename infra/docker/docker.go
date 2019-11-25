@@ -3,6 +3,7 @@ package docker
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/infra"
@@ -57,11 +58,13 @@ func (d *Docker) Install() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
-	stdout, stderr, err := ssh.RunCommand(installCmd)
-	if err != nil {
+	if err := ssh.RunCommand(installCmd, sshOperator.CommandOptions{
+		Stdout: os.Stdout,
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		fmt.Println("install docker failed \n================")
-		fmt.Println("failed: ", string(stderr))
-		fmt.Println("output: ", string(stdout))
+		fmt.Println(err)
 		fmt.Println("================")
 		return err
 	}
@@ -79,11 +82,13 @@ func (d *Docker) StartDockerd() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
-	stdout, stderr, err := ssh.RunCommand(installCmd)
-	if err != nil {
+	if err := ssh.RunCommand(installCmd, sshOperator.CommandOptions{
+		Stdout: os.Stdout,
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		fmt.Println("start dockerd failed \n================")
-		fmt.Println("failed: ", string(stderr))
-		fmt.Println("output: ", string(stdout))
+		fmt.Println(err)
 		fmt.Println("================")
 		return err
 	}
@@ -97,11 +102,13 @@ func (d *Docker) StartFxAgent() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
-	stdout, stderr, err := ssh.RunCommand(startCmd)
-	if err != nil {
+	if err := ssh.RunCommand(startCmd, sshOperator.CommandOptions{
+		Stdout: os.Stdout,
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		fmt.Println("start fx agent failed \n================")
-		fmt.Println("failed: ", string(stderr))
-		fmt.Println("output: ", string(stdout))
+		fmt.Println(err)
 		fmt.Println("================")
 		return err
 	}

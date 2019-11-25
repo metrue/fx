@@ -22,7 +22,7 @@ require (
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
-	github.com/metrue/go-ssh-client v0.0.0-20191118075827-4f8a85823809
+	github.com/metrue/go-ssh-client v0.0.0-20191125030649-4ac058ee958b
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/morikuni/aec v1.0.0 // indirect

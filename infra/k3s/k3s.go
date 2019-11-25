@@ -1,7 +1,10 @@
 package k3s
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/metrue/fx/infra"
@@ -64,11 +67,13 @@ func (k *K3S) SetupMaster() error {
 	}
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
 	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
-	stdout, stderr, err := ssh.RunCommand(installCmd)
-	if err != nil {
+	if err := ssh.RunCommand(installCmd, sshOperator.CommandOptions{
+		Stdout: os.Stdout,
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		fmt.Println("setup master failed \n ===========")
-		fmt.Println("failed: ", string(stderr))
-		fmt.Println("output: ", string(stdout))
+		fmt.Println(err)
 		fmt.Println("===========")
 	}
 	return err
@@ -81,11 +86,15 @@ func (k *K3S) getToken() (string, error) {
 	}
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
 	script := "cat /var/lib/rancher/k3s/server/node-token"
-	stdout, _, err := ssh.RunCommand(script)
-	if err != nil {
+	var outPipe bytes.Buffer
+	if err := ssh.RunCommand(script, sshOperator.CommandOptions{
+		Stdout: bufio.NewWriter(&outPipe),
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		return "", err
 	}
-	return string(stdout), nil
+	return outPipe.String(), nil
 }
 
 // SetupAgent set agent node
@@ -102,11 +111,13 @@ func (k *K3S) SetupAgent() error {
 	joinCmd := fmt.Sprintf("curl -sfL https://get.k3s.io/ | K3S_URL='https://%s:6443' K3S_TOKEN='%s' INSTALL_K3S_VERSION='%s' sh -s - %s", k.master.IP, tok, version, k3sExtraArgs)
 	for _, agent := range k.agents {
 		ssh := sshOperator.New(agent.IP).WithUser(agent.User).WithKey(publicKey)
-		stdout, stderr, err := ssh.RunCommand(joinCmd)
-		if err != nil {
+		if err := ssh.RunCommand(joinCmd, sshOperator.CommandOptions{
+			Stdout: os.Stdout,
+			Stdin:  os.Stdin,
+			Stderr: os.Stderr,
+		}); err != nil {
 			fmt.Println("setup agent failed \n================")
-			fmt.Println("failed: ", string(stderr))
-			fmt.Println("output: ", string(stdout))
+			fmt.Println(err)
 			fmt.Println("================")
 			return err
 		}
@@ -124,15 +135,18 @@ func (k *K3S) GetKubeConfig() ([]byte, error) {
 	}
 	getConfigCmd := "cat /etc/rancher/k3s/k3s.yaml\n"
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
-	stdout, stderr, err := ssh.RunCommand(getConfigCmd)
-	if err != nil {
+	var outPipe bytes.Buffer
+	if err := ssh.RunCommand(getConfigCmd, sshOperator.CommandOptions{
+		Stdout: bufio.NewWriter(&outPipe),
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
 		fmt.Println("setup agent failed \n================")
-		fmt.Println("failed: ", string(stderr))
-		fmt.Println("output: ", string(stdout))
 		fmt.Println("================")
+		fmt.Println(err)
 		return config, err
 	}
-	return rewriteKubeconfig(string(stdout), k.master.IP, "default"), nil
+	return rewriteKubeconfig(outPipe.String(), k.master.IP, "default"), nil
 }
 
 func rewriteKubeconfig(kubeconfig string, ip string, context string) []byte {
