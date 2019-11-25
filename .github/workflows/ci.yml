@@ -17,6 +17,12 @@ jobs:
         run: |
           ./scripts/provision.sh
 
+      - name: install multipass
+        run: |
+          sudo apt update
+          sudo apt install snapd
+          sudo snap install multipass --beta --classic
+
       - name: lint
         run: |
           docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
