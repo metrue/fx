@@ -12,7 +12,7 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.5.0
 	github.com/gobuffalo/packr v1.30.1
 	github.com/golang/mock v1.3.1
 	github.com/golang/snappy v0.0.1 // indirect
