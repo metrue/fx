@@ -78,7 +78,7 @@ func (d *Docker) StartDockerd() error {
 	if d.User != "root" {
 		sudo = "sudo"
 	}
-	installCmd := fmt.Sprintf("%s, dockerd >/dev/null 2>&1 & sleep 2", sudo)
+	installCmd := fmt.Sprintf("%s dockerd >/dev/null 2>&1 & sleep 2", sudo)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
