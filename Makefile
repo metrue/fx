@@ -49,3 +49,17 @@ test_docker_infra:
 
 stop_docker_infra:
 	docker stop fx-docker-infra
+
+start_k3s_infra:
+	multipass launch --name k3s-master --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+	multipass launch --name k3s-worker1 --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+	multipass launch --name k3s-worker2 --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+
+test_k3s_infra:
+	./scripts/test_k3s_infra.sh
+
+stop_k3s_infra:
+	multipass delete k3s-master
+	multipass delete k3s-worker1
+	multipass delete k3s-worker2
+	multipass purge
