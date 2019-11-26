@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install snapd
-          sudo snap install multipass --beta --classic
+          sudo snap install multipass
 
       - name: lint
         run: |
