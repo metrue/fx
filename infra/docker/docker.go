@@ -32,7 +32,7 @@ func (d *Docker) Provision() ([]byte, error) {
 	if os.Getenv("CICD") != "" {
 		if d.isLocalHost() {
 			if !d.hasDocker() {
-				return nil, fmt.Errorf("Please make sure docker installed and running")
+				return nil, fmt.Errorf("please make sure docker installed and running")
 			}
 			config, _ := json.Marshal(map[string]string{
 				"ip":   d.IP,
