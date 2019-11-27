@@ -18,6 +18,10 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
+      - name: kind create a k8s cluster
+        run: |
+          kind create cluster
+
       - name: lint
         run: |
           docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
