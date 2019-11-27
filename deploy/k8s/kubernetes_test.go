@@ -26,7 +26,7 @@ func TestK8SDeployer(t *testing.T) {
 	if kubeconfig == "" || username == "" || password == "" {
 		t.Skip("skip test since no KUBECONFIG, DOCKER_USERNAME and DOCKER_PASSWORD given in environment variable")
 	}
-	k8s, err := Create()
+	k8s, err := Create("")
 	if err != nil {
 		t.Fatal(err)
 	}

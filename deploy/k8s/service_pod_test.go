@@ -27,7 +27,7 @@ func TestK8S(t *testing.T) {
 	if kubeconfig == "" {
 		t.Skip("skip test since no KUBECONFIG given in environment variable")
 	}
-	k8s, err := Create()
+	k8s, err := Create("")
 	if err != nil {
 		t.Fatal(err)
 	}
