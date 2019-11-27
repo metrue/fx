@@ -227,7 +227,7 @@ But we would suggest you run `kubectl config current-context` to check if the cu
 ![init workflow](https://raw.githubusercontent.com/metrue/fx/master/docs/fx-init-cluster.png)
 
 ```shell
-fx init --master <host ip> --agents "<host ip 1>,<host ip 2>" --user <user> --password <password>
+fx infra create --type k3s --name fx-cluster-1 --master root@123.11.2.3 --agents 'root@1.1.1.1,root@2.2.2.2'
 ```
 
 ## Contribute
