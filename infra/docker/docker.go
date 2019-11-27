@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/infra"
@@ -26,6 +28,20 @@ func New(ip string, user string) *Docker {
 
 // Provision provision a host, install docker and start dockerd
 func (d *Docker) Provision() ([]byte, error) {
+	// TODO clean up, skip check localhost or not if in CICD env
+	if os.Getenv("CICD") != "" {
+		if d.isLocalHost() {
+			if !d.hasDocker() {
+				return nil, fmt.Errorf("please make sure docker installed and running")
+			}
+			config, _ := json.Marshal(map[string]string{
+				"ip":   d.IP,
+				"user": d.User,
+			})
+			return config, nil
+		}
+	}
+
 	if err := d.Install(); err != nil {
 		return nil, err
 	}
@@ -40,6 +56,18 @@ func (d *Docker) Provision() ([]byte, error) {
 		"user": d.User,
 	})
 	return config, nil
+}
+
+func (d *Docker) isLocalHost() bool {
+	return strings.ToLower(d.IP) == "localhost" || d.IP == "127.0.0.1"
+}
+
+func (d *Docker) hasDocker() bool {
+	cmd := exec.Command("docker", "version")
+	if err := cmd.Run(); err != nil {
+		return false
+	}
+	return true
 }
 
 // HealthCheck check healthy status of host

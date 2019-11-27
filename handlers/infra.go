@@ -21,17 +21,21 @@ func setupK3S(masterInfo string, agentsInfo string) ([]byte, error) {
 		IP:   info[1],
 	}
 	agents := []k3s.AgentNode{}
-	agentsInfoList := strings.Split(agentsInfo, ",")
-	for _, agent := range agentsInfoList {
-		info := strings.Split(agent, "@")
-		if len(info) != 2 {
-			return nil, fmt.Errorf("incorrect agent info, should be <user>@<ip> format")
+	if agentsInfo != "" {
+		agentsInfoList := strings.Split(agentsInfo, ",")
+		for _, agent := range agentsInfoList {
+			info := strings.Split(agent, "@")
+			if len(info) != 2 {
+				return nil, fmt.Errorf("incorrect agent info, should be <user>@<ip> format")
+			}
+			agents = append(agents, k3s.AgentNode{
+				User: info[0],
+				IP:   info[1],
+			})
 		}
-		agents = append(agents, k3s.AgentNode{
-			User: info[0],
-			IP:   info[1],
-		})
 	}
+
+	fmt.Println(master, agents, len(agents))
 	k3sOperator := k3s.New(master, agents)
 	return k3sOperator.Provision()
 }

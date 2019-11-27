@@ -29,9 +29,8 @@ export_image() {
 # main
 # clean up
 # docker stop fx-agent || true && docker rm fx-agent || true
-
 port=20000
-for lang in 'js' 'rb' 'py' 'go' 'php' 'java' 'd'; do
+for lang in ${1}; do
   run $lang $port
   ((port++))
 

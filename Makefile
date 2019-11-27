@@ -26,12 +26,19 @@ clean:
 unit-test:
 	./scripts/coverage.sh
 
-cli-test:
+cli-test-ci:
 	echo 'run testing on localhost'
-	./scripts/test_cli.sh
+	./scripts/test_cli.sh 'js'
 	# TODO enable remote test
 	echo 'run testing on remote host'
-	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh
+	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js'
+
+cli-test:
+	echo 'run testing on localhost'
+	./scripts/test_cli.sh 'js rb py go php java d'
+	# TODO enable remote test
+	echo 'run testing on remote host'
+	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js rb py go php java d'
 
 http-test:
 	./scripts/http_test.sh
@@ -45,7 +52,21 @@ start_docker_infra:
 	docker run --rm --name fx-docker-infra -p 2222:22 -v /var/run/docker.sock:/var/run/docker.sock -d fx-docker-infra
 
 test_docker_infra:
-	SSH_PORT=2222 SSH_KEY_FILE=./test/id_rsa ./build/fx infra create --name docker-local -t docker --host root@127.0.0.1
+	CICD=true SSH_PORT=2222 SSH_KEY_FILE=./test/id_rsa ./build/fx infra create --name docker-local -t docker --host root@127.0.0.1
 
 stop_docker_infra:
 	docker stop fx-docker-infra
+
+start_k3s_infra:
+	multipass launch --name k3s-master --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+	multipass launch --name k3s-worker1 --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+	multipass launch --name k3s-worker2 --cpus 1 --mem 512M --disk 3G  --cloud-init ./test/k3s/ssh-cloud-init.yaml
+
+test_k3s_infra:
+	./scripts/test_k3s_infra.sh
+
+stop_k3s_infra:
+	multipass delete k3s-master
+	multipass delete k3s-worker1
+	multipass delete k3s-worker2
+	multipass purge

@@ -9,7 +9,6 @@ import (
 
 	"github.com/metrue/fx/infra"
 	sshOperator "github.com/metrue/go-ssh-client"
-	"github.com/mitchellh/go-homedir"
 )
 
 // MasterNode master node instance
@@ -61,13 +60,10 @@ func (k *K3S) HealthCheck() (bool, error) {
 
 // SetupMaster setup master node
 func (k *K3S) SetupMaster() error {
-	publicKey, err := homedir.Expand("~/.ssh/id_rsa")
-	if err != nil {
-		return err
-	}
-	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
+	sshKeyFile, _ := infra.GetSSHKeyFile()
+	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
-	if err := ssh.RunCommand(installCmd, sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(installCmd, k.master.IP), sshOperator.CommandOptions{
 		Stdout: os.Stdout,
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,
@@ -76,18 +72,15 @@ func (k *K3S) SetupMaster() error {
 		fmt.Println(err)
 		fmt.Println("===========")
 	}
-	return err
+	return nil
 }
 
 func (k *K3S) getToken() (string, error) {
-	publicKey, err := homedir.Expand("~/.ssh/id_rsa")
-	if err != nil {
-		return "", err
-	}
-	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
+	sshKeyFile, _ := infra.GetSSHKeyFile()
+	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	script := "cat /var/lib/rancher/k3s/server/node-token"
 	var outPipe bytes.Buffer
-	if err := ssh.RunCommand(script, sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(script, k.master.IP), sshOperator.CommandOptions{
 		Stdout: bufio.NewWriter(&outPipe),
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,
@@ -99,18 +92,15 @@ func (k *K3S) getToken() (string, error) {
 
 // SetupAgent set agent node
 func (k *K3S) SetupAgent() error {
-	publicKey, err := homedir.Expand("~/.ssh/id_rsa")
-	if err != nil {
-		return err
-	}
+	sshKeyFile, _ := infra.GetSSHKeyFile()
 	tok, err := k.getToken()
 	if err != nil {
 		return err
 	}
 	const k3sExtraArgs = ""
-	joinCmd := fmt.Sprintf("curl -sfL https://get.k3s.io/ | K3S_URL='https://%s:6443' K3S_TOKEN='%s' INSTALL_K3S_VERSION='%s' sh -s - %s", k.master.IP, tok, version, k3sExtraArgs)
+	joinCmd := fmt.Sprintf("curl -fL https://get.k3s.io/ | K3S_URL='https://%s:6443' K3S_TOKEN='%s' INSTALL_K3S_VERSION='%s' sh -s - %s", k.master.IP, tok, version, k3sExtraArgs)
 	for _, agent := range k.agents {
-		ssh := sshOperator.New(agent.IP).WithUser(agent.User).WithKey(publicKey)
+		ssh := sshOperator.New(agent.IP).WithUser(agent.User).WithKey(sshKeyFile)
 		if err := ssh.RunCommand(joinCmd, sshOperator.CommandOptions{
 			Stdout: os.Stdout,
 			Stdin:  os.Stdin,
@@ -128,15 +118,12 @@ func (k *K3S) SetupAgent() error {
 
 // GetKubeConfig get kubeconfig of k3s cluster
 func (k *K3S) GetKubeConfig() ([]byte, error) {
-	publicKey, err := homedir.Expand("~/.ssh/id_rsa")
+	sshKeyFile, _ := infra.GetSSHKeyFile()
 	var config []byte
-	if err != nil {
-		return config, err
-	}
 	getConfigCmd := "cat /etc/rancher/k3s/k3s.yaml\n"
-	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(publicKey)
+	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	var outPipe bytes.Buffer
-	if err := ssh.RunCommand(getConfigCmd, sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(getConfigCmd, k.master.IP), sshOperator.CommandOptions{
 		Stdout: bufio.NewWriter(&outPipe),
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,

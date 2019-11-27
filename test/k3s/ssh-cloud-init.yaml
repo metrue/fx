@@ -1,0 +1,6 @@
+#cloud-config
+
+# add each entry to ~/.ssh/authorized_keys for the configured user or the
+# first user defined in the user definition directive.
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPVROluD9aW8YEsHiMefr0Yk70TzMJ+yRXkTN0DSDQje6fycffZaxI4vb5JO/tfXkTQCg+uo3t9YVQU3ceFAPpnznCnCr3jnOo7s2BqV5zDRjIW/fG3MLuVyZKvecA5RDIj2WLfvlsev+J6LI/Q/kMr9i8dI9BHp5B3u8Nv3sePEzKU9YRnTd/UTbSdAHKqfpGhgwZEI00q3iiP6f5DKVXZ4b7ZVEsV3cPVrRskurYClSMd32/yaJ+68mFlpwTKI/aq7tZBd5lLsAsd2IxshGE23g4bU04GeeJ76tFT7BvDyL8woshECisRHSdEsdlY9MXIcC/a4hIV4baHXJDkFrf minghe@oldmac.local
