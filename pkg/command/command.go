@@ -1,6 +1,8 @@
 package command
 
 import (
+	"bufio"
+	"bytes"
 	"os/exec"
 	"strings"
 
@@ -24,8 +26,13 @@ func NewRemoteRunner(sshClient ssh.Client) *RemoteRunner {
 
 // Run script on remote host
 func (r *RemoteRunner) Run(script string) ([]byte, error) {
-	stdout, stderr, err := r.sshClient.RunCommand(script)
-	output := string(stdout) + string(stderr)
+	var outPipe bytes.Buffer
+	var errPipe bytes.Buffer
+	err := r.sshClient.RunCommand(script, ssh.CommandOptions{
+		Stdout: bufio.NewWriter(&outPipe),
+		Stderr: bufio.NewWriter(&errPipe),
+	})
+	output := outPipe.String() + errPipe.String()
 	return []byte(output), err
 }
 

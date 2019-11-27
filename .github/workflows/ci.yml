@@ -13,31 +13,21 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
-      - name: setup docker
+      - name: kind create a k8s cluster
         run: |
-          ./scripts/provision.sh
+          kind create cluster
 
       - name: lint
         run: |
           docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
           golangci-lint run -v
 
-      - name: setup k8s and kind
-        run: |
-          export GOBIN=$(go env GOPATH)/bin
-          export PATH=$PATH:$GOBIN
-          mkdir -p $GOBIN
-          curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-          chmod +x kubectl && mv kubectl $GOBIN
-          wget https://github.com/kubernetes-sigs/kind/releases/download/v0.5.0/kind-linux-amd64 && chmod +x kind-linux-amd64 && mv kind-linux-amd64 $GOBIN/kind
-          ./scripts/setup_kind.sh
-
       - name: unit test
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
+          export KUBECONFIG="$(kind get kubeconfig-path)"
           DEBUG=true go test -v ./...
       - name: code cov
         env:
@@ -57,6 +47,11 @@ jobs:
           make docker-build
           make test
           # make docker-publish #TODO in release workflow
+      - name: test fx docker cloud
+        run: |
+          make start_docker_infra
+          make test_docker_infra
+          make stop_docker_infra
 
       - name: test fx cli
         env:
@@ -66,7 +61,7 @@ jobs:
         run: |
           echo $KUBECONFIG
           unset KUBECONFIG
-          make cli-test
+          make cli-test-ci
 
       - name: test AKS
         env:
