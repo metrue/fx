@@ -13,16 +13,6 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
-      - name: setup docker
-        run: |
-          ./scripts/provision.sh
-
-      - name: install multipass
-        run: |
-          sudo apt update
-          sudo apt install snapd
-          sudo snap install multipass
-
       - name: lint
         run: |
           docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
