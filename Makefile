@@ -26,12 +26,19 @@ clean:
 unit-test:
 	./scripts/coverage.sh
 
-cli-test:
+cli-test-ci:
 	echo 'run testing on localhost'
-	./scripts/test_cli.sh
+	./scripts/test_cli.sh 'js'
 	# TODO enable remote test
 	echo 'run testing on remote host'
-	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh
+	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js'
+
+cli-test:
+	echo 'run testing on localhost'
+	./scripts/test_cli.sh 'js rb py go php java d'
+	# TODO enable remote test
+	echo 'run testing on remote host'
+	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js rb py go php java d'
 
 http-test:
 	./scripts/http_test.sh

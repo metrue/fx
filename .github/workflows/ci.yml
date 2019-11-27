@@ -61,7 +61,7 @@ jobs:
         run: |
           echo $KUBECONFIG
           unset KUBECONFIG
-          make cli-test
+          make cli-test-ci
 
       - name: test AKS
         env:
