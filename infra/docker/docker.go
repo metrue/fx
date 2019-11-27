@@ -28,22 +28,17 @@ func New(ip string, user string) *Docker {
 
 // Provision provision a host, install docker and start dockerd
 func (d *Docker) Provision() ([]byte, error) {
-	fmt.Println("+++++")
 	// TODO clean up, skip check localhost or not if in CICD env
 	if d.isLocalHost() {
-		fmt.Println("+++++")
 		if os.Getenv("CICD") == "" {
-			fmt.Println("+++++")
 			if !d.hasDocker() {
 				return nil, fmt.Errorf("please make sure docker installed and running")
 			}
-			fmt.Println("+++++")
 
 			if err := d.StartFxAgentLocally(); err != nil {
 				return nil, err
 			}
 
-			fmt.Println("+++++")
 			config, _ := json.Marshal(map[string]string{
 				"ip":   d.IP,
 				"user": d.User,
