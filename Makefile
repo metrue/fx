@@ -1,5 +1,7 @@
-OUTPUT_DIR=./build
-DIST_DIR=./dist
+OUTPUT_DIR ?=./build
+DIST_DIR ?=./dist
+DOCKER_REMOTE_HOST_ADDR ?= "127.0.0.1"
+DOCKER_REMOTE_HOST_USER ?= $(whoami)
 
 lint:
 	golangci-lint run
@@ -27,18 +29,10 @@ unit-test:
 	./scripts/coverage.sh
 
 cli-test-ci:
-	echo 'run testing on localhost'
 	./scripts/test_cli.sh 'js'
-	# TODO enable remote test
-	echo 'run testing on remote host'
-	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js'
 
 cli-test:
-	echo 'run testing on localhost'
 	./scripts/test_cli.sh 'js rb py go php java d'
-	# TODO enable remote test
-	echo 'run testing on remote host'
-	DOCKER_REMOTE_HOST_ADDR=${REMOTE_HOST_ADDR} DOCKER_REMOTE_HOST_USER=${REMOTE_HOST_USER} DOCKER_REMOTE_HOST_PASSWORD=${REMOTE_HOST_PASSWORD} ./scripts/test_cli.sh 'js rb py go php java d'
 
 http-test:
 	./scripts/http_test.sh
