@@ -28,12 +28,22 @@ func New(ip string, user string) *Docker {
 
 // Provision provision a host, install docker and start dockerd
 func (d *Docker) Provision() ([]byte, error) {
+	fmt.Println("+++++")
 	// TODO clean up, skip check localhost or not if in CICD env
-	if os.Getenv("CICD") != "" {
-		if d.isLocalHost() {
+	if d.isLocalHost() {
+		fmt.Println("+++++")
+		if os.Getenv("CICD") == "" {
+			fmt.Println("+++++")
 			if !d.hasDocker() {
 				return nil, fmt.Errorf("please make sure docker installed and running")
 			}
+			fmt.Println("+++++")
+
+			if err := d.StartFxAgentLocally(); err != nil {
+				return nil, err
+			}
+
+			fmt.Println("+++++")
 			config, _ := json.Marshal(map[string]string{
 				"ip":   d.IP,
 				"user": d.User,
@@ -138,6 +148,26 @@ func (d *Docker) StartFxAgent() error {
 		fmt.Println("start fx agent failed \n================")
 		fmt.Println(err)
 		fmt.Println("================")
+		return err
+	}
+	return nil
+}
+
+// StartFxAgentLocally start fx agent
+func (d *Docker) StartFxAgentLocally() error {
+	startCmd := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	params := strings.Split(startCmd, " ")
+	fmt.Println(params)
+	var cmd *exec.Cmd
+	if len(params) > 1 {
+		// nolint: gosec
+		cmd = exec.Command(params[0], params[1:]...)
+	} else {
+		// nolint: gosec
+		cmd = exec.Command(params[0])
+	}
+	if out, err := cmd.CombinedOutput(); err != nil {
+		fmt.Println(string(out))
 		return err
 	}
 	return nil
