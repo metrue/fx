@@ -19,8 +19,12 @@ type K8S struct {
 const namespace = "default"
 
 // Create a k8s cluster client
-func Create() (*K8S, error) {
-	config, err := clientcmd.BuildConfigFromKubeconfigGetter("", clientcmd.NewDefaultClientConfigLoadingRules().Load)
+func Create(kubeconfig string) (*K8S, error) {
+	if os.Getenv("KUBECONFIG") != "" {
+		kubeconfig = os.Getenv("KUBECONFIG")
+	}
+
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
 		return nil, err
 	}
