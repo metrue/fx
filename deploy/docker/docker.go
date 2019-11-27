@@ -2,12 +2,8 @@ package docker
 
 import (
 	"context"
-	"os"
 
-	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
-	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
-	dockerSDK "github.com/metrue/fx/container_runtimes/docker/sdk"
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/types"
 )
@@ -18,23 +14,8 @@ type Docker struct {
 }
 
 // CreateClient create a docker instance
-func CreateClient(ctx context.Context) (d *Docker, err error) {
-	var cli containerruntimes.ContainerRuntime
-	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
-	user := os.Getenv("DOCKER_REMOTE_HOST_USER")
-	if host != "" && user != "" {
-		cli, err = dockerHTTP.Create(host, constants.AgentPort)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		cli, err = dockerSDK.CreateClient(ctx)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &Docker{cli: cli}, nil
+func CreateClient(client containerruntimes.ContainerRuntime) (d *Docker, err error) {
+	return &Docker{cli: client}, nil
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port

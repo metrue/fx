@@ -16,8 +16,8 @@ import (
 
 // Items data of config file
 type Items struct {
-	Clouds       map[string]interface{} `json:"clouds"`
-	CurrentCloud string                 `json:"current_cloud"`
+	Clouds       map[string]map[string]string `json:"clouds"`
+	CurrentCloud string                       `json:"current_cloud"`
 }
 
 // Config config of fx
@@ -66,7 +66,7 @@ func Load(configFile string) (*Config, error) {
 }
 
 // AddCloud add a cloud
-func (c *Config) addCloud(name string, cloud interface{}) error {
+func (c *Config) addCloud(name string, cloud map[string]string) error {
 	c.Items.Clouds[name] = cloud
 	return save(c)
 }
@@ -82,9 +82,10 @@ func (c *Config) AddDockerCloud(name string, config []byte) error {
 		return err
 	}
 
-	cloud := DockerCloud{
-		Host: conf["ip"],
-		User: conf["user"],
+	cloud := map[string]string{
+		"type": "docker",
+		"host": conf["ip"],
+		"user": conf["user"],
 	}
 	return c.addCloud(name, cloud)
 }
@@ -103,8 +104,9 @@ func (c *Config) AddK8SCloud(name string, kubeconfig []byte) error {
 		return err
 	}
 
-	cloud := K8SCloud{
-		KubeConfig: kubecfg,
+	cloud := map[string]string{
+		"type":       "k8s",
+		"kubeConfig": kubecfg,
 	}
 
 	return c.addCloud(name, cloud)
@@ -170,10 +172,11 @@ func writeDefaultConfig(configFile string) error {
 		return err
 	}
 	items := Items{
-		Clouds: map[string]interface{}{
-			"default": DockerCloud{
-				Host: "127.0.0.1",
-				User: me.Username,
+		Clouds: map[string]map[string]string{
+			"default": map[string]string{
+				"type": "docker",
+				"host": "127.0.0.1",
+				"user": me.Username,
 			},
 		},
 		CurrentCloud: "default",

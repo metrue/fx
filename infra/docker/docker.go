@@ -29,11 +29,16 @@ func New(ip string, user string) *Docker {
 // Provision provision a host, install docker and start dockerd
 func (d *Docker) Provision() ([]byte, error) {
 	// TODO clean up, skip check localhost or not if in CICD env
-	if os.Getenv("CICD") != "" {
-		if d.isLocalHost() {
+	if d.isLocalHost() {
+		if os.Getenv("CICD") == "" {
 			if !d.hasDocker() {
 				return nil, fmt.Errorf("please make sure docker installed and running")
 			}
+
+			if err := d.StartFxAgentLocally(); err != nil {
+				return nil, err
+			}
+
 			config, _ := json.Marshal(map[string]string{
 				"ip":   d.IP,
 				"user": d.User,
@@ -126,7 +131,7 @@ func (d *Docker) StartDockerd() error {
 
 // StartFxAgent start fx agent
 func (d *Docker) StartFxAgent() error {
-	startCmd := fmt.Sprintf("sleep 3 && docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	startCmd := fmt.Sprintf("sleep 3 && docker stop %s || true && docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentContainerName, constants.AgentPort)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
@@ -138,6 +143,26 @@ func (d *Docker) StartFxAgent() error {
 		fmt.Println("start fx agent failed \n================")
 		fmt.Println(err)
 		fmt.Println("================")
+		return err
+	}
+	return nil
+}
+
+// StartFxAgentLocally start fx agent
+func (d *Docker) StartFxAgentLocally() error {
+	startCmd := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	params := strings.Split(startCmd, " ")
+	fmt.Println(params)
+	var cmd *exec.Cmd
+	if len(params) > 1 {
+		// nolint: gosec
+		cmd = exec.Command(params[0], params[1:]...)
+	} else {
+		// nolint: gosec
+		cmd = exec.Command(params[0])
+	}
+	if out, err := cmd.CombinedOutput(); err != nil {
+		fmt.Println(string(out))
 		return err
 	}
 	return nil

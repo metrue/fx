@@ -155,6 +155,7 @@ func main() {
 				},
 			},
 			Action: handle(
+				middlewares.LoadConfig,
 				middlewares.Setup,
 				middlewares.Binding,
 				middlewares.Parse,
@@ -167,6 +168,7 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: handle(
+				middlewares.LoadConfig,
 				middlewares.Setup,
 				handlers.Down,
 			),
@@ -176,6 +178,7 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
 			Action: handle(
+				middlewares.LoadConfig,
 				middlewares.Setup,
 				handlers.List,
 			),
@@ -205,6 +208,7 @@ func main() {
 						},
 					},
 					Action: handle(
+						middlewares.LoadConfig,
 						middlewares.Setup,
 						handlers.BuildImage,
 					),
@@ -218,7 +222,11 @@ func main() {
 							Usage: "output directory",
 						},
 					},
-					Action: handle(handlers.ExportImage),
+					Action: handle(
+						middlewares.LoadConfig,
+						middlewares.Setup,
+						handlers.ExportImage,
+					),
 				},
 			},
 		},
