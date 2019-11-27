@@ -23,7 +23,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          export KUBECONFIG=/home/runner/.kube/kind-config-fx-test
+          export KUBECONFIG="$(kind get kubeconfig-path)"
           DEBUG=true go test -v ./...
       - name: code cov
         env:
