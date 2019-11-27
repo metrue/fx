@@ -29,6 +29,8 @@ export_image() {
 # main
 # clean up
 # docker stop fx-agent || true && docker rm fx-agent || true
+DOCKER_REMOTE_HOST_ADDR ?= "127.0.0.1"
+DOCKER_REMOTE_HOST_USER ?= $(whoami)
 if [[ "$DOCKER_REMOTE_HOST_ADDR" != "" ]];then
   cloud_name='fx-remote-docker-host'
   $fx infra create --name ${cloud_name} --type docker --host ${DOCKER_REMOTE_HOST_USER}@${DOCKER_REMOTE_HOST_ADDR}
