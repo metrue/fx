@@ -32,9 +32,9 @@ func Setup(ctx *context.Context) (err error) {
 		if err != nil {
 			return err
 		}
+		// TODO should clean up, but it needed in middlewares.Build
 		ctx.Set("docker", docker)
-
-		deployer, err = dockerDeployer.CreateClient(ctx.Context)
+		deployer, err = dockerDeployer.CreateClient(docker)
 		if err != nil {
 			return err
 		}

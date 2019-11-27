@@ -126,7 +126,7 @@ func (d *Docker) StartDockerd() error {
 
 // StartFxAgent start fx agent
 func (d *Docker) StartFxAgent() error {
-	startCmd := fmt.Sprintf("sleep 3 && docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
+	startCmd := fmt.Sprintf("sleep 3 && docker stop %s || true && docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentContainerName, constants.AgentPort)
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	sshPort := infra.GetSSHPort()
 	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
