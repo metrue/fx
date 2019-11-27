@@ -44,9 +44,6 @@ func Start(task string) {
 func Stop(task string, err error) {
 	if err != nil {
 		fmt.Println(aurora.Red("\u2717"))
-		fmt.Println(aurora.Red("*****************"))
-		fmt.Println(err)
-		fmt.Println(aurora.Red("*****************"))
 	}
 	s.Stop()
 }

@@ -79,10 +79,10 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.8.1
+   0.8.4
 
 COMMANDS:
-   init      start fx agent on host
+   infra     manage infrastructure
    up        deploy a function
    down      destroy a service
    list, ls  list deployed services
