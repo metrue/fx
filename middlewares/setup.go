@@ -40,12 +40,12 @@ func Setup(ctx *context.Context) (err error) {
 		}
 	} else if cloud["type"] == config.CloudTypeK8S {
 		if os.Getenv("K3S") != "" {
-			deployer, err = k3sDeployer.Create()
+			deployer, err = k3sDeployer.Create(cloud["kubeconfig"])
 			if err != nil {
 				return err
 			}
 		} else if os.Getenv("KUBECONFIG") != "" {
-			deployer, err = k8sDeployer.Create()
+			deployer, err = k8sDeployer.Create(cloud["kubeconfig"])
 			if err != nil {
 				return err
 			}
