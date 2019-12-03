@@ -8,6 +8,7 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
+	"github.com/metrue/fx/types"
 )
 
 func TestDocker(t *testing.T) {
@@ -40,6 +41,23 @@ func TestDocker(t *testing.T) {
 	}
 	if !found {
 		t.Fatalf("should have built image with tag %s", name)
+	}
+
+	if err := cli.StartContainer(ctx, name, name, []types.PortBinding{
+		types.PortBinding{
+			ServiceBindingPort:  9000,
+			ContainerExposePort: 3000,
+		},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	var container dockerTypes.ContainerJSON
+	if err := cli.InspectContainer(ctx, name, &container); err != nil {
+		t.Fatal(err)
+	}
+	if container.Name != "/"+name {
+		t.Fatalf("should get %s but got %s", "/"+name, container.Name)
 	}
 
 	username := os.Getenv("DOCKER_USERNAME")

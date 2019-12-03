@@ -132,8 +132,24 @@ func (k *K8S) Destroy(ctx context.Context, name string) error {
 }
 
 // GetStatus get status of a service
-func (k *K8S) GetStatus(ctx context.Context, name string) error {
-	return nil
+func (k *K8S) GetStatus(ctx context.Context, name string) (types.Service, error) {
+	svc, err := k.GetService(namespace, name)
+	service := types.Service{}
+	if err != nil {
+		return service, err
+	}
+
+	service.Host = svc.Spec.ClusterIP
+	if len(svc.Spec.ExternalIPs) > 0 {
+		service.Host = svc.Spec.ExternalIPs[0]
+	}
+
+	for _, port := range svc.Spec.Ports {
+		// TODO should clearify which port (target port, node port) should use
+		service.Port = int(port.Port)
+		break
+	}
+	return service, nil
 }
 
 // List services
