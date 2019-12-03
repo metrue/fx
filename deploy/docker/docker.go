@@ -2,7 +2,9 @@ package docker
 
 import (
 	"context"
+	"strconv"
 
+	dockerTypes "github.com/docker/docker/api/types"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/types"
@@ -33,9 +35,36 @@ func (d *Docker) Destroy(ctx context.Context, name string) error {
 	return d.cli.StopContainer(ctx, name)
 }
 
-// GetStatus get status of container
-func (d *Docker) GetStatus(ctx context.Context, name string) error {
-	return nil
+// GetStatus get a service status
+func (d *Docker) GetStatus(ctx context.Context, name string) (types.Service, error) {
+	var container dockerTypes.ContainerJSON
+	if err := d.cli.InspectContainer(ctx, name, &container); err != nil {
+		return types.Service{}, err
+	}
+
+	service := types.Service{
+		ID:   container.ID,
+		Name: container.Name,
+	}
+	for _, bindings := range container.NetworkSettings.Ports {
+		if len(bindings) > 0 {
+			binding := bindings[0]
+			port, err := strconv.Atoi(binding.HostPort)
+			if err != nil {
+				return service, err
+			}
+			service.Port = port
+			service.Host = binding.HostIP
+			service.State = container.State.Status
+			service.Image = container.Image
+			break
+		}
+		if service.Port != 0 && service.Host != "" {
+			break
+		}
+	}
+
+	return service, nil
 }
 
 // List services

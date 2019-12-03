@@ -27,8 +27,14 @@ func TestUp(t *testing.T) {
 	ctx.EXPECT().Get("image").Return(image)
 	ctx.EXPECT().Get("deployer").Return(deployer)
 	ctx.EXPECT().Get("bindings").Return(bindings)
-	ctx.EXPECT().GetContext().Return(context.Background())
+	ctx.EXPECT().GetContext().Return(context.Background()).Times(2)
 	deployer.EXPECT().Deploy(gomock.Any(), fn, name, image, bindings).Return(nil)
+	deployer.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
+		ID:   "id-1",
+		Name: name,
+		Host: "127.0.0.1",
+		Port: 2100,
+	}, nil)
 	if err := Up(ctx); err != nil {
 		t.Fatal(err)
 	}

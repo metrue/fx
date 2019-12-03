@@ -189,7 +189,16 @@ func (d *Docker) StopContainer(ctx context.Context, name string) error {
 
 // InspectContainer inspect a container
 func (d *Docker) InspectContainer(ctx context.Context, name string, container interface{}) error {
-	return nil
+	res, err := d.ContainerInspect(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	body, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(body, &container)
 }
 
 // ListContainer list containers

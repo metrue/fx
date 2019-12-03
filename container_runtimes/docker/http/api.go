@@ -416,6 +416,10 @@ func (api *API) StopContainer(ctx context.Context, name string) error {
 
 // InspectContainer inspect container
 func (api *API) InspectContainer(ctx context.Context, name string, container interface{}) error {
+	path := fmt.Sprintf("/containers/%s/json", name)
+	if err := api.get(path, "", &container); err != nil {
+		return err
+	}
 	return nil
 }
 
