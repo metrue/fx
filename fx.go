@@ -157,8 +157,8 @@ func main() {
 			Action: handle(
 				middlewares.LoadConfig,
 				middlewares.Setup,
-				middlewares.Binding,
 				middlewares.Parse,
+				middlewares.Binding,
 				middlewares.Build,
 				handlers.Up,
 			),
