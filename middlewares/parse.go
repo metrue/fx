@@ -11,7 +11,7 @@ import (
 )
 
 // Parse parse input
-func Parse(ctx *context.Context) (err error) {
+func Parse(ctx context.Contexter) (err error) {
 	const task = "parsing"
 	spinner.Start(task)
 	defer func() {
@@ -30,6 +30,11 @@ func Parse(ctx *context.Context) (err error) {
 		Source:   string(body),
 	}
 	ctx.Set("fn", fn)
+
+	name := cli.String("name")
+	ctx.Set("name", name)
+	port := cli.Int("port")
+	ctx.Set("port", port)
 
 	return nil
 }

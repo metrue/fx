@@ -6,7 +6,7 @@ import (
 )
 
 // LoadConfig load default config
-func LoadConfig(ctx *context.Context) error {
+func LoadConfig(ctx context.Contexter) error {
 	config, err := config.LoadDefault()
 	if err != nil {
 		return err

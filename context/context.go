@@ -12,6 +12,15 @@ const (
 	keyCliCtx = key("cmd_cli")
 )
 
+// Contexter ctx interface
+type Contexter interface {
+	Get(k string) interface{}
+	Set(k string, v interface{})
+	Use(fn func(ctx *Context) error) error
+	GetContext() context.Context
+	GetCliContext() *cli.Context
+}
+
 // Context fx context
 type Context struct {
 	context.Context
@@ -56,3 +65,12 @@ func (ctx *Context) Get(name string) interface{} {
 func (ctx *Context) Use(fn func(ctx *Context) error) error {
 	return fn(ctx)
 }
+
+// GetContext get context
+func (ctx *Context) GetContext() context.Context {
+	return ctx.Context
+}
+
+var (
+	_ Contexter = &Context{}
+)

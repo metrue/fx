@@ -22,7 +22,7 @@ func init() {
 	go checkForUpdate()
 }
 
-func handle(fns ...func(ctx *context.Context) error) func(ctx *cli.Context) error {
+func handle(fns ...func(ctx context.Contexter) error) func(ctx *cli.Context) error {
 	return func(c *cli.Context) error {
 		ctx := context.FromCliContext(c)
 		for _, fn := range fns {
