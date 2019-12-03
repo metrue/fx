@@ -47,7 +47,8 @@ func (d *Docker) GetStatus(ctx context.Context, name string) (types.Service, err
 		Name: container.Name,
 	}
 	for _, bindings := range container.NetworkSettings.Ports {
-		for _, binding := range bindings {
+		if len(bindings) > 0 {
+			binding := bindings[0]
 			port, err := strconv.Atoi(binding.HostPort)
 			if err != nil {
 				return service, err
