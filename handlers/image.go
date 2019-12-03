@@ -18,7 +18,7 @@ import (
 )
 
 // BuildImage build image
-func BuildImage(ctx *context.Context) error {
+func BuildImage(ctx context.Contexter) error {
 	cli := ctx.GetCliContext()
 	funcFile := cli.Args().First()
 	tag := cli.String("tag")
@@ -47,7 +47,7 @@ func BuildImage(ctx *context.Context) error {
 	docker, ok := ctx.Get("docker").(containerruntimes.ContainerRuntime)
 	if ok {
 		nameWithTag := tag + ":latest"
-		if err := docker.BuildImage(ctx.Context, workdir, nameWithTag); err != nil {
+		if err := docker.BuildImage(ctx.GetContext(), workdir, nameWithTag); err != nil {
 			return err
 		}
 		log.Infof("image built: %v", constants.CheckedSymbol)
@@ -57,7 +57,7 @@ func BuildImage(ctx *context.Context) error {
 }
 
 // ExportImage export service's code into a directory
-func ExportImage(ctx *context.Context) (err error) {
+func ExportImage(ctx context.Contexter) (err error) {
 	cli := ctx.GetCliContext()
 	funcFile := cli.Args().First()
 	outputDir := cli.String("output")

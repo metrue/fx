@@ -6,7 +6,7 @@ import (
 )
 
 // UseInfra use infra
-func UseInfra(ctx *context.Context) error {
+func UseInfra(ctx context.Contexter) error {
 	fxConfig := ctx.Get("config").(*config.Config)
 	cli := ctx.GetCliContext()
 	return fxConfig.Use(cli.Args().First())

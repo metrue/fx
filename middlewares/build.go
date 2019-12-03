@@ -13,7 +13,7 @@ import (
 )
 
 // Build image
-func Build(ctx *context.Context) (err error) {
+func Build(ctx context.Contexter) (err error) {
 	const task = "building"
 	spinner.Start(task)
 	defer func() {
@@ -30,12 +30,12 @@ func Build(ctx *context.Context) (err error) {
 	if err := packer.PackIntoDir(fn, workdir); err != nil {
 		return err
 	}
-	if err := docker.BuildImage(ctx.Context, workdir, name); err != nil {
+	if err := docker.BuildImage(ctx.GetContext(), workdir, name); err != nil {
 		return err
 	}
 
 	nameWithTag := name + ":latest"
-	if err := docker.TagImage(ctx, name, nameWithTag); err != nil {
+	if err := docker.TagImage(ctx.GetContext(), name, nameWithTag); err != nil {
 		return err
 	}
 	ctx.Set("image", nameWithTag)
@@ -45,7 +45,7 @@ func Build(ctx *context.Context) (err error) {
 		username := os.Getenv("DOCKER_USERNAME")
 		password := os.Getenv("DOCKER_PASSWORD")
 		if username != "" && password != "" {
-			if _, err := docker.PushImage(ctx.Context, name); err != nil {
+			if _, err := docker.PushImage(ctx.GetContext(), name); err != nil {
 				return err
 			}
 			ctx.Set("image", username+"/"+name)

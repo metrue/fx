@@ -10,7 +10,7 @@ import (
 )
 
 // Doctor command handle
-func Doctor(ctx *context.Context) error {
+func Doctor(ctx context.Contexter) error {
 	host := os.Getenv("DOCKER_REMOTE_HOST_ADDR")
 	user := os.Getenv("DOCKER_REMOTE_HOST_USER")
 	password := os.Getenv("DOCKER_REMOTE_HOST_PASSWORD")
