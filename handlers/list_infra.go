@@ -8,7 +8,7 @@ import (
 )
 
 // ListInfra list infra
-func ListInfra(ctx *context.Context) (err error) {
+func ListInfra(ctx context.Contexter) (err error) {
 	fxConfig := ctx.Get("config").(*config.Config)
 	conf, err := fxConfig.View()
 	if err != nil {

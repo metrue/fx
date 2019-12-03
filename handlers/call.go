@@ -12,7 +12,7 @@ import (
 )
 
 // Call command handle
-func Call(ctx *context.Context) error {
+func Call(ctx context.Contexter) error {
 	cli := ctx.GetCliContext()
 	_ = strings.Join(cli.Args()[1:], " ")
 

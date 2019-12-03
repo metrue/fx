@@ -52,7 +52,7 @@ func setupDocker(hostInfo string) ([]byte, error) {
 }
 
 // Setup infra
-func Setup(ctx *context.Context) (err error) {
+func Setup(ctx context.Contexter) (err error) {
 	const task = "setup infra"
 	spinner.Start(task)
 	defer func() {
