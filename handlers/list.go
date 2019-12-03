@@ -8,7 +8,7 @@ import (
 )
 
 // List command handle
-func List(ctx *context.Context) (err error) {
+func List(ctx context.Contexter) (err error) {
 	const task = "deploying"
 	spinner.Start(task)
 	defer func() {
@@ -18,7 +18,7 @@ func List(ctx *context.Context) (err error) {
 	cli := ctx.GetCliContext()
 	deployer := ctx.Get("deployer").(deploy.Deployer)
 
-	services, err := deployer.List(ctx.Context, cli.Args().First())
+	services, err := deployer.List(ctx.GetContext(), cli.Args().First())
 	if err != nil {
 		return err
 	}

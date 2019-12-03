@@ -16,7 +16,7 @@ import (
 )
 
 // Setup create k8s or docker cli
-func Setup(ctx *context.Context) (err error) {
+func Setup(ctx context.Contexter) (err error) {
 	const task = "setup"
 	spinner.Start(task)
 	defer func() {

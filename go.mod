@@ -29,6 +29,7 @@ require (
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/pierrec/lz4 v0.0.0-20190222153722-062282ea0dcf // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.4.0

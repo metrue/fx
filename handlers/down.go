@@ -7,7 +7,7 @@ import (
 )
 
 // Down command handle
-func Down(ctx *context.Context) (err error) {
+func Down(ctx context.Contexter) (err error) {
 	const task = "destroying"
 	spinner.Start(task)
 	defer func() {
@@ -18,7 +18,7 @@ func Down(ctx *context.Context) (err error) {
 	services := cli.Args()
 	runner := ctx.Get("deployer").(deploy.Deployer)
 	for _, svc := range services {
-		if err := runner.Destroy(ctx.Context, svc); err != nil {
+		if err := runner.Destroy(ctx.GetContext(), svc); err != nil {
 			return err
 		}
 	}

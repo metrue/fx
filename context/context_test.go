@@ -22,4 +22,8 @@ func TestContext(t *testing.T) {
 	if v != value {
 		t.Fatalf("should get %v but %v", value, v)
 	}
+
+	if ctx.GetContext() == nil {
+		t.Fatalf("should get context")
+	}
 }
