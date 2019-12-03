@@ -7,6 +7,7 @@ import (
 	"github.com/metrue/fx/deploy"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
+	"github.com/phayes/freeport"
 )
 
 // PortRange usable port range https: //en.wikipedia.org/wiki/Ephemeral_port
@@ -29,6 +30,13 @@ func Up(ctx *context.Context) (err error) {
 	cli := ctx.GetCliContext()
 	name := cli.String("name")
 	port := cli.Int("port")
+
+	if port == 0 {
+		port, err = freeport.GetFreePort()
+		if err != nil {
+			return err
+		}
+	}
 
 	if port < PortRange.min || port > PortRange.max {
 		return fmt.Errorf("invalid port number: %d, port number should in range of %d -  %d", port, PortRange.min, PortRange.max)
