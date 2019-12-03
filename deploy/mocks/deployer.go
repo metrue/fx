@@ -77,11 +77,12 @@ func (mr *MockDeployerMockRecorder) Update(ctx, name interface{}) *gomock.Call {
 }
 
 // GetStatus mocks base method
-func (m *MockDeployer) GetStatus(ctx context.Context, name string) error {
+func (m *MockDeployer) GetStatus(ctx context.Context, name string) (types.Service, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetStatus", ctx, name)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(types.Service)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetStatus indicates an expected call of GetStatus
