@@ -3,8 +3,8 @@ package handlers
 import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/pkg/render"
 	"github.com/metrue/fx/pkg/spinner"
-	"github.com/metrue/fx/utils"
 )
 
 // List command handle
@@ -23,11 +23,6 @@ func List(ctx context.Contexter) (err error) {
 		return err
 	}
 
-	for _, service := range services {
-		if err := utils.OutputJSON(service); err != nil {
-			return err
-		}
-	}
-
+	render.Table(services)
 	return nil
 }
