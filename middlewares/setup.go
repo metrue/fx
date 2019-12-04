@@ -10,7 +10,6 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/deploy"
 	dockerDeployer "github.com/metrue/fx/deploy/docker"
-	k3sDeployer "github.com/metrue/fx/deploy/k3s"
 	k8sDeployer "github.com/metrue/fx/deploy/k8s"
 	"github.com/pkg/errors"
 )
@@ -33,12 +32,7 @@ func Setup(ctx context.Contexter) (err error) {
 			return err
 		}
 	} else if cloud["type"] == config.CloudTypeK8S {
-		if os.Getenv("K3S") != "" {
-			deployer, err = k3sDeployer.Create(cloud["kubeconfig"])
-			if err != nil {
-				return err
-			}
-		} else if os.Getenv("KUBECONFIG") != "" {
+		if os.Getenv("KUBECONFIG") != "" {
 			deployer, err = k8sDeployer.Create(cloud["kubeconfig"])
 			if err != nil {
 				return err
