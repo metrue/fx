@@ -64,7 +64,7 @@ func (k *K8S) Deploy(
 	if _, err := k.GetDeployment(namespace, name); err != nil {
 		// TODO enable passing replica from fx CLI
 		if os.Getenv("K3S") != "" {
-			// NOTE Where cluster is created by K3S, we could not doing the docker build in initContainer
+			// NOTE Doing docker build in initial container will fail when cluster is created by K3S
 			if _, err := k.CreateDeployment(
 				namespace,
 				name,
