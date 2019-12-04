@@ -6,21 +6,21 @@ import (
 
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/infra/docker"
-	"github.com/metrue/fx/infra/k3s"
+	dockerInfra "github.com/metrue/fx/infra/docker"
+	"github.com/metrue/fx/infra/k8s"
 	"github.com/metrue/fx/pkg/spinner"
 )
 
-func setupK3S(masterInfo string, agentsInfo string) ([]byte, error) {
+func setupK8S(masterInfo string, agentsInfo string) ([]byte, error) {
 	info := strings.Split(masterInfo, "@")
 	if len(info) != 2 {
 		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
 	}
-	master := k3s.MasterNode{
+	master := k8s.MasterNode{
 		User: info[0],
 		IP:   info[1],
 	}
-	agents := []k3s.AgentNode{}
+	agents := []k8s.AgentNode{}
 	if agentsInfo != "" {
 		agentsInfoList := strings.Split(agentsInfo, ",")
 		for _, agent := range agentsInfoList {
@@ -28,7 +28,7 @@ func setupK3S(masterInfo string, agentsInfo string) ([]byte, error) {
 			if len(info) != 2 {
 				return nil, fmt.Errorf("incorrect agent info, should be <user>@<ip> format")
 			}
-			agents = append(agents, k3s.AgentNode{
+			agents = append(agents, k8s.AgentNode{
 				User: info[0],
 				IP:   info[1],
 			})
@@ -36,8 +36,8 @@ func setupK3S(masterInfo string, agentsInfo string) ([]byte, error) {
 	}
 
 	fmt.Println(master, agents, len(agents))
-	k3sOperator := k3s.New(master, agents)
-	return k3sOperator.Provision()
+	k8sOperator := k8s.New(master, agents)
+	return k8sOperator.Provision()
 }
 
 func setupDocker(hostInfo string) ([]byte, error) {
@@ -47,7 +47,7 @@ func setupDocker(hostInfo string) ([]byte, error) {
 	}
 	user := info[1]
 	host := info[0]
-	dockr := docker.New(user, host)
+	dockr := dockerInfra.CreateProvisioner(user, host)
 	return dockr.Provision()
 }
 
@@ -69,20 +69,20 @@ func Setup(ctx context.Contexter) (err error) {
 		if cli.String("host") == "" {
 			return fmt.Errorf("host required, eg. 'root@123.1.2.12'")
 		}
-	} else if typ == "k3s" {
+	} else if typ == "k8s" {
 		if cli.String("master") == "" {
 			return fmt.Errorf("master required, eg. 'root@123.1.2.12'")
 		}
 	} else if typ == "k8s" {
 	} else {
-		return fmt.Errorf("invalid type, 'docker', 'k3s' and 'k8s' support")
+		return fmt.Errorf("invalid type, 'docker', 'k8s' and 'k8s' support")
 	}
 
 	fxConfig := ctx.Get("config").(*config.Config)
 
 	switch strings.ToLower(typ) {
-	case "k3s":
-		kubeconf, err := setupK3S(cli.String("master"), cli.String("agents"))
+	case "k8s":
+		kubeconf, err := setupK8S(cli.String("master"), cli.String("agents"))
 		if err != nil {
 			return err
 		}
@@ -93,8 +93,6 @@ func Setup(ctx context.Contexter) (err error) {
 			return err
 		}
 		return fxConfig.AddDockerCloud(name, config)
-	case "k8s":
-		fmt.Println("WIP")
 	}
 	return nil
 }

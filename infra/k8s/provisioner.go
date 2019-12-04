@@ -1,4 +1,4 @@
-package k3s
+package k8s
 
 import (
 	"bufio"
@@ -23,8 +23,8 @@ type AgentNode struct {
 	User string
 }
 
-// K3S k3s operator
-type K3S struct {
+// Provisioner k3s operator
+type Provisioner struct {
 	master MasterNode
 	agents []AgentNode
 }
@@ -34,15 +34,15 @@ type K3S struct {
 const version = "v0.9.1"
 
 // New new a operator
-func New(master MasterNode, agents []AgentNode) *K3S {
-	return &K3S{
+func New(master MasterNode, agents []AgentNode) *Provisioner {
+	return &Provisioner{
 		master: master,
 		agents: agents,
 	}
 }
 
 // Provision provision k3s cluster
-func (k *K3S) Provision() ([]byte, error) {
+func (k *Provisioner) Provision() ([]byte, error) {
 	if err := k.SetupMaster(); err != nil {
 		return nil, err
 	}
@@ -53,13 +53,13 @@ func (k *K3S) Provision() ([]byte, error) {
 }
 
 // HealthCheck check healthy status of host
-func (k *K3S) HealthCheck() (bool, error) {
+func (k *Provisioner) HealthCheck() (bool, error) {
 	// TODO
 	return true, nil
 }
 
 // SetupMaster setup master node
-func (k *K3S) SetupMaster() error {
+func (k *Provisioner) SetupMaster() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
@@ -75,7 +75,7 @@ func (k *K3S) SetupMaster() error {
 	return nil
 }
 
-func (k *K3S) getToken() (string, error) {
+func (k *Provisioner) getToken() (string, error) {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	script := "cat /var/lib/rancher/k3s/server/node-token"
@@ -91,7 +91,7 @@ func (k *K3S) getToken() (string, error) {
 }
 
 // SetupAgent set agent node
-func (k *K3S) SetupAgent() error {
+func (k *Provisioner) SetupAgent() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	tok, err := k.getToken()
 	if err != nil {
@@ -117,7 +117,7 @@ func (k *K3S) SetupAgent() error {
 }
 
 // GetKubeConfig get kubeconfig of k3s cluster
-func (k *K3S) GetKubeConfig() ([]byte, error) {
+func (k *Provisioner) GetKubeConfig() ([]byte, error) {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	var config []byte
 	getConfigCmd := "cat /etc/rancher/k3s/k3s.yaml\n"
@@ -150,4 +150,4 @@ func rewriteKubeconfig(kubeconfig string, ip string, context string) []byte {
 	return []byte(kubeconfigReplacer.Replace(kubeconfig))
 }
 
-var _ infra.Infra = &K3S{}
+var _ infra.Provisioner = &Provisioner{}

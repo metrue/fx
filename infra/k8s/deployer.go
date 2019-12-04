@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/packer"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -168,7 +169,12 @@ func (k *K8S) GetStatus(ctx context.Context, name string) (types.Service, error)
 }
 
 // List services
-func (k *K8S) List(ctx context.Context, name string) ([]types.Service, error) {
+func (k *K8S) List(ctx context.Context, name string) (svcs []types.Service, err error) {
+	const task = "listing"
+	spinner.Start(task)
+	defer func() {
+		spinner.Stop(task, err)
+	}()
 	return []types.Service{}, nil
 }
 
@@ -186,5 +192,5 @@ func (k *K8S) Ping(ctx context.Context) error {
 }
 
 var (
-	_ deploy.Deployer = &K8S{}
+	_ infra.Deployer = &K8S{}
 )

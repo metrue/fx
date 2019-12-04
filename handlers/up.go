@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/pkg/render"
 	"github.com/metrue/fx/types"
 )
@@ -12,7 +12,7 @@ func Up(ctx context.Contexter) (err error) {
 	fn := ctx.Get("fn").(types.Func)
 	image := ctx.Get("image").(string)
 	name := ctx.Get("name").(string)
-	deployer := ctx.Get("deployer").(deploy.Deployer)
+	deployer := ctx.Get("deployer").(infra.Deployer)
 	bindings := ctx.Get("bindings").([]types.PortBinding)
 
 	if err := deployer.Deploy(

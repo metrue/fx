@@ -8,9 +8,9 @@ import (
 	"github.com/metrue/fx/constants"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/deploy"
-	dockerDeployer "github.com/metrue/fx/deploy/docker"
-	k8sDeployer "github.com/metrue/fx/deploy/k8s"
+	"github.com/metrue/fx/infra"
+	dockerInfra "github.com/metrue/fx/infra/docker"
+	k8sInfra "github.com/metrue/fx/infra/k8s"
 	"github.com/pkg/errors"
 )
 
@@ -19,7 +19,7 @@ func Setup(ctx context.Contexter) (err error) {
 	fxConfig := ctx.Get("config").(*config.Config)
 	cloud := fxConfig.Clouds[fxConfig.CurrentCloud]
 
-	var deployer deploy.Deployer
+	var deployer infra.Deployer
 	if cloud["type"] == config.CloudTypeDocker {
 		docker, err := dockerHTTP.Create(cloud["host"], constants.AgentPort)
 		if err != nil {
@@ -27,13 +27,13 @@ func Setup(ctx context.Contexter) (err error) {
 		}
 		// TODO should clean up, but it needed in middlewares.Build
 		ctx.Set("docker", docker)
-		deployer, err = dockerDeployer.CreateClient(docker)
+		deployer, err = dockerInfra.CreateDeployer(docker)
 		if err != nil {
 			return err
 		}
 	} else if cloud["type"] == config.CloudTypeK8S {
 		if os.Getenv("KUBECONFIG") != "" {
-			deployer, err = k8sDeployer.Create(cloud["kubeconfig"])
+			deployer, err = k8sInfra.CreateDeployer(cloud["kubeconfig"])
 			if err != nil {
 				return err
 			}

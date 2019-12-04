@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	mockCtx "github.com/metrue/fx/context/mocks"
-	mockDeployer "github.com/metrue/fx/deploy/mocks"
+	mockDeployer "github.com/metrue/fx/infra/mocks"
 	"github.com/metrue/fx/types"
 	fxTypes "github.com/metrue/fx/types"
 )
