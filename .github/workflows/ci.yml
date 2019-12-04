@@ -26,13 +26,9 @@ jobs:
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        run: |
-          export KUBECONFIG="$(kind get kubeconfig-path)"
-          DEBUG=true go test -v ./...
-      - name: code cov
-        env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
+          export KUBECONFIG="$(kind get kubeconfig-path)"
           ./scripts/coverage.sh
           bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
