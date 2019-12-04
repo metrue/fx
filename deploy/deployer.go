@@ -13,4 +13,5 @@ type Deployer interface {
 	Update(ctx context.Context, name string) error
 	GetStatus(ctx context.Context, name string) (types.Service, error)
 	List(ctx context.Context, name string) ([]types.Service, error)
+	Ping(ctx context.Context) error
 }

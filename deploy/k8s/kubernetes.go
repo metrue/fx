@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/metrue/fx/deploy"
@@ -155,6 +156,19 @@ func (k *K8S) GetStatus(ctx context.Context, name string) (types.Service, error)
 // List services
 func (k *K8S) List(ctx context.Context, name string) ([]types.Service, error) {
 	return []types.Service{}, nil
+}
+
+// Ping health check of infra
+func (k *K8S) Ping(ctx context.Context) error {
+	// Does not find any ping method for k8s
+	nodes, err := k.ListNodes()
+	if err != nil {
+		return err
+	}
+	if len(nodes.Items) <= 0 {
+		return fmt.Errorf("no available nodes")
+	}
+	return nil
 }
 
 var (

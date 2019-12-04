@@ -129,6 +129,41 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 	return nil
 }
 
+// Version get version of docker engine
+func (api *API) Version(ctx context.Context) (string, error) {
+	path := api.endpoint + "/version"
+	if !strings.HasPrefix(path, "http") {
+		path = "http://" + path
+	}
+
+	req, err := http.NewRequest("GET", path, nil)
+	if err != nil {
+		return "", err
+	}
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("request %s failed: %d - %s", path, resp.StatusCode, resp.Status)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var res dockerTypes.Version
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return "", err
+	}
+	return res.APIVersion, nil
+}
+
 // ListContainer list service
 func (api *API) ListContainer(ctx context.Context, name string) ([]types.Service, error) {
 	if name != "" {
