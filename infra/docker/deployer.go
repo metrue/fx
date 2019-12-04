@@ -6,23 +6,23 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
-	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 )
 
-// Docker manage container
-type Docker struct {
+// Deployer manage container
+type Deployer struct {
 	cli containerruntimes.ContainerRuntime
 }
 
 // CreateClient create a docker instance
-func CreateClient(client containerruntimes.ContainerRuntime) (d *Docker, err error) {
-	return &Docker{cli: client}, nil
+func CreateClient(client containerruntimes.ContainerRuntime) (d *Deployer, err error) {
+	return &Deployer{cli: client}, nil
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) (err error) {
+func (d *Deployer) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) (err error) {
 	spinner.Start("deploying " + name)
 	defer func() {
 		spinner.Stop("deploying "+name, err)
@@ -31,12 +31,12 @@ func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image s
 }
 
 // Update a container
-func (d *Docker) Update(ctx context.Context, name string) error {
+func (d *Deployer) Update(ctx context.Context, name string) error {
 	return nil
 }
 
 // Destroy stop and remove container
-func (d *Docker) Destroy(ctx context.Context, name string) (err error) {
+func (d *Deployer) Destroy(ctx context.Context, name string) (err error) {
 	spinner.Start("destroying " + name)
 	defer func() {
 		spinner.Stop("destroying "+name, err)
@@ -45,7 +45,7 @@ func (d *Docker) Destroy(ctx context.Context, name string) (err error) {
 }
 
 // GetStatus get a service status
-func (d *Docker) GetStatus(ctx context.Context, name string) (types.Service, error) {
+func (d *Deployer) GetStatus(ctx context.Context, name string) (types.Service, error) {
 	var container dockerTypes.ContainerJSON
 	if err := d.cli.InspectContainer(ctx, name, &container); err != nil {
 		return types.Service{}, err
@@ -77,7 +77,7 @@ func (d *Docker) GetStatus(ctx context.Context, name string) (types.Service, err
 }
 
 // Ping check healty status of infra
-func (d *Docker) Ping(ctx context.Context) error {
+func (d *Deployer) Ping(ctx context.Context) error {
 	if _, err := d.cli.Version(ctx); err != nil {
 		return err
 	}
@@ -85,11 +85,17 @@ func (d *Docker) Ping(ctx context.Context) error {
 }
 
 // List services
-func (d *Docker) List(ctx context.Context, name string) ([]types.Service, error) {
+func (d *Deployer) List(ctx context.Context, name string) (svcs []types.Service, err error) {
+	const task = "listing"
+	spinner.Start(task)
+	defer func() {
+		spinner.Stop(task, err)
+	}()
+
 	// FIXME support remote host
 	return d.cli.ListContainer(ctx, name)
 }
 
 var (
-	_ deploy.Deployer = &Docker{}
+	_ infra.Deployer = &Deployer{}
 )

@@ -1,4 +1,4 @@
-package k3s
+package k8s
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestK3S(t *testing.T) {
+func TestProvisioner(t *testing.T) {
 	if os.Getenv("K3S_MASTER_IP") == "" ||
 		os.Getenv("K3S_MASTER_USER") == "" ||
 		os.Getenv("K3S_AGENT_IP") == "" ||
