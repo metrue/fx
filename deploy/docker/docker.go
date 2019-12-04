@@ -23,9 +23,9 @@ func CreateClient(client containerruntimes.ContainerRuntime) (d *Docker, err err
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
 func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) (err error) {
-	spinner.Start("deploying")
+	spinner.Start("deploying " + name)
 	defer func() {
-		spinner.Stop("deploying", err)
+		spinner.Stop("deploying "+name, err)
 	}()
 	return d.cli.StartContainer(ctx, name, image, ports)
 }
@@ -36,7 +36,11 @@ func (d *Docker) Update(ctx context.Context, name string) error {
 }
 
 // Destroy stop and remove container
-func (d *Docker) Destroy(ctx context.Context, name string) error {
+func (d *Docker) Destroy(ctx context.Context, name string) (err error) {
+	spinner.Start("destroying " + name)
+	defer func() {
+		spinner.Stop("destroying "+name, err)
+	}()
 	return d.cli.StopContainer(ctx, name)
 }
 
