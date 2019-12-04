@@ -7,6 +7,7 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/deploy"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 )
 
@@ -21,7 +22,11 @@ func CreateClient(client containerruntimes.ContainerRuntime) (d *Docker, err err
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) error {
+func (d *Docker) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) (err error) {
+	spinner.Start("deploying")
+	defer func() {
+		spinner.Stop("deploying", err)
+	}()
 	return d.cli.StartContainer(ctx, name, image, ports)
 }
 
