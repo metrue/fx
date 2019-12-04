@@ -73,9 +73,8 @@ func Setup(ctx context.Contexter) (err error) {
 		if cli.String("master") == "" {
 			return fmt.Errorf("master required, eg. 'root@123.1.2.12'")
 		}
-	} else if typ == "k8s" {
 	} else {
-		return fmt.Errorf("invalid type, 'docker', 'k8s' and 'k8s' support")
+		return fmt.Errorf("invalid type, 'docker' and 'k8s' support")
 	}
 
 	fxConfig := ctx.Get("config").(*config.Config)

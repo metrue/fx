@@ -138,6 +138,7 @@ func (k *Provisioner) GetKubeConfig() ([]byte, error) {
 
 func rewriteKubeconfig(kubeconfig string, ip string, context string) []byte {
 	if context == "" {
+		// nolint
 		context = "default"
 	}
 
