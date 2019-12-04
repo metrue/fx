@@ -76,6 +76,14 @@ func (d *Docker) GetStatus(ctx context.Context, name string) (types.Service, err
 	return service, nil
 }
 
+// Ping check healty status of infra
+func (d *Docker) Ping(ctx context.Context) error {
+	if _, err := d.cli.Version(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // List services
 func (d *Docker) List(ctx context.Context, name string) ([]types.Service, error) {
 	// FIXME support remote host

@@ -16,4 +16,5 @@ type ContainerRuntime interface {
 	StopContainer(ctx context.Context, name string) error
 	InspectContainer(ctx context.Context, name string, container interface{}) error
 	ListContainer(ctx context.Context, filter string) ([]types.Service, error)
+	Version(ctx context.Context) (string, error)
 }

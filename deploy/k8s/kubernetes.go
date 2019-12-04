@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/metrue/fx/deploy"
@@ -62,14 +63,28 @@ func (k *K8S) Deploy(
 	const replicas = int32(3)
 	if _, err := k.GetDeployment(namespace, name); err != nil {
 		// TODO enable passing replica from fx CLI
-		if _, err := k.CreateDeploymentWithInitContainer(
-			namespace,
-			name,
-			ports,
-			replicas,
-			selector,
-		); err != nil {
-			return err
+		if os.Getenv("K3S") != "" {
+			// NOTE Doing docker build in initial container will fail when cluster is created by K3S
+			if _, err := k.CreateDeployment(
+				namespace,
+				name,
+				image,
+				ports,
+				replicas,
+				selector,
+			); err != nil {
+				return err
+			}
+		} else {
+			if _, err := k.CreateDeploymentWithInitContainer(
+				namespace,
+				name,
+				ports,
+				replicas,
+				selector,
+			); err != nil {
+				return err
+			}
 		}
 	} else {
 		if _, err := k.UpdateDeployment(
@@ -155,6 +170,19 @@ func (k *K8S) GetStatus(ctx context.Context, name string) (types.Service, error)
 // List services
 func (k *K8S) List(ctx context.Context, name string) ([]types.Service, error) {
 	return []types.Service{}, nil
+}
+
+// Ping health check of infra
+func (k *K8S) Ping(ctx context.Context) error {
+	// Does not find any ping method for k8s
+	nodes, err := k.ListNodes()
+	if err != nil {
+		return err
+	}
+	if len(nodes.Items) <= 0 {
+		return fmt.Errorf("no available nodes")
+	}
+	return nil
 }
 
 var (

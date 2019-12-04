@@ -235,6 +235,15 @@ func (d *Docker) ListContainer(ctx context.Context, name string) ([]types.Servic
 	return services, nil
 }
 
+// Version get version of docker engine
+func (d *Docker) Version(ctx context.Context) (string, error) {
+	ping, err := d.Ping(ctx)
+	if err != nil {
+		return "", err
+	}
+	return ping.APIVersion, nil
+}
+
 var (
 	_ containerruntimes.ContainerRuntime = &Docker{}
 )
