@@ -157,7 +157,7 @@ func main() {
 			Action: handle(
 				middlewares.LoadConfig,
 				middlewares.Setup,
-				middlewares.Parse,
+				middlewares.Parse("up"),
 				middlewares.Binding,
 				middlewares.Build,
 				handlers.Up,
@@ -168,6 +168,7 @@ func main() {
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: handle(
+				middlewares.Parse("down"),
 				middlewares.LoadConfig,
 				middlewares.Setup,
 				handlers.Down,
@@ -178,6 +179,7 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
 			Action: handle(
+				middlewares.Parse("list"),
 				middlewares.LoadConfig,
 				middlewares.Setup,
 				handlers.List,
