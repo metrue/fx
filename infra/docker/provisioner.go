@@ -29,22 +29,37 @@ func NewProvisioner(ip string, user string) *Provisioner {
 // Provision provision a host, install docker and start dockerd
 func (d *Provisioner) Provision() ([]byte, error) {
 	// TODO clean up, skip check localhost or not if in CICD env
-	if d.isLocalHost() {
-		if os.Getenv("CICD") == "" {
-			if !d.hasDocker() {
-				return nil, fmt.Errorf("please make sure docker installed and running")
-			}
-
-			if err := d.StartFxAgentLocally(); err != nil {
-				return nil, err
-			}
-
-			config, _ := json.Marshal(map[string]string{
-				"ip":   d.IP,
-				"user": d.User,
-			})
-			return config, nil
+	if os.Getenv("CICD") != "" {
+		if err := d.Install(); err != nil {
+			return nil, err
 		}
+		if err := d.StartDockerd(); err != nil {
+			return nil, err
+		}
+		if err := d.StartFxAgent(); err != nil {
+			return nil, err
+		}
+		config, _ := json.Marshal(map[string]string{
+			"ip":   d.IP,
+			"user": d.User,
+		})
+		return config, nil
+	}
+
+	if d.isLocalHost() {
+		if !d.hasDocker() {
+			return nil, fmt.Errorf("please make sure docker installed and running")
+		}
+
+		if err := d.StartFxAgentLocally(); err != nil {
+			return nil, err
+		}
+
+		config, _ := json.Marshal(map[string]string{
+			"ip":   d.IP,
+			"user": d.User,
+		})
+		return config, nil
 	}
 
 	if err := d.Install(); err != nil {
