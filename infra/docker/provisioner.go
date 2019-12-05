@@ -9,6 +9,7 @@ import (
 
 	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/pkg/spinner"
 	sshOperator "github.com/metrue/go-ssh-client"
 )
 
@@ -27,7 +28,12 @@ func NewProvisioner(ip string, user string) *Provisioner {
 }
 
 // Provision provision a host, install docker and start dockerd
-func (d *Provisioner) Provision() ([]byte, error) {
+func (d *Provisioner) Provision() (config []byte, err error) {
+	spinner.Start("provisioning")
+	defer func() {
+		spinner.Stop("provisioning", err)
+	}()
+
 	// TODO clean up, skip check localhost or not if in CICD env
 	if os.Getenv("CICD") != "" {
 		if err := d.Install(); err != nil {
@@ -71,11 +77,10 @@ func (d *Provisioner) Provision() ([]byte, error) {
 	if err := d.StartFxAgent(); err != nil {
 		return nil, err
 	}
-	config, _ := json.Marshal(map[string]string{
+	return json.Marshal(map[string]string{
 		"ip":   d.IP,
 		"user": d.User,
 	})
-	return config, nil
 }
 
 func (d *Provisioner) isLocalHost() bool {
@@ -92,8 +97,10 @@ func (d *Provisioner) hasDocker() bool {
 
 // HealthCheck check healthy status of host
 func (d *Provisioner) HealthCheck() (bool, error) {
-	// TODO
-	return true, nil
+	if d.isLocalHost() {
+		return d.IfFxAgentRunningLocally(), nil
+	}
+	return d.IfFxAgentRunning(), nil
 }
 
 // Install docker on host
@@ -167,7 +174,6 @@ func (d *Provisioner) StartFxAgent() error {
 func (d *Provisioner) StartFxAgentLocally() error {
 	startCmd := fmt.Sprintf("docker run -d --name=%s --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:%s:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock", constants.AgentContainerName, constants.AgentPort)
 	params := strings.Split(startCmd, " ")
-	fmt.Println(params)
 	var cmd *exec.Cmd
 	if len(params) > 1 {
 		// nolint: gosec
@@ -181,6 +187,33 @@ func (d *Provisioner) StartFxAgentLocally() error {
 		return err
 	}
 	return nil
+}
+
+// IfFxAgentRunningLocally check if fx agent is running
+func (d *Provisioner) IfFxAgentRunningLocally() bool {
+	inspectCmd := "docker inspect fx-agent"
+	params := strings.Split(inspectCmd, " ")
+	cmd := exec.Command(params[0], params[1:]...)
+	if err := cmd.Run(); err != nil {
+		return false
+	}
+	return true
+}
+
+// IfFxAgentRunning check if fx agent is running
+func (d *Provisioner) IfFxAgentRunning() bool {
+	inspectCmd := infra.Sudo("docker inspect fx-agent", d.User)
+	sshKeyFile, _ := infra.GetSSHKeyFile()
+	sshPort := infra.GetSSHPort()
+	ssh := sshOperator.New(d.IP).WithUser(d.User).WithKey(sshKeyFile).WithPort(sshPort)
+	if err := ssh.RunCommand(inspectCmd, sshOperator.CommandOptions{
+		Stdout: os.Stdout,
+		Stdin:  os.Stdin,
+		Stderr: os.Stderr,
+	}); err != nil {
+		return false
+	}
+	return true
 }
 
 var _ infra.Provisioner = &Provisioner{}

@@ -63,7 +63,7 @@ func (k *Provisioner) SetupMaster() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
-	if err := ssh.RunCommand(infra.Sudo(installCmd, k.master.IP), sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(installCmd, k.master.User), sshOperator.CommandOptions{
 		Stdout: os.Stdout,
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,
@@ -80,7 +80,7 @@ func (k *Provisioner) getToken() (string, error) {
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	script := "cat /var/lib/rancher/k3s/server/node-token"
 	var outPipe bytes.Buffer
-	if err := ssh.RunCommand(infra.Sudo(script, k.master.IP), sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(script, k.master.User), sshOperator.CommandOptions{
 		Stdout: bufio.NewWriter(&outPipe),
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,
@@ -123,7 +123,7 @@ func (k *Provisioner) GetKubeConfig() ([]byte, error) {
 	getConfigCmd := "cat /etc/rancher/k3s/k3s.yaml\n"
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
 	var outPipe bytes.Buffer
-	if err := ssh.RunCommand(infra.Sudo(getConfigCmd, k.master.IP), sshOperator.CommandOptions{
+	if err := ssh.RunCommand(infra.Sudo(getConfigCmd, k.master.User), sshOperator.CommandOptions{
 		Stdout: bufio.NewWriter(&outPipe),
 		Stdin:  os.Stdin,
 		Stderr: os.Stderr,

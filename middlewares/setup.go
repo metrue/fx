@@ -21,10 +21,22 @@ func Setup(ctx context.Contexter) (err error) {
 
 	var deployer infra.Deployer
 	if cloud["type"] == config.CloudTypeDocker {
+		provisioner := dockerInfra.CreateProvisioner(cloud["host"], cloud["user"])
+		ok, err := provisioner.HealthCheck()
+		if err != nil {
+			return err
+		}
+		if !ok {
+			if _, err := provisioner.Provision(); err != nil {
+				return err
+			}
+		}
+
 		docker, err := dockerHTTP.Create(cloud["host"], constants.AgentPort)
 		if err != nil {
 			return errors.Wrapf(err, "please make sure docker is installed and running on your host")
 		}
+
 		// TODO should clean up, but it needed in middlewares.Build
 		ctx.Set("docker", docker)
 		deployer, err = dockerInfra.CreateDeployer(docker)
