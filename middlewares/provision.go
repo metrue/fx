@@ -14,8 +14,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Setup create k8s or docker cli
-func Setup(ctx context.Contexter) (err error) {
+// Provision make sure infrastructure is healthy
+func Provision(ctx context.Contexter) (err error) {
 	fxConfig := ctx.Get("config").(*config.Config)
 	cloud := fxConfig.Clouds[fxConfig.CurrentCloud]
 

@@ -156,7 +156,7 @@ func main() {
 			},
 			Action: handle(
 				middlewares.LoadConfig,
-				middlewares.Setup,
+				middlewares.Provision,
 				middlewares.Parse("up"),
 				middlewares.Binding,
 				middlewares.Build,
@@ -170,7 +170,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("down"),
 				middlewares.LoadConfig,
-				middlewares.Setup,
+				middlewares.Provision,
 				handlers.Down,
 			),
 		},
@@ -181,7 +181,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("list"),
 				middlewares.LoadConfig,
-				middlewares.Setup,
+				middlewares.Provision,
 				handlers.List,
 			),
 		},
@@ -211,7 +211,7 @@ func main() {
 					},
 					Action: handle(
 						middlewares.LoadConfig,
-						middlewares.Setup,
+						middlewares.Provision,
 						handlers.BuildImage,
 					),
 				},
@@ -226,7 +226,7 @@ func main() {
 					},
 					Action: handle(
 						middlewares.LoadConfig,
-						middlewares.Setup,
+						middlewares.Provision,
 						handlers.ExportImage,
 					),
 				},

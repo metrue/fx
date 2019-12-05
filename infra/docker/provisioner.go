@@ -191,9 +191,7 @@ func (d *Provisioner) StartFxAgentLocally() error {
 
 // IfFxAgentRunningLocally check if fx agent is running
 func (d *Provisioner) IfFxAgentRunningLocally() bool {
-	inspectCmd := "docker inspect fx-agent"
-	params := strings.Split(inspectCmd, " ")
-	cmd := exec.Command(params[0], params[1:]...)
+	cmd := exec.Command("docker", "inspect", "fx-agent")
 	if err := cmd.Run(); err != nil {
 		return false
 	}
