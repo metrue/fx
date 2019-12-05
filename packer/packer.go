@@ -82,6 +82,7 @@ func Pack(output string, input ...string) error {
 func hasDockerfileInDir(dir string) (string, bool) {
 	var dockerfile string
 	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		// nolint
 		if !info.IsDir() && info.Name() == "Dockerfile" {
 			dockerfile = path
 		}
