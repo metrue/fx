@@ -1,11 +1,9 @@
 package middlewares
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/types"
-	"github.com/metrue/fx/utils"
 	"github.com/pkg/errors"
 )
 
@@ -15,18 +13,18 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		cli := ctx.GetCliContext()
 		switch action {
 		case "up":
-			funcFile := cli.Args().First()
-			lang := utils.GetLangFromFileName(funcFile)
-			body, err := ioutil.ReadFile(funcFile)
-			if err != nil {
-				return errors.Wrap(err, "read source failed")
+			sources := []string{}
+			for _, s := range cli.Args() {
+				sources = append(sources, s)
 			}
-			fn := types.Func{
-				Language: lang,
-				Source:   string(body),
+			if len(sources) == 0 {
+				pwd, err := os.Getwd()
+				if err != nil {
+					return err
+				}
+				sources = append(sources, pwd)
 			}
-			ctx.Set("fn", fn)
-
+			ctx.Set("sources", sources)
 			name := cli.String("name")
 			ctx.Set("name", name)
 			port := cli.Int("port")

@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/types"
 )
 
@@ -31,16 +32,12 @@ func TestK8SDeployer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	fn := types.Func{
-		Language: "node",
-		Source: `
-module.exports = (ctx) => {
-	ctx.body = 'hello world'
-}
-`,
+	data, err := packer.PackIntoK8SConfigMapFile("./fixture")
+	if err != nil {
+		t.Fatal(err)
 	}
 	ctx := context.Background()
-	if err := k8s.Deploy(ctx, fn, name, name, bindings); err != nil {
+	if err := k8s.Deploy(ctx, data, name, name, bindings); err != nil {
 		t.Fatal(err)
 	}
 

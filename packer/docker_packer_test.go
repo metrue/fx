@@ -8,7 +8,7 @@ import (
 	"github.com/metrue/fx/types"
 )
 
-func TestPacker(t *testing.T) {
+func TestDockerPacker(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

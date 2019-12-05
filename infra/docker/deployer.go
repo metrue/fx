@@ -22,7 +22,7 @@ func CreateClient(client containerruntimes.ContainerRuntime) (d *Deployer, err e
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Deployer) Deploy(ctx context.Context, fn types.Func, name string, image string, ports []types.PortBinding) (err error) {
+func (d *Deployer) Deploy(ctx context.Context, fn string, name string, image string, ports []types.PortBinding) (err error) {
 	spinner.Start("deploying " + name)
 	defer func() {
 		spinner.Stop("deploying "+name, err)
