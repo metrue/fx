@@ -9,7 +9,7 @@ import (
 
 // Up command handle
 func Up(ctx context.Contexter) (err error) {
-	fn := ctx.Get("fn").(types.Func)
+	fn := ctx.Get("data").(string)
 	image := ctx.Get("image").(string)
 	name := ctx.Get("name").(string)
 	deployer := ctx.Get("deployer").(infra.Deployer)

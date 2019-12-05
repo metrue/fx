@@ -1,9 +1,12 @@
 package packer
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"encoding/base64"
 	"encoding/json"
@@ -11,15 +14,106 @@ import (
 	"github.com/gobuffalo/packr"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
+	"github.com/otiai10/copy"
+	"github.com/pkg/errors"
 )
 
-// Packer interface
-type Packer interface {
-	Pack(serviceName string, fn types.Func) (types.Project, error)
+// Pack pack a file or directory into a Docker project
+func Pack(output string, input ...string) error {
+	if len(input) == 0 {
+		return fmt.Errorf("source file or directory required")
+	}
+
+	if len(input) == 1 {
+		file := input[0]
+		stat, err := os.Stat(file)
+		if err != nil {
+			return err
+		}
+		if !stat.IsDir() {
+			lang := utils.GetLangFromFileName(file)
+			body, err := ioutil.ReadFile(file)
+			if err != nil {
+				return errors.Wrap(err, "read source failed")
+			}
+			fn := types.Func{
+				Language: lang,
+				Source:   string(body),
+			}
+			if err := PackIntoDir(fn, output); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+
+	workdir := fmt.Sprintf("./fx-%d", time.Now().Unix())
+	defer os.RemoveAll(workdir)
+
+	for _, f := range input {
+		if err := copy.Copy(f, filepath.Join(workdir, f)); err != nil {
+			return err
+		}
+	}
+
+	if dockerfile, has := hasDockerfileInDir(workdir); has {
+		return copy.Copy(filepath.Dir(dockerfile), output)
+	}
+
+	if f, has := hasFxHandleFileInDir(workdir); has {
+		lang := utils.GetLangFromFileName(f)
+		body, err := ioutil.ReadFile(f)
+		if err != nil {
+			return errors.Wrap(err, "read source failed")
+		}
+		fn := types.Func{
+			Language: lang,
+			Source:   string(body),
+		}
+		if err := PackIntoDir(fn, output); err != nil {
+			return err
+		}
+		return copy.Copy(filepath.Dir(f), output)
+	}
+
+	return fmt.Errorf("input directories or files has no Dockerfile or file with fx as name, e.g. fx.js")
+}
+
+func hasDockerfileInDir(dir string) (string, bool) {
+	var dockerfile string
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		// nolint
+		if !info.IsDir() && info.Name() == "Dockerfile" {
+			dockerfile = path
+		}
+		return nil
+	}); err != nil {
+		return "", false
+	}
+	if dockerfile == "" {
+		return "", false
+	}
+	return dockerfile, true
+}
+
+func hasFxHandleFileInDir(dir string) (string, bool) {
+	var handleFile string
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() && isHandler(info.Name()) {
+			handleFile = path
+		}
+		return nil
+	}); err != nil {
+		return "", false
+	}
+	if handleFile == "" {
+		return "", false
+	}
+	return handleFile, true
 }
 
 // Pack a function to be a docker project which is web service, handle the imcome request with given function
-func Pack(svcName string, fn types.Func) (types.Project, error) {
+func pack(svcName string, fn types.Func) (types.Project, error) {
 	box := packr.NewBox("./images")
 	pkr := NewDockerPacker(box)
 	return pkr.Pack(svcName, fn)
@@ -27,7 +121,7 @@ func Pack(svcName string, fn types.Func) (types.Project, error) {
 
 // PackIntoDir pack service code into directory
 func PackIntoDir(fn types.Func, outputDir string) error {
-	project, err := Pack("", fn)
+	project, err := pack("", fn)
 	if err != nil {
 		return err
 	}
@@ -44,16 +138,24 @@ func PackIntoDir(fn types.Func, outputDir string) error {
 }
 
 // PackIntoK8SConfigMapFile pack function a K8S config map file
-func PackIntoK8SConfigMapFile(fn types.Func) (string, error) {
-	project, err := Pack("", fn)
-	if err != nil {
-		return "", err
-	}
+func PackIntoK8SConfigMapFile(dir string) (string, error) {
 	tree := map[string]string{}
-	for _, file := range project.Files {
-		tree[file.Path] = file.Body
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			relpath := strings.Replace(path, dir, "", 1)
+			body, err := ioutil.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			tree[relpath] = string(body)
+		}
+		return nil
+	}); err != nil {
+		return "", nil
 	}
-
 	data, err := json.Marshal(tree)
 	if err != nil {
 		return "", err

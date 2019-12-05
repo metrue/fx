@@ -9,7 +9,6 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
-	"github.com/metrue/fx/types"
 )
 
 // Build image
@@ -20,16 +19,21 @@ func Build(ctx context.Contexter) (err error) {
 		spinner.Stop(task, err)
 	}()
 
-	cli := ctx.GetCliContext()
-	name := cli.String("name")
-	fn := ctx.Get("fn").(types.Func)
+	name := ctx.Get("name").(string)
 	docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
 	defer os.RemoveAll(workdir)
 
-	if err := packer.PackIntoDir(fn, workdir); err != nil {
+	if err := packer.Pack(workdir, ctx.Get("sources").([]string)...); err != nil {
 		return err
 	}
+
+	data, err := packer.PackIntoK8SConfigMapFile(workdir)
+	if err != nil {
+		return err
+	}
+	ctx.Set("data", data)
+
 	if err := docker.BuildImage(ctx.GetContext(), workdir, name); err != nil {
 		return err
 	}
@@ -41,7 +45,6 @@ func Build(ctx context.Contexter) (err error) {
 	ctx.Set("image", nameWithTag)
 
 	if os.Getenv("K3S") != "" {
-		name := cli.String("name")
 		username := os.Getenv("DOCKER_USERNAME")
 		password := os.Getenv("DOCKER_PASSWORD")
 		if username != "" && password != "" {

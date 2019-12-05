@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/metrue/fx/infra"
-	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 	"k8s.io/client-go/kubernetes"
@@ -41,18 +40,13 @@ func Create(kubeconfig string) (*K8S, error) {
 // Deploy a image to be a service
 func (k *K8S) Deploy(
 	ctx context.Context,
-	fn types.Func,
+	fn string,
 	name string,
 	image string,
 	ports []types.PortBinding,
 ) error {
-	// put source code of function docker project into k8s config map
-	tree, err := packer.PackIntoK8SConfigMapFile(fn)
-	if err != nil {
-		return err
-	}
 	data := map[string]string{}
-	data[ConfigMap.AppMetaEnvName] = tree
+	data[ConfigMap.AppMetaEnvName] = fn
 	if _, err := k.CreateOrUpdateConfigMap(namespace, name, data); err != nil {
 		return err
 	}

@@ -88,7 +88,7 @@ func (m *MockDeployer) EXPECT() *MockDeployerMockRecorder {
 }
 
 // Deploy mocks base method
-func (m *MockDeployer) Deploy(ctx context.Context, fn types.Func, name, image string, bindings []types.PortBinding) error {
+func (m *MockDeployer) Deploy(ctx context.Context, fn, name, image string, bindings []types.PortBinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Deploy", ctx, fn, name, image, bindings)
 	ret0, _ := ret[0].(error)
@@ -227,7 +227,7 @@ func (mr *MockInfraMockRecorder) HealthCheck() *gomock.Call {
 }
 
 // Deploy mocks base method
-func (m *MockInfra) Deploy(ctx context.Context, fn types.Func, name, image string, bindings []types.PortBinding) error {
+func (m *MockInfra) Deploy(ctx context.Context, fn, name, image string, bindings []types.PortBinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Deploy", ctx, fn, name, image, bindings)
 	ret0, _ := ret[0].(error)
