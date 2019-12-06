@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -44,4 +46,22 @@ func DockerVersion(host string, port string) (string, error) {
 		return "", err
 	}
 	return res.APIVersion, nil
+}
+
+// HasDockerfile check if there is Dockerfile in dir
+func HasDockerfile(dir string) bool {
+	var dockerfile string
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		// nolint
+		if info.Mode().IsRegular() && info.Name() == "Dockerfile" {
+			dockerfile = path
+		}
+		return nil
+	}); err != nil {
+		return false
+	}
+	if dockerfile == "" {
+		return false
+	}
+	return true
 }

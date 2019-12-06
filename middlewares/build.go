@@ -10,6 +10,8 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
+	"github.com/metrue/fx/utils"
+	"github.com/otiai10/copy"
 )
 
 // Build image
@@ -23,8 +25,32 @@ func Build(ctx context.Contexter) (err error) {
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
 	defer os.RemoveAll(workdir)
 
-	if err := packer.Pack(workdir, ctx.Get("sources").([]string)...); err != nil {
-		return err
+	// Cases supports
+	// 1. a single file function
+	// 		fx up func.js
+	// 2. a directory with Docker in it
+	// 		fx up ./func/
+	// 3. a directory without Dockerfile in it, but has fx handle function file
+	// 4. a fx handlefunction file and its dependencies files or/and directory
+	// 		fx up func.js helper.js ./lib/
+
+	// When only one directory given and there is a Dockerfile in given directory, treat it as a containerized project and skip packing
+	sources := ctx.Get("sources").([]string)
+
+	if len(sources) == 0 {
+		return fmt.Errorf("source file/directory of function required")
+	}
+
+	if len(sources) == 1 &&
+		utils.IsDir(sources[0]) &&
+		utils.HasDockerfile(sources[0]) {
+		if err := copy.Copy(sources[0], workdir); err != nil {
+			return err
+		}
+	} else {
+		if err := packer.Pack(workdir, sources...); err != nil {
+			return err
+		}
 	}
 
 	cloudType := ctx.Get("cloud_type").(string)

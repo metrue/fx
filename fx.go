@@ -212,6 +212,7 @@ func main() {
 					Action: handle(
 						middlewares.LoadConfig,
 						middlewares.Provision,
+						middlewares.Parse("image_build"),
 						handlers.BuildImage,
 					),
 				},
@@ -227,6 +228,7 @@ func main() {
 					Action: handle(
 						middlewares.LoadConfig,
 						middlewares.Provision,
+						middlewares.Parse("image_export"),
 						handlers.ExportImage,
 					),
 				},

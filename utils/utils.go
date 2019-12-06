@@ -199,6 +199,24 @@ func EnsureFile(fullpath string) error {
 	return nil
 }
 
+// IsDir if given path is a directory
+func IsDir(dir string) bool {
+	stat, err := os.Stat(dir)
+	if err != nil {
+		return false
+	}
+	return stat.IsDir()
+}
+
+// IsRegularFile if given path is a regular
+func IsRegularFile(file string) bool {
+	stat, err := os.Stat(file)
+	if err != nil {
+		return false
+	}
+	return stat.Mode().IsRegular()
+}
+
 // IsPathExists checks whether a path exists or if failed to check
 func IsPathExists(path string) (bool, error) {
 	_, err := os.Stat(path)

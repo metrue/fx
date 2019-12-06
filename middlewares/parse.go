@@ -1,8 +1,6 @@
 package middlewares
 
 import (
-	"os"
-
 	"github.com/metrue/fx/context"
 	"github.com/pkg/errors"
 )
@@ -16,13 +14,6 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			sources := []string{}
 			for _, s := range cli.Args() {
 				sources = append(sources, s)
-			}
-			if len(sources) == 0 {
-				pwd, err := os.Getwd()
-				if err != nil {
-					return err
-				}
-				sources = append(sources, pwd)
 			}
 			ctx.Set("sources", sources)
 			name := cli.String("name")
@@ -42,6 +33,13 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
+		case "image_build":
+		case "image_export":
+			sources := []string{}
+			for _, s := range cli.Args() {
+				sources = append(sources, s)
+			}
+			ctx.Set("sources", sources)
 		}
 
 		return nil
