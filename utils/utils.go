@@ -176,8 +176,8 @@ func CopyDir(src string, dst string) (err error) {
 	return
 }
 
-// EnsurerDir Create Dir if not exist
-func EnsurerDir(dir string) (err error) {
+// EnsureDir Create Dir if not exist
+func EnsureDir(dir string) (err error) {
 	if _, statError := os.Stat(dir); os.IsNotExist(statError) {
 		mkError := os.MkdirAll(dir, os.ModePerm)
 		return mkError
@@ -188,7 +188,7 @@ func EnsurerDir(dir string) (err error) {
 // EnsureFile ensure a file
 func EnsureFile(fullpath string) error {
 	dir := path.Dir(fullpath)
-	err := EnsurerDir(dir)
+	err := EnsureDir(dir)
 	if err != nil {
 		return err
 	}

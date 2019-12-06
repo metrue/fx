@@ -95,7 +95,7 @@ func TestGenerate(t *testing.T) {
 		defer func() {
 			os.RemoveAll(output)
 		}()
-		if err := generate(output, lang); err != nil {
+		if err := restore(output, lang); err != nil {
 			t.Fatal(err)
 		}
 		diffCmd := exec.Command("diff", "-r", output, "./images/"+lang)
@@ -110,7 +110,7 @@ func TestMerge(t *testing.T) {
 	// TODO should check the merge result
 	t.Run("NoInput", func(t *testing.T) {
 		dest := "./dest"
-		_ = utils.EnsurerDir("./dest")
+		_ = utils.EnsureDir("./dest")
 		defer func() {
 			os.RemoveAll(dest)
 		}()
@@ -122,7 +122,7 @@ func TestMerge(t *testing.T) {
 
 	t.Run("Files", func(t *testing.T) {
 		dest := "./dest"
-		_ = utils.EnsurerDir("./dest")
+		_ = utils.EnsureDir("./dest")
 		defer func() {
 			os.RemoveAll(dest)
 		}()
@@ -146,7 +146,7 @@ func TestMerge(t *testing.T) {
 
 	t.Run("Directories", func(t *testing.T) {
 		dest := "./dest"
-		_ = utils.EnsurerDir("./dest")
+		_ = utils.EnsureDir("./dest")
 		defer func() {
 			os.RemoveAll(dest)
 		}()
@@ -158,7 +158,7 @@ func TestMerge(t *testing.T) {
 
 	t.Run("Files and Directories", func(t *testing.T) {
 		dest := "./dest"
-		_ = utils.EnsurerDir("./dest")
+		_ = utils.EnsureDir("./dest")
 		defer func() {
 			os.RemoveAll(dest)
 		}()

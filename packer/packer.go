@@ -49,7 +49,7 @@ func Pack(output string, input ...string) error {
 		return fmt.Errorf("could not tell programe language of your input source codes")
 	}
 
-	if err := generate(output, lang); err != nil {
+	if err := restore(output, lang); err != nil {
 		return err
 	}
 
@@ -97,7 +97,7 @@ fx.d for D`
 	return nil
 }
 
-func generate(output string, lang string) error {
+func restore(output string, lang string) error {
 	for _, name := range presets.List() {
 		prefix := fmt.Sprintf("%s/", lang)
 		if strings.HasPrefix(name, prefix) {
