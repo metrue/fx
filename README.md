@@ -14,7 +14,7 @@ Poor man's function as a service.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Manage Infrastructure](#manage_infrastructure)
+- [Manage Infrastructure](#manage-infrastructure)
 - [Contribute](#contribute)
 
 
@@ -119,7 +119,7 @@ $ KUBECONFIG=~/.kube/config ./build/fx up examples/functions/JavaScript/func.js 
 | ID                     | NAME        |    ENDPOINT    |
 +----+--------------------------+-----------------------+
 |  5b24d36608ee392c937a  | hello-fx    | 10.0.242.75:80 |
-+----+------+----------------+
++------------------------+-------------+----------------+
 ```
 
 ### Test your service
@@ -153,9 +153,9 @@ hello world
 
 **fx** is originally designed to turn a function into a runnable Docker container in a easiest way, on a host with Docker running, you can just deploy your function with `fx up` command,  and now **fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
 
-By default. **fx** use localhost as target infrastructure to run your service, and you can also setup your remote virtual machines as **fx**'s infrastructure and deploy your functions onto it.'
+By default. **fx** use localhost as target infrastructure to run your service, and you can also setup your remote virtual machines as **fx**'s infrastructure and deploy your functions onto it.
 
-### fx infra create
+### `fx infra create`
 
 You can create types (docker and k8s) of infrastructures for **fx** to deploy functions
 
@@ -164,7 +164,7 @@ $ fx infra create --name infra_us --type docker --host <user>@<ip>              
 $ fx infra create --name infra_bj --type k8s --master <user>@<ip> --agents '<user1>@<ip1>,<user2>@<ip2>'      ## create k8s type infrasture use <ip> as master node, and <ip1> and <ip2> as agents nodes
 ```
 
-### fx infra use
+### `fx infra use`
 
 To use a infrastructure, you can use `fx infra use` command to activate it.
 
@@ -174,7 +174,7 @@ fx infra use <infrastructure name>
 
 and you can list your infrastructure with `fx infra list`
 
-## Use Public Cloud Kubernetes Service
+## Use Public Cloud Kubernetes Service as infrastructure to run your functions
 
 * Azure Kubernetes Service (AKS)
 
