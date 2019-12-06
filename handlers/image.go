@@ -2,80 +2,74 @@ package handlers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
 	"github.com/apex/log"
-	"github.com/google/uuid"
 	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
-	"github.com/metrue/fx/types"
+	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/utils"
-	"github.com/pkg/errors"
+	"github.com/otiai10/copy"
 )
 
 // BuildImage build image
-func BuildImage(ctx context.Contexter) error {
-	cli := ctx.GetCliContext()
-	funcFile := cli.Args().First()
-	tag := cli.String("tag")
-	if tag == "" {
-		tag = uuid.New().String()
-	}
-
+func BuildImage(ctx context.Contexter) (err error) {
+	spinner.Start("building")
+	defer func() {
+		spinner.Stop("building", err)
+	}()
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
 	defer os.RemoveAll(workdir)
 
-	body, err := ioutil.ReadFile(funcFile)
-	if err != nil {
-		log.Fatalf("function code load failed: %v", err)
-		return err
+	sources := ctx.Get("sources").([]string)
+
+	if len(sources) == 0 {
+		return fmt.Errorf("source file/directory of function required")
 	}
-	log.Infof("function code loaded: %v", constants.CheckedSymbol)
-	lang := utils.GetLangFromFileName(funcFile)
-
-	fn := types.Func{Language: lang, Source: string(body)}
-
-	if err := packer.PackIntoDir(fn, workdir); err != nil {
-		log.Fatalf("could not pack function %v: %v", fn, err)
-		return err
-	}
-
-	docker, ok := ctx.Get("docker").(containerruntimes.ContainerRuntime)
-	if ok {
-		nameWithTag := tag + ":latest"
-		if err := docker.BuildImage(ctx.GetContext(), workdir, nameWithTag); err != nil {
+	if len(sources) == 1 &&
+		utils.IsDir(sources[0]) &&
+		utils.HasDockerfile(sources[0]) {
+		if err := copy.Copy(sources[0], workdir); err != nil {
 			return err
 		}
-		log.Infof("image built: %v", constants.CheckedSymbol)
-		return nil
+	} else {
+		if err := packer.Pack(workdir, sources...); err != nil {
+			return err
+		}
 	}
-	return fmt.Errorf("no available docker cli")
+
+	docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
+	nameWithTag := ctx.Get("tag").(string) + ":latest"
+	if err := docker.BuildImage(ctx.GetContext(), workdir, nameWithTag); err != nil {
+		return err
+	}
+	log.Infof("image built: %s %v", nameWithTag, constants.CheckedSymbol)
+	return nil
 }
 
 // ExportImage export service's code into a directory
 func ExportImage(ctx context.Contexter) (err error) {
-	cli := ctx.GetCliContext()
-	funcFile := cli.Args().First()
-	outputDir := cli.String("output")
-	if outputDir == "" {
-		log.Fatalf("output directory required")
-		return nil
+	outputDir := ctx.Get("output").(string)
+	sources := ctx.Get("sources").([]string)
+
+	if len(sources) == 0 {
+		return fmt.Errorf("source file/directory of function required")
+	}
+	if len(sources) == 1 &&
+		utils.IsDir(sources[0]) &&
+		utils.HasDockerfile(sources[0]) {
+		if err := copy.Copy(sources[0], outputDir); err != nil {
+			return err
+		}
+	} else {
+		if err := packer.Pack(outputDir, sources...); err != nil {
+			return err
+		}
 	}
 
-	body, err := ioutil.ReadFile(funcFile)
-	if err != nil {
-		return errors.Wrap(err, "read source failed")
-	}
-	lang := utils.GetLangFromFileName(funcFile)
-
-	if err := packer.PackIntoDir(types.Func{Language: lang, Source: string(body)}, outputDir); err != nil {
-		log.Fatalf("write source code to file failed: %v", constants.UncheckedSymbol)
-		return err
-	}
 	log.Infof("exported to %v: %v", outputDir, constants.CheckedSymbol)
 	return nil
 }

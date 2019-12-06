@@ -1,22 +1,24 @@
 package packer
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
-
-	"encoding/base64"
-	"encoding/json"
 
 	"github.com/gobuffalo/packr"
-	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/otiai10/copy"
-	"github.com/pkg/errors"
 )
+
+var presets packr.Box
+
+func init() {
+	presets = packr.NewBox("./images")
+}
 
 // Pack pack a file or directory into a Docker project
 func Pack(output string, input ...string) error {
@@ -24,117 +26,172 @@ func Pack(output string, input ...string) error {
 		return fmt.Errorf("source file or directory required")
 	}
 
+	var lang string
+	for _, f := range input {
+		if utils.IsRegularFile(f) {
+			lang = langFromFileName(f)
+		} else if utils.IsDir(f) {
+			if err := filepath.Walk(f, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				if utils.IsRegularFile(path) {
+					lang = langFromFileName(path)
+				}
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+	}
+
+	if lang == "" {
+		return fmt.Errorf("could not tell programe language of your input source codes")
+	}
+
+	if err := restore(output, lang); err != nil {
+		return err
+	}
+
 	if len(input) == 1 {
-		file := input[0]
+		stat, err := os.Stat(input[0])
+		if err != nil {
+			return err
+		}
+		if stat.Mode().IsRegular() {
+			if err := filepath.Walk(output, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+
+				if isHandler(path) {
+					if err := copy.Copy(input[0], path); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	if !hasFxHandleFile(input...) {
+		msg := `it requires a fx handle file when input is not a single file function, e.g.  
+fx.go for Golang
+Fx.java for Java
+fx.php for PHP
+fx.py for Python
+fx.js for JavaScript or Node
+fx.rb for Ruby
+fx.jl for Julia
+fx.d for D`
+		return fmt.Errorf(msg)
+	}
+
+	if err := merge(output, input...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func restore(output string, lang string) error {
+	for _, name := range presets.List() {
+		prefix := fmt.Sprintf("%s/", lang)
+		if strings.HasPrefix(name, prefix) {
+			content, err := presets.FindString(name)
+			if err != nil {
+				return err
+			}
+
+			filePath := filepath.Join(output, strings.Replace(name, prefix, "", 1))
+			if err := utils.EnsureFile(filePath); err != nil {
+				return err
+			}
+			if err := ioutil.WriteFile(filePath, []byte(content), 0666); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func merge(dest string, input ...string) error {
+	for _, file := range input {
 		stat, err := os.Stat(file)
 		if err != nil {
 			return err
 		}
-		if !stat.IsDir() {
-			lang := utils.GetLangFromFileName(file)
-			body, err := ioutil.ReadFile(file)
-			if err != nil {
-				return errors.Wrap(err, "read source failed")
-			}
-			fn := types.Func{
-				Language: lang,
-				Source:   string(body),
-			}
-			if err := PackIntoDir(fn, output); err != nil {
+		if stat.Mode().IsRegular() {
+			targetFilePath := filepath.Join(dest, stat.Name())
+			if err := utils.EnsureFile(targetFilePath); err != nil {
 				return err
 			}
-			return nil
-		}
-	}
+			body, err := ioutil.ReadFile(file)
+			if err != nil {
+				return err
+			}
+			if err := ioutil.WriteFile(targetFilePath, body, 0644); err != nil {
+				return err
+			}
+		} else if stat.Mode().IsDir() {
+			if err := filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
 
-	workdir := fmt.Sprintf("./fx-%d", time.Now().Unix())
-	defer os.RemoveAll(workdir)
-
-	for _, f := range input {
-		if err := copy.Copy(f, filepath.Join(workdir, f)); err != nil {
-			return err
-		}
-	}
-
-	if dockerfile, has := hasDockerfileInDir(workdir); has {
-		return copy.Copy(filepath.Dir(dockerfile), output)
-	}
-
-	if f, has := hasFxHandleFileInDir(workdir); has {
-		lang := utils.GetLangFromFileName(f)
-		body, err := ioutil.ReadFile(f)
-		if err != nil {
-			return errors.Wrap(err, "read source failed")
-		}
-		fn := types.Func{
-			Language: lang,
-			Source:   string(body),
-		}
-		if err := PackIntoDir(fn, output); err != nil {
-			return err
-		}
-		return copy.Copy(filepath.Dir(f), output)
-	}
-
-	return fmt.Errorf("input directories or files has no Dockerfile or file with fx as name, e.g. fx.js")
-}
-
-func hasDockerfileInDir(dir string) (string, bool) {
-	var dockerfile string
-	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		// nolint
-		if !info.IsDir() && info.Name() == "Dockerfile" {
-			dockerfile = path
-		}
-		return nil
-	}); err != nil {
-		return "", false
-	}
-	if dockerfile == "" {
-		return "", false
-	}
-	return dockerfile, true
-}
-
-func hasFxHandleFileInDir(dir string) (string, bool) {
-	var handleFile string
-	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && isHandler(info.Name()) {
-			handleFile = path
-		}
-		return nil
-	}); err != nil {
-		return "", false
-	}
-	if handleFile == "" {
-		return "", false
-	}
-	return handleFile, true
-}
-
-// Pack a function to be a docker project which is web service, handle the imcome request with given function
-func pack(svcName string, fn types.Func) (types.Project, error) {
-	box := packr.NewBox("./images")
-	pkr := NewDockerPacker(box)
-	return pkr.Pack(svcName, fn)
-}
-
-// PackIntoDir pack service code into directory
-func PackIntoDir(fn types.Func, outputDir string) error {
-	project, err := pack("", fn)
-	if err != nil {
-		return err
-	}
-	for _, file := range project.Files {
-		tmpfn := filepath.Join(outputDir, file.Path)
-		if err := utils.EnsureFile(tmpfn); err != nil {
-			return err
-		}
-		if err := ioutil.WriteFile(tmpfn, []byte(file.Body), 0666); err != nil {
-			return err
+				if err := copy.Copy(file, dest); err != nil {
+					return err
+				}
+				return nil
+			}); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+func langFromFileName(fileName string) string {
+	extLangMap := map[string]string{
+		".js":   "node",
+		".go":   "go",
+		".rb":   "ruby",
+		".py":   "python",
+		".php":  "php",
+		".jl":   "julia",
+		".java": "java",
+		".d":    "d",
+		".rs":   "rust",
+	}
+	return extLangMap[filepath.Ext(fileName)]
+}
+
+func hasFxHandleFile(input ...string) bool {
+	var handleFile string
+	for _, file := range input {
+		if utils.IsRegularFile(file) && isHandler(file) {
+			handleFile = file
+			break
+		} else if utils.IsDir(file) {
+			if err := filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+
+				if utils.IsRegularFile(path) && isHandler(info.Name()) {
+					handleFile = path
+				}
+				return nil
+			}); err != nil {
+				return false
+			}
+		}
+	}
+
+	return handleFile != ""
 }
 
 // PackIntoK8SConfigMapFile pack function a K8S config map file
@@ -175,19 +232,4 @@ func TreeToDir(tree map[string]string, outputDir string) error {
 		}
 	}
 	return nil
-}
-
-// PackIntoTar pack service code into directory
-func PackIntoTar(fn types.Func, path string) error {
-	tarDir, err := ioutil.TempDir("/tmp", "fx-tar")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(tarDir)
-
-	if err := PackIntoDir(fn, tarDir); err != nil {
-		return err
-	}
-
-	return utils.TarDir(tarDir, path)
 }

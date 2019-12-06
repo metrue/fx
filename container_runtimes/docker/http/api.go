@@ -37,27 +37,29 @@ type API struct {
 
 // Create a API
 func Create(host string, port string) (*API, error) {
-	version, err := utils.DockerVersion(host, port)
+	addr := host + ":" + port
+	v, err := version(addr)
 	if err != nil {
 		return nil, err
 	}
-	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, v)
 	return &API{
 		endpoint: endpoint,
-		version:  version,
+		version:  v,
 	}, nil
 }
 
 // MustCreate a api object, panic if not
 func MustCreate(host string, port string) *API {
-	version, err := utils.DockerVersion(host, port)
+	addr := host + ":" + port
+	v, err := version(addr)
 	if err != nil {
 		panic(err)
 	}
-	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, version)
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", host, port, v)
 	return &API{
 		endpoint: endpoint,
-		version:  version,
+		version:  v,
 	}
 }
 
@@ -131,7 +133,11 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 
 // Version get version of docker engine
 func (api *API) Version(ctx context.Context) (string, error) {
-	path := api.endpoint + "/version"
+	return version(api.endpoint)
+}
+
+func version(endpoint string) (string, error) {
+	path := endpoint + "/version"
 	if !strings.HasPrefix(path, "http") {
 		path = "http://" + path
 	}

@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"os"
+	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/metrue/fx/context"
-	"github.com/pkg/errors"
 )
 
 // Parse parse input
@@ -17,13 +17,6 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			for _, s := range cli.Args() {
 				sources = append(sources, s)
 			}
-			if len(sources) == 0 {
-				pwd, err := os.Getwd()
-				if err != nil {
-					return err
-				}
-				sources = append(sources, pwd)
-			}
 			ctx.Set("sources", sources)
 			name := cli.String("name")
 			ctx.Set("name", name)
@@ -32,7 +25,7 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		case "down":
 			services := cli.Args()
 			if len(services) == 0 {
-				return errors.New("service name required")
+				return fmt.Errorf("service name required")
 			}
 			svc := []string{}
 			for _, service := range services {
@@ -42,6 +35,28 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
+		case "image_build":
+			sources := []string{}
+			for _, s := range cli.Args() {
+				sources = append(sources, s)
+			}
+			ctx.Set("sources", sources)
+			tag := cli.String("tag")
+			if tag == "" {
+				tag = uuid.New().String()
+			}
+			ctx.Set("tag", tag)
+		case "image_export":
+			sources := []string{}
+			for _, s := range cli.Args() {
+				sources = append(sources, s)
+			}
+			ctx.Set("sources", sources)
+			outputDir := cli.String("output")
+			if outputDir == "" {
+				return fmt.Errorf("output directory required")
+			}
+			ctx.Set("output", outputDir)
 		}
 
 		return nil

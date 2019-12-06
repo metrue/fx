@@ -16,7 +16,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.8.71"
+const version = "0.8.72"
 
 func init() {
 	go checkForUpdate()
@@ -212,6 +212,7 @@ func main() {
 					Action: handle(
 						middlewares.LoadConfig,
 						middlewares.Provision,
+						middlewares.Parse("image_build"),
 						handlers.BuildImage,
 					),
 				},
@@ -227,6 +228,7 @@ func main() {
 					Action: handle(
 						middlewares.LoadConfig,
 						middlewares.Provision,
+						middlewares.Parse("image_export"),
 						handlers.ExportImage,
 					),
 				},
