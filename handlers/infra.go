@@ -35,7 +35,6 @@ func setupK8S(masterInfo string, agentsInfo string) ([]byte, error) {
 		}
 	}
 
-	fmt.Println(master, agents, len(agents))
 	k8sOperator := k8s.New(master, agents)
 	return k8sOperator.Provision()
 }
