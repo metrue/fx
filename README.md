@@ -20,8 +20,6 @@ Poor man's function as a service.
 
 ## Introduction
 
-![workflow](https://raw.githubusercontent.com/metrue/fx/master/docs/fx-workflow.png)
-
 fx is a tool to help you do Function as a Service on your own server, fx can make your stateless function a service in seconds, both Docker host and Kubernetes cluster supported. The most exciting thing is that you can write your functions with most programming languages.
 
 Feel free hacking fx to support the languages not listed. Welcome to tweet me [@_metrue](https://twitter.com/_metrue) on Twitter, [@metrue](https://www.weibo.com/u/2165714507) on Weibo.
@@ -210,8 +208,6 @@ But we would suggest you run `kubectl config current-context` to check if the cu
   TODO
 
 * Setup your own Kubernetes cluster
-
-![init workflow](https://raw.githubusercontent.com/metrue/fx/master/docs/fx-init-cluster.png)
 
 ```shell
 fx infra create --type k3s --name fx-cluster-1 --master root@123.11.2.3 --agents 'root@1.1.1.1,root@2.2.2.2'

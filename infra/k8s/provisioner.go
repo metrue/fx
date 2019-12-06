@@ -62,7 +62,7 @@ func (k *Provisioner) HealthCheck() (bool, error) {
 func (k *Provisioner) SetupMaster() error {
 	sshKeyFile, _ := infra.GetSSHKeyFile()
 	ssh := sshOperator.New(k.master.IP).WithUser(k.master.User).WithKey(sshKeyFile)
-	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
+	installCmd := fmt.Sprintf("curl -sLS https://get.k3s.io | INSTALL_K3S_EXEC='server --docker --tls-san %s' INSTALL_K3S_VERSION='%s' sh -", k.master.IP, version)
 	if err := ssh.RunCommand(infra.Sudo(installCmd, k.master.User), sshOperator.CommandOptions{
 		Stdout: os.Stdout,
 		Stdin:  os.Stdin,
@@ -97,7 +97,7 @@ func (k *Provisioner) SetupAgent() error {
 	if err != nil {
 		return err
 	}
-	const k3sExtraArgs = ""
+	const k3sExtraArgs = "--docker"
 	joinCmd := fmt.Sprintf("curl -fL https://get.k3s.io/ | K3S_URL='https://%s:6443' K3S_TOKEN='%s' INSTALL_K3S_VERSION='%s' sh -s - %s", k.master.IP, tok, version, k3sExtraArgs)
 	for _, agent := range k.agents {
 		ssh := sshOperator.New(agent.IP).WithUser(agent.User).WithKey(sshKeyFile)

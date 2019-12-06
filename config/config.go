@@ -106,7 +106,7 @@ func (c *Config) AddK8SCloud(name string, kubeconfig []byte) error {
 
 	cloud := map[string]string{
 		"type":       "k8s",
-		"kubeConfig": kubecfg,
+		"kubeconfig": kubecfg,
 	}
 
 	return c.addCloud(name, cloud)

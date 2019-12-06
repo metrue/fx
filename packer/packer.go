@@ -154,6 +154,14 @@ func merge(dest string, input ...string) error {
 	return nil
 }
 
+func isHandler(name string) bool {
+	basename := filepath.Base(name)
+	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
+	return nameWithoutExt == "fx" ||
+		nameWithoutExt == "Fx" || // Fx is for Java
+		nameWithoutExt == "mod" // mod.rs is for Rust
+}
+
 func langFromFileName(fileName string) string {
 	extLangMap := map[string]string{
 		".js":   "node",
