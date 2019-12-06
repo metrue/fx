@@ -9,8 +9,14 @@ import (
 
 // Up command handle
 func Up(ctx context.Contexter) (err error) {
-	fn := ctx.Get("data").(string)
-	image := ctx.Get("image").(string)
+	fn, ok := ctx.Get("data").(string)
+	if !ok {
+		fn = ""
+	}
+	image, ok := ctx.Get("image").(string)
+	if !ok {
+		image = ""
+	}
 	name := ctx.Get("name").(string)
 	deployer := ctx.Get("deployer").(infra.Deployer)
 	bindings := ctx.Get("bindings").([]types.PortBinding)
