@@ -87,8 +87,7 @@ fx.py for Python
 fx.js for JavaScript or Node
 fx.rb for Ruby
 fx.jl for Julia
-fx.d for D
-`
+fx.d for D`
 		return fmt.Errorf(msg)
 	}
 
@@ -150,8 +149,6 @@ func merge(dest string, input ...string) error {
 			}); err != nil {
 				return err
 			}
-		} else {
-			// skip
 		}
 	}
 	return nil
