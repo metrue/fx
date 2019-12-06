@@ -1,5 +1,6 @@
 fx
 ------
+
 Poor man's function as a service.
 <br/>
 ![CI](https://github.com/metrue/fx/workflows/ci/badge.svg)
@@ -13,6 +14,7 @@ Poor man's function as a service.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Manage Infrastructure](#manage-infrastructure)
 - [Contribute](#contribute)
 
 
@@ -79,7 +81,7 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.8.4
+   0.8.7
 
 COMMANDS:
    infra     manage infrastructure
@@ -96,44 +98,36 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-1. Write a function
+### Deploy your function to Docker
 
-You can check out [examples](https://github.com/metrue/fx/tree/master/examples/functions) for reference. Let's write a function as an example,  it calculates the sum of two numbers then returns:
-
-```js
-module.exports = (ctx) => {
-    ctx.body = 'hello world'
-}
 ```
-Then save it to a file `func.js`.
+$ fx up --name hello-fx ./examples/functions/JavaScript/func.js
 
-2. Deploy your function as a service
-
-Give your service a port with `--port`, and name with `--name`, heath checking with `--healthcheck` if you want.
-
-```shell
-$ fx up -name fx_service_name -p 10001 --healthcheck func.js
-
-2019/08/10 13:26:37  info Pack Service: ✓
-2019/08/10 13:26:39  info Build Service: ✓
-2019/08/10 13:26:39  info Run Service: ✓
-2019/08/10 13:26:39  info Service (fx_service_name) is running on: 0.0.0.0:10001
-2019/08/10 13:26:39  info up function fx_service_name(func.js) to machine localhost: ✓
++------------------------------------------------------------------+-----------+---------------+
+|                                ID                                |   NAME    |   ENDPOINT    |
++------------------------------------------------------------------+-----------+---------------+
+| 5b24d36608ee392c937a61a530805f74551ddec304aea3aca2ffa0fabcf98cf3 | /hello-fx | 0.0.0.0:58328 |
++------------------------------------------------------------------+-----------+---------------+
 ```
 
-if you want see what the source code of your service looks like, you can export it into a dirctory,
+### Deploy your function to Kubernetes
 
-```shell
-$ fx image export -o <path of dir> func.js
-2019/09/25 19:31:19  info exported to <path of dir>: ✓
+```
+$ KUBECONFIG=~/.kube/config ./build/fx up examples/functions/JavaScript/func.js --name hello-fx
+
++-------------------------------+------+----------------+
+| ID                     | NAME        |    ENDPOINT    |
++----+--------------------------+-----------------------+
+|  5b24d36608ee392c937a  | hello-fx    | 10.0.242.75:80 |
++------------------------+-------------+----------------+
 ```
 
-3. Test your service
+### Test your service
 
 then you can test your service:
 
 ```shell
-$ curl -v 0.0.0.0:10001
+$ curl -v 0.0.0.0:58328
 
 
 GET / HTTP/1.1
@@ -155,39 +149,32 @@ hello world
 
 ```
 
-## Docker
+## Manage Infrastructure
 
-**fx** is originally designed to turn a function into a runnable Docker container in a easiest way, on a host with Docker running, you can just deploy your function with `fx up` command,
+**fx** is originally designed to turn a function into a runnable Docker container in a easiest way, on a host with Docker running, you can just deploy your function with `fx up` command,  and now **fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
 
-```shell
-fx up --name hello-svc --port 7777 hello.js # onto localhost
-DOCKER_REMOTE_HOST_ADDR=xx.xx.xx.xx DOCKER_REMOTE_HOST_USER=xxxx DOCKER_REMOTE_HOST_PASSWORD=xxxx fx up --name hello-svc --port 7777 hello.js # onto remote host
-```
+By default. **fx** use localhost as target infrastructure to run your service, and you can also setup your remote virtual machines as **fx**'s infrastructure and deploy your functions onto it.
 
-## Kubernetes
+### `fx infra create`
 
-**fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
+You can create types (docker and k8s) of infrastructures for **fx** to deploy functions
 
 ```shell
-KUBECONFIG=<Your KUBECONFIG> fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
+$ fx infra create --name infra_us --type docker --host <user>@<ip>                                            ## create docker type infrasture on <ip>
+$ fx infra create --name infra_bj --type k8s --master <user>@<ip> --agents '<user1>@<ip1>,<user2>@<ip2>'      ## create k8s type infrasture use <ip> as master node, and <ip1> and <ip2> as agents nodes
 ```
 
-or
+### `fx infra use`
+
+To use a infrastructure, you can use `fx infra use` command to activate it.
 
 ```shell
-$ export KUBECONFIG=<Your KUBECONFIG>
-$ fx deploy -n fx-service-abc_js -p 12349 examples/functions/JavaScript/func.js   # function will be deploy to your Kubernetes cluster and expose a IP address of your loadbalencer
+fx infra use <infrastructure name>
 ```
 
-* Local Kubernetes Cluster
+and you can list your infrastructure with `fx infra list`
 
-Docker for Mac and Docker for Windows already support Kubernetes with single node cluster, we can use it directly, and the default `KUBECONFIG` is `~/.kube/config`.
-
-```shell
-$ export KUBECONFIG=~/.kube/config  # then fx will take the config to deloy function
-```
-
-if you have multiple Kubernetes clusters configured, you have to set context correctly. FYI [configure-access-multiple-clusters](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
+## Use Public Cloud Kubernetes Service as infrastructure to run your functions
 
 * Azure Kubernetes Service (AKS)
 

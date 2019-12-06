@@ -20,7 +20,13 @@ func Provision(ctx context.Contexter) (err error) {
 	cloud := fxConfig.Clouds[fxConfig.CurrentCloud]
 
 	var deployer infra.Deployer
-	if cloud["type"] == config.CloudTypeDocker {
+	if os.Getenv("KUBECONFIG") != "" {
+		deployer, err = k8sInfra.CreateDeployer(os.Getenv("KUBECONFIG"))
+		if err != nil {
+			return err
+		}
+		ctx.Set("cloud_type", config.CloudTypeK8S)
+	} else if cloud["type"] == config.CloudTypeDocker {
 		provisioner := dockerInfra.CreateProvisioner(cloud["host"], cloud["user"])
 		ok, err := provisioner.HealthCheck()
 		if err != nil {
@@ -43,13 +49,13 @@ func Provision(ctx context.Contexter) (err error) {
 		if err != nil {
 			return err
 		}
+		ctx.Set("cloud_type", config.CloudTypeDocker)
 	} else if cloud["type"] == config.CloudTypeK8S {
-		if os.Getenv("KUBECONFIG") != "" {
-			deployer, err = k8sInfra.CreateDeployer(cloud["kubeconfig"])
-			if err != nil {
-				return err
-			}
+		deployer, err = k8sInfra.CreateDeployer(cloud["kubeconfig"])
+		if err != nil {
+			return err
 		}
+		ctx.Set("cloud_type", config.CloudTypeK8S)
 	} else {
 		return fmt.Errorf("unsupport cloud type %s, please make sure you config is correct", cloud["type"])
 	}
