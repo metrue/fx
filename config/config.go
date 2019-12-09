@@ -7,45 +7,65 @@ import (
 	"os"
 	"os/user"
 	"path"
-	"sync"
 
+	dockerInfra "github.com/metrue/fx/infra/docker"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/mitchellh/go-homedir"
-	"gopkg.in/yaml.v2"
 )
 
-// Items data of config file
-type Items struct {
-	Clouds       map[string]map[string]string `json:"clouds"`
-	CurrentCloud string                       `json:"current_cloud"`
+// Configer manage fx config
+type Configer interface {
+	GetCurrentCloud() ([]byte, error)
+	GetCurrentCloudType() (string, error)
+	GetKubeConfig() (string, error)
+	UseCloud(name string) error
+	View() ([]byte, error)
+	AddCloud(name string, meta []byte) error
 }
 
 // Config config of fx
 type Config struct {
-	mux        sync.Mutex
 	configFile string
-	Items
+	container  *Container
 }
+
+const defaultFxConfig = "~/.fx/config.yml"
 
 // LoadDefault load default config
 func LoadDefault() (*Config, error) {
-	configFile, err := homedir.Expand("~/.fx/config.yml")
+	configFile, err := homedir.Expand(defaultFxConfig)
 	if err != nil {
 		return nil, err
 	}
 	if os.Getenv("FX_CONFIG") != "" {
 		configFile = os.Getenv("FX_CONFIG")
-
 	}
+
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		if err := utils.EnsureFile(configFile); err != nil {
 			return nil, err
 		}
-		if err := writeDefaultConfig(configFile); err != nil {
+	}
+	return load(configFile)
+}
+
+func load(configFile string) (*Config, error) {
+	container, err := CreateContainer(configFile)
+	if err != nil {
+		return nil, err
+	}
+	config := &Config{
+		configFile: configFile,
+		container:  container,
+	}
+
+	if container.get("clouds") == nil {
+		if err := config.writeDefaultConfig(); err != nil {
 			return nil, err
 		}
 	}
-	return load(configFile)
+	return config, nil
 }
 
 // Load config
@@ -58,138 +78,119 @@ func Load(configFile string) (*Config, error) {
 		if err := utils.EnsureFile(configFile); err != nil {
 			return nil, err
 		}
-		if err := writeDefaultConfig(configFile); err != nil {
-			return nil, err
-		}
 	}
 	return load(configFile)
 }
 
-// AddCloud add a cloud
-func (c *Config) addCloud(name string, cloud map[string]string) error {
-	c.Items.Clouds[name] = cloud
-	return save(c)
-}
-
-// AddDockerCloud add docker cloud
-func (c *Config) AddDockerCloud(name string, config []byte) error {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-
-	var conf map[string]string
-	err := json.Unmarshal(config, &conf)
-	if err != nil {
+// AddCloud add k8s cloud
+func (c *Config) AddCloud(name string, meta []byte) error {
+	var cloudMeta map[string]interface{}
+	if err := json.Unmarshal(meta, &cloudMeta); err != nil {
 		return err
 	}
 
-	cloud := map[string]string{
-		"type": "docker",
-		"host": conf["ip"],
-		"user": conf["user"],
-	}
-	return c.addCloud(name, cloud)
-}
-
-// AddK8SCloud add k8s cloud
-func (c *Config) AddK8SCloud(name string, kubeconfig []byte) error {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-
-	dir := path.Dir(c.configFile)
-	kubecfg := path.Join(dir, name+".kubeconfig")
-	if err := utils.EnsureFile(kubecfg); err != nil {
-		return err
-	}
-	if err := ioutil.WriteFile(kubecfg, kubeconfig, 0666); err != nil {
-		return err
+	cloudType, ok := cloudMeta["type"].(string)
+	if !ok || cloudType == "" {
+		return fmt.Errorf("unknown cloud type")
 	}
 
-	cloud := map[string]string{
-		"type":       "k8s",
-		"kubeconfig": kubecfg,
-	}
-
-	return c.addCloud(name, cloud)
-}
-
-// Use set cloud instance with name as current context
-func (c *Config) Use(name string) error {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-
-	has := false
-	for n := range c.Clouds {
-		if n == name {
-			has = true
-			break
+	if cloudType == types.CloudTypeK8S {
+		dir := path.Dir(c.configFile)
+		kubecfg := path.Join(dir, name+".kubeconfig")
+		if err := utils.EnsureFile(kubecfg); err != nil {
+			return err
+		}
+		config, ok := cloudMeta["config"].(string)
+		if !ok {
+			return fmt.Errorf("invalid k8s config")
+		}
+		if err := ioutil.WriteFile(kubecfg, []byte(config), 0666); err != nil {
+			return err
 		}
 	}
-	if !has {
-		return fmt.Errorf("no cloud with name = %s", name)
+
+	if err := c.container.set("clouds."+name, cloudMeta); err != nil {
+		return err
 	}
-	c.Items.CurrentCloud = name
-	return save(c)
+
+	return nil
+}
+
+// UseCloud set cloud instance with name as current context
+func (c *Config) UseCloud(name string) error {
+	if name == "" {
+		return fmt.Errorf("could not use empty name")
+	}
+
+	if c.container.get("clouds."+name) == nil {
+		return fmt.Errorf("no such cloud with name: %s", name)
+	}
+	return c.container.set("current_cloud", name)
 }
 
 // View view current config
 func (c *Config) View() ([]byte, error) {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-
 	return ioutil.ReadFile(c.configFile)
 }
 
-func load(configFile string) (*Config, error) {
-	conf, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		return nil, err
+// GetCurrentCloud get current using cloud's meta
+func (c *Config) GetCurrentCloud() ([]byte, error) {
+	name, ok := c.container.get("current_cloud").(string)
+	if !ok {
+		return nil, fmt.Errorf("no active cloud")
 	}
-	var items Items
-	if err := yaml.Unmarshal(conf, &items); err != nil {
-		return nil, err
+	meta := c.container.get("clouds." + name)
+	if meta == nil {
+		return nil, fmt.Errorf("invalid config")
 	}
-	var c = Config{
-		configFile: configFile,
-		Items:      items,
-	}
-	return &c, nil
+	return json.Marshal(meta)
 }
 
-func save(c *Config) error {
-	conf, err := yaml.Marshal(c.Items)
-	if err != nil {
-		return err
+// GetCurrentCloudType get current cloud type
+func (c *Config) GetCurrentCloudType() (string, error) {
+	name, ok := c.container.get("current_cloud").(string)
+	if !ok {
+		return "", fmt.Errorf("no active cloud")
 	}
-	if err := ioutil.WriteFile(c.configFile, conf, 0666); err != nil {
-		return err
-	}
-	return nil
+	return c.container.get("clouds." + name + ".type").(string), nil
 }
 
-func writeDefaultConfig(configFile string) error {
+// GetKubeConfig get kubeconfig
+func (c *Config) GetKubeConfig() (string, error) {
+	name, ok := c.container.get("current_cloud").(string)
+	if !ok {
+		return "", fmt.Errorf("no active cloud")
+	}
+	dir := path.Dir(c.configFile)
+	kubecfg := path.Join(dir, name+".kubeconfig")
+	return kubecfg, nil
+}
+
+func (c *Config) writeDefaultConfig() error {
 	me, err := user.Current()
 	if err != nil {
 		return err
 	}
-	items := Items{
-		Clouds: map[string]map[string]string{
-			"default": map[string]string{
-				"type": "docker",
-				"host": "127.0.0.1",
-				"user": me.Username,
-			},
-		},
-		CurrentCloud: "default",
-	}
 
-	body, err := yaml.Marshal(items)
+	defaultCloud := &dockerInfra.Cloud{
+		IP:   "127.0.0.1",
+		User: me.Username,
+		Name: "default",
+		Type: types.CloudTypeDocker,
+	}
+	meta, err := defaultCloud.Dump()
 	if err != nil {
 		return err
 	}
-
-	if err := ioutil.WriteFile(configFile, body, 0666); err != nil {
+	if err := c.container.set("clouds", map[string]interface{}{}); err != nil {
 		return err
 	}
-
-	return nil
+	if err := c.AddCloud("default", meta); err != nil {
+		return err
+	}
+	return c.UseCloud("default")
 }
+
+var (
+	_ Configer = &Config{}
+)

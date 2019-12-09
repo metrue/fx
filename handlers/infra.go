@@ -7,7 +7,7 @@ import (
 	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/context"
 	dockerInfra "github.com/metrue/fx/infra/docker"
-	"github.com/metrue/fx/infra/k8s"
+	k8sInfra "github.com/metrue/fx/infra/k8s"
 	"github.com/metrue/fx/pkg/spinner"
 )
 
@@ -16,38 +16,49 @@ func setupK8S(masterInfo string, agentsInfo string) ([]byte, error) {
 	if len(info) != 2 {
 		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
 	}
-	master := k8s.MasterNode{
-		User: info[0],
-		IP:   info[1],
+	master, err := k8sInfra.CreateNode(info[1], info[0], "k3s_master", "master")
+	if err != nil {
+		return nil, err
 	}
-	agents := []k8s.AgentNode{}
+	nodes := []k8sInfra.Noder{master}
 	if agentsInfo != "" {
 		agentsInfoList := strings.Split(agentsInfo, ",")
-		for _, agent := range agentsInfoList {
+		for idx, agent := range agentsInfoList {
 			info := strings.Split(agent, "@")
 			if len(info) != 2 {
 				return nil, fmt.Errorf("incorrect agent info, should be <user>@<ip> format")
 			}
-			agents = append(agents, k8s.AgentNode{
-				User: info[0],
-				IP:   info[1],
-			})
+			node, err := k8sInfra.CreateNode(info[1], info[0], "k3s_agent", fmt.Sprintf("agent-%d", idx))
+			if err != nil {
+				return nil, err
+			}
+
+			nodes = append(nodes, node)
 		}
 	}
-
-	k8sOperator := k8s.New(master, agents)
-	return k8sOperator.Provision()
+	cloud := k8sInfra.NewCloud(nodes...)
+	if err := cloud.Provision(); err != nil {
+		return nil, err
+	}
+	return cloud.Dump()
 }
 
-func setupDocker(hostInfo string) ([]byte, error) {
+func setupDocker(hostInfo string, name string) ([]byte, error) {
 	info := strings.Split(hostInfo, "@")
 	if len(info) != 2 {
 		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
 	}
-	user := info[1]
-	host := info[0]
-	dockr := dockerInfra.CreateProvisioner(user, host)
-	return dockr.Provision()
+	user := info[0]
+	host := info[1]
+
+	cloud, err := dockerInfra.Create(host, user, name)
+	if err != nil {
+		return nil, err
+	}
+	if err := cloud.Provision(); err != nil {
+		return nil, err
+	}
+	return cloud.Dump()
 }
 
 // Setup infra
@@ -84,13 +95,13 @@ func Setup(ctx context.Contexter) (err error) {
 		if err != nil {
 			return err
 		}
-		return fxConfig.AddK8SCloud(name, kubeconf)
+		return fxConfig.AddCloud(name, kubeconf)
 	case "docker":
-		config, err := setupDocker(cli.String("host"))
+		config, err := setupDocker(cli.String("host"), name)
 		if err != nil {
 			return err
 		}
-		return fxConfig.AddDockerCloud(name, config)
+		return fxConfig.AddCloud(name, config)
 	}
 	return nil
 }

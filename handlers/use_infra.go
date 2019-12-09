@@ -9,5 +9,5 @@ import (
 func UseInfra(ctx context.Contexter) error {
 	fxConfig := ctx.Get("config").(*config.Config)
 	cli := ctx.GetCliContext()
-	return fxConfig.Use(cli.Args().First())
+	return fxConfig.UseCloud(cli.Args().First())
 }

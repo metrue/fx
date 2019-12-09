@@ -6,10 +6,12 @@ import (
 	"github.com/metrue/fx/types"
 )
 
-// Provisioner provision interface
-type Provisioner interface {
-	Provision() (config []byte, err error)
-	HealthCheck() (bool, error)
+// Clouder cloud interface
+type Clouder interface {
+	Provision() error
+	GetConfig() (string, error)
+	GetType() string
+	Dump() ([]byte, error)
 }
 
 // Deployer deploy interface
@@ -24,6 +26,5 @@ type Deployer interface {
 
 // Infra infrastructure provision interface
 type Infra interface {
-	Provisioner
 	Deployer
 }
