@@ -5,11 +5,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/metrue/fx/config"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
+	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 	"github.com/otiai10/copy"
 )
@@ -55,7 +55,7 @@ func Build(ctx context.Contexter) (err error) {
 
 	cloudType := ctx.Get("cloud_type").(string)
 	name := ctx.Get("name").(string)
-	if cloudType == config.CloudTypeK8S && os.Getenv("K3S") == "" {
+	if cloudType == types.CloudTypeK8S {
 		data, err := packer.PackIntoK8SConfigMapFile(workdir)
 		if err != nil {
 			return err
@@ -72,17 +72,6 @@ func Build(ctx context.Contexter) (err error) {
 			return err
 		}
 		ctx.Set("image", nameWithTag)
-
-		if os.Getenv("K3S") != "" {
-			username := os.Getenv("DOCKER_USERNAME")
-			password := os.Getenv("DOCKER_PASSWORD")
-			if username != "" && password != "" {
-				if _, err := docker.PushImage(ctx.GetContext(), name); err != nil {
-					return err
-				}
-				ctx.Set("image", username+"/"+name)
-			}
-		}
 	}
 
 	return nil
