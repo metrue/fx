@@ -10,10 +10,10 @@ generate:
 	packr
 
 b:
-	go build -o ${OUTPUT_DIR}/fx fx.go
+	go build -ldflags="-s -w" -o ${OUTPUT_DIR}/fx fx.go
 
 build:
-	go build -o ${OUTPUT_DIR}/fx fx.go
+	go build -ldflags="-s -w" -o ${OUTPUT_DIR}/fx fx.go
 
 pull:
 	./scripts/pull.sh
