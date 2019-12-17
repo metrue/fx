@@ -108,6 +108,11 @@ func (c *Cloud) Dump() ([]byte, error) {
 
 // IsHealth check if cloud is in health
 func (c *Cloud) IsHealth() (bool, error) {
+	if err := c.runCmd(infra.Scripts["check_fx_agent"].(string)); err != nil {
+		if err := c.runCmd(infra.Scripts["start_fx_agent"].(string)); err != nil {
+			return false, err
+		}
+	}
 	return true, nil
 }
 
