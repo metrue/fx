@@ -2,8 +2,11 @@ package docker
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/types"
@@ -68,18 +71,18 @@ func Load(meta []byte) (*Cloud, error) {
 
 // Provision a host
 func (c *Cloud) Provision() error {
-	if err := c.sshClient.RunCommand(infra.Scripts["docker_version"].(string), ssh.CommandOptions{}); err != nil {
-		if err := c.sshClient.RunCommand(infra.Scripts["install_docker"].(string), ssh.CommandOptions{}); err != nil {
+	if err := c.runCmd(infra.Scripts["docker_version"].(string)); err != nil {
+		if err := c.runCmd(infra.Scripts["install_docker"].(string)); err != nil {
 			return err
 		}
 
-		if err := c.sshClient.RunCommand(infra.Scripts["start_dockerd"].(string), ssh.CommandOptions{}); err != nil {
+		if err := c.runCmd(infra.Scripts["start_dockerd"].(string)); err != nil {
 			return err
 		}
 	}
 
-	if err := c.sshClient.RunCommand(infra.Scripts["check_fx_agent"].(string), ssh.CommandOptions{}); err != nil {
-		if err := c.sshClient.RunCommand(infra.Scripts["start_fx_agent"].(string), ssh.CommandOptions{}); err != nil {
+	if err := c.runCmd(infra.Scripts["check_fx_agent"].(string)); err != nil {
+		if err := c.runCmd(infra.Scripts["start_fx_agent"].(string)); err != nil {
 			return err
 		}
 	}
@@ -103,9 +106,39 @@ func (c *Cloud) Dump() ([]byte, error) {
 	return json.Marshal(c)
 }
 
+// IsHealth check if cloud is in health
+func (c *Cloud) IsHealth() (bool, error) {
+	return true, nil
+}
+
 // NOTE only using for unit testing
 func (c *Cloud) setsshClient(client ssh.Clienter) {
 	c.sshClient = client
+}
+
+func (c *Cloud) runCmd(script string, options ...ssh.CommandOptions) error {
+	option := ssh.CommandOptions{}
+	if len(options) >= 1 {
+		option = options[0]
+	}
+
+	local := c.IP == "127.0.0.1" || c.IP == "localhost"
+	if local && os.Getenv("CI") == "" {
+		params := strings.Split(script, " ")
+		if len(params) == 0 {
+			return fmt.Errorf("invalid script: %s", script)
+		}
+		cmd := exec.Command(params[0], params[1:]...)
+		cmd.Stdout = option.Stdout
+		cmd.Stderr = option.Stderr
+		err := cmd.Run()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return c.sshClient.RunCommand(script, option)
 }
 
 // NOTE the reason putting sshkey() and sshport here inside node.go is because

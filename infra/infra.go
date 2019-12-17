@@ -12,6 +12,7 @@ type Clouder interface {
 	GetConfig() (string, error)
 	GetType() string
 	Dump() ([]byte, error)
+	IsHealth() (bool, error)
 }
 
 // Deployer deploy interface

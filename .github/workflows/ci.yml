@@ -29,8 +29,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export KUBECONFIG="$(kind get kubeconfig-path)"
-          ./scripts/coverage.sh
-          bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+          make unit-test
 
       - name: build fx
         run: |

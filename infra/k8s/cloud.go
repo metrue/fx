@@ -257,6 +257,11 @@ func (c *Cloud) GetConfig() (string, error) {
 	return c.Config, nil
 }
 
+// IsHealth check if cloud is in health
+func (c *Cloud) IsHealth() (bool, error) {
+	return true, nil
+}
+
 var (
 	_ infra.Clouder = &Cloud{}
 )
