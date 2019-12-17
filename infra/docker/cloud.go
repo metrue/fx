@@ -116,6 +116,7 @@ func (c *Cloud) setsshClient(client ssh.Clienter) {
 	c.sshClient = client
 }
 
+// nolint:unparam
 func (c *Cloud) runCmd(script string, options ...ssh.CommandOptions) error {
 	option := ssh.CommandOptions{}
 	if len(options) >= 1 {
@@ -128,6 +129,7 @@ func (c *Cloud) runCmd(script string, options ...ssh.CommandOptions) error {
 		if len(params) == 0 {
 			return fmt.Errorf("invalid script: %s", script)
 		}
+		// nolint
 		cmd := exec.Command(params[0], params[1:]...)
 		cmd.Stdout = option.Stdout
 		cmd.Stderr = option.Stderr
