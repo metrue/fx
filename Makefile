@@ -26,7 +26,7 @@ clean:
 	rm -rf ${DIST_DIR}
 
 unit-test:
-	# CI=true ./scripts/coverage.sh
+	CI=true ./scripts/coverage.sh
 	curl -s https://codecov.io/bash | bash -s -t ${CODECOV_TOKEN}
 
 cli-test-ci:
