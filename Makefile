@@ -26,8 +26,8 @@ clean:
 	rm -rf ${DIST_DIR}
 
 unit-test:
-	CI=true ./scripts/coverage.sh
-	bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+	# CI=true ./scripts/coverage.sh
+	curl -s https://codecov.io/bash | bash -s -t ${CODECOV_TOKEN}
 
 cli-test-ci:
 	./scripts/test_cli.sh 'js'
