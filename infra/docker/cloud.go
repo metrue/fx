@@ -112,7 +112,6 @@ func (c *Cloud) IsHealth() (bool, error) {
 		if err := c.runCmd(infra.Scripts["start_fx_agent"].(string)); err != nil {
 			return false, err
 		}
-		return false, err
 	}
 	return true, nil
 }
