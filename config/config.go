@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 
 	dockerInfra "github.com/metrue/fx/infra/docker"
 	"github.com/metrue/fx/types"
@@ -22,6 +23,7 @@ type Configer interface {
 	UseCloud(name string) error
 	View() ([]byte, error)
 	AddCloud(name string, meta []byte) error
+	Dir() (string, error)
 }
 
 // Config config of fx
@@ -189,6 +191,15 @@ func (c *Config) writeDefaultConfig() error {
 		return err
 	}
 	return c.UseCloud("default")
+}
+
+// Dir get directory of config
+func (c *Config) Dir() (string, error) {
+	p, err := filepath.Abs(c.configFile)
+	if err != nil {
+		return "", err
+	}
+	return path.Dir(p), nil
 }
 
 var (

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -108,4 +109,16 @@ func TestConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Println(string(body))
+
+	dir, err := c.Dir()
+	if err != nil {
+		t.Fatal(err)
+	}
+	here, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dir != filepath.Join(here, "./tmp") {
+		t.Fatalf("should get %s but got %s", "./tmp", dir)
+	}
 }
