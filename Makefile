@@ -27,7 +27,6 @@ clean:
 
 unit-test:
 	CI=true ./scripts/coverage.sh
-	curl -s https://codecov.io/bash | bash -s -t ${CODECOV_TOKEN}
 
 cli-test-ci:
 	./scripts/test_cli.sh 'js'

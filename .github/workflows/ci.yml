@@ -30,6 +30,7 @@ jobs:
         run: |
           export KUBECONFIG="$(kind get kubeconfig-path)"
           make unit-test
+          bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
       - name: build fx
         run: |
