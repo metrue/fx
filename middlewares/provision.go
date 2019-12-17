@@ -39,6 +39,16 @@ func Provision(ctx context.Contexter) (err error) {
 	if err != nil {
 		return err
 	}
+
+	ok, err := cloud.IsHealth()
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return fmt.Errorf("infrastrure is not health, please try to run create infrastructure use 'fx infra create ...' command")
+	}
+
 	ctx.Set("cloud", cloud)
 
 	conf, err := cloud.GetConfig()
