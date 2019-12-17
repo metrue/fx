@@ -58,7 +58,6 @@ func Provision(ctx context.Contexter) (err error) {
 			return err
 		}
 		docker, err := dockerHTTP.Create(meta["ip"], constants.AgentPort)
-		fmt.Println("-->", err)
 		if err != nil {
 			return errors.Wrapf(err, "please make sure docker is installed and running on your host")
 		}
