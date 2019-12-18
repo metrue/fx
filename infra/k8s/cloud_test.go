@@ -3,6 +3,8 @@ package k8s
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -25,6 +27,13 @@ func TestLoad(t *testing.T) {
 	})
 
 	t.Run("only master node", func(t *testing.T) {
+		kubeconfig := "./kubeconfig.yml"
+		defer func() {
+			if err := os.RemoveAll("./kubeconfig.yml"); err != nil {
+				t.Fatal(err)
+			}
+		}()
+
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -36,18 +45,19 @@ func TestLoad(t *testing.T) {
 		name := "master"
 		ip := "127.0.0.1"
 		user := "testuser"
+		kubeconfContent := "sample-content"
 		master.EXPECT().GetName().Return(name)
 		master.EXPECT().GetType().Return(typ).Times(2)
 		master.EXPECT().GetIP().Return(ip).Times(2)
 		master.EXPECT().GetUser().Return(user)
-		master.EXPECT().GetConfig().Return("sample-config", nil)
+		master.EXPECT().GetConfig().Return(kubeconfContent, nil)
 
 		claud := &Cloud{
-			Config: "",
-			URL:    "",
-			Token:  "",
-			Type:   "k8s",
-			Nodes:  map[string]Noder{"master-node": master},
+			KubeConfig: kubeconfig,
+			Type:       "k8s",
+			url:        "",
+			token:      "",
+			Nodes:      map[string]Noder{"master-node": master},
 		}
 
 		meta, err := json.Marshal(claud)
@@ -67,9 +77,24 @@ func TestLoad(t *testing.T) {
 		if err := cloud.Provision(); err != nil {
 			t.Fatal(err)
 		}
+
+		content, err := ioutil.ReadFile(claud.KubeConfig)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != kubeconfContent {
+			t.Fatalf("should get %s but got %s", kubeconfContent, content)
+		}
 	})
 
 	t.Run("one master node and one agent", func(t *testing.T) {
+		kubeconfig := "./kubeconfig.yml"
+		defer func() {
+			if err := os.RemoveAll("./kubeconfig.yml"); err != nil {
+				t.Fatal(err)
+			}
+		}()
+
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -85,10 +110,11 @@ func TestLoad(t *testing.T) {
 		name := "master"
 		ip := "127.0.0.1"
 		user := "testuser"
+		kubeconfContent := "sample-config"
 		master.EXPECT().GetName().Return(name)
 		master.EXPECT().GetType().Return(typ).Times(2)
 		master.EXPECT().GetIP().Return(ip).Times(3)
-		master.EXPECT().GetConfig().Return("sample-config", nil)
+		master.EXPECT().GetConfig().Return(kubeconfContent, nil)
 		master.EXPECT().GetUser().Return(user)
 
 		nodeType := NodeTypeAgent
@@ -96,18 +122,18 @@ func TestLoad(t *testing.T) {
 		nodeIP := "12.12.12.12"
 		nodeUser := "testuser"
 		node.EXPECT().GetName().Return(nodeName)
-		node.EXPECT().GetType().Return(nodeType).Times(3)
+		node.EXPECT().GetType().Return(nodeType).Times(2)
 		node.EXPECT().GetIP().Return(nodeIP)
 		node.EXPECT().GetUser().Return(nodeUser)
 
 		url := fmt.Sprintf("https://%s:6443", master.GetIP())
 		tok := "tok-1"
 		claud := &Cloud{
-			Config: "",
-			URL:    url,
-			Token:  tok,
-			Type:   "k8s",
-			Nodes:  map[string]Noder{"master-node": master, "agent-node": node},
+			KubeConfig: kubeconfig,
+			url:        url,
+			token:      tok,
+			Type:       "k8s",
+			Nodes:      map[string]Noder{"master-node": master, "agent-node": node},
 		}
 		meta, err := json.Marshal(claud)
 		if err != nil {
@@ -125,11 +151,18 @@ func TestLoad(t *testing.T) {
 		master.EXPECT().Provision(map[string]string{}).Return(nil)
 		master.EXPECT().GetToken().Return(tok, nil)
 		node.EXPECT().Provision(map[string]string{
-			"url":   cloud.URL,
-			"token": cloud.Token,
+			"url":   cloud.url,
+			"token": cloud.token,
 		}).Return(nil)
 		if err := cloud.Provision(); err != nil {
 			t.Fatal(err)
+		}
+		content, err := ioutil.ReadFile(claud.KubeConfig)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(content) != kubeconfContent {
+			t.Fatalf("should get %s but got %s", kubeconfContent, content)
 		}
 	})
 }
