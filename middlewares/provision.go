@@ -59,8 +59,8 @@ func Provision(ctx context.Contexter) (err error) {
 	if os.Getenv("KUBECONFIG") != "" {
 		cloudType = types.CloudTypeK8S
 		conf = os.Getenv("KUBECONFIG")
+		ctx.Set("cloud_type", types.CloudTypeK8S)
 	}
-	ctx.Set("cloud_type", types.CloudTypeK8S)
 
 	if cloudType == types.CloudTypeDocker {
 		var meta map[string]string
