@@ -82,15 +82,6 @@ func (c *Cloud) Provision() error {
 		c.Config = config
 	}
 
-	// when it's a docker agent
-	if len(agents) == 1 && agents[0].GetType() == NodeTypeDocker {
-		config, err := agents[0].GetConfig()
-		if err != nil {
-			return err
-		}
-		c.Config = config
-	}
-
 	if len(agents) > 0 {
 		errCh := make(chan error, len(agents))
 		defer close(errCh)
