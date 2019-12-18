@@ -4,6 +4,7 @@ fx
 Poor man's function as a service.
 <br/>
 ![CI](https://github.com/metrue/fx/workflows/ci/badge.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/metrue/fx)
 [![CodeCov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
