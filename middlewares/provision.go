@@ -56,13 +56,7 @@ func Provision(ctx context.Contexter) (err error) {
 		return err
 	}
 	var deployer infra.Deployer
-	if os.Getenv("KUBECONFIG") != "" {
-		deployer, err = k8sInfra.CreateDeployer(os.Getenv("KUBECONFIG"))
-		if err != nil {
-			return err
-		}
-		ctx.Set("cloud_type", types.CloudTypeK8S)
-	} else if cloud.GetType() == types.CloudTypeDocker {
+	if cloud.GetType() == types.CloudTypeDocker {
 		var meta map[string]string
 		if err := json.Unmarshal([]byte(conf), &meta); err != nil {
 			return err
@@ -79,11 +73,12 @@ func Provision(ctx context.Contexter) (err error) {
 			return err
 		}
 	} else if cloud.GetType() == types.CloudTypeK8S {
-		kubeconfig, err := fxConfig.GetKubeConfig()
-		if err != nil {
-			return err
+		ctx.Set("cloud_type", types.CloudTypeK8S)
+
+		if os.Getenv("KUBECONFIG") != "" {
+			conf = os.Getenv("KUBECONFIG")
 		}
-		deployer, err = k8sInfra.CreateDeployer(kubeconfig)
+		deployer, err = k8sInfra.CreateDeployer(conf)
 		if err != nil {
 			return err
 		}

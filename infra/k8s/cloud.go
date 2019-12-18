@@ -3,18 +3,22 @@ package k8s
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/types"
+	"github.com/metrue/fx/utils"
 )
 
 // Cloud define a cloud
 type Cloud struct {
-	Config string           `json:"config"`
-	URL    string           `json:"url"`
-	Token  string           `json:"token"`
-	Type   string           `json:"type"`
-	Nodes  map[string]Noder `json:"nodes"`
+	//  Define where is the location of kubeconf would be saved to
+	KubeConfig string           `json:"config"`
+	Type       string           `json:"type"`
+	Nodes      map[string]Noder `json:"nodes"`
+
+	token string
+	url   string
 }
 
 // Load a cloud from config
@@ -39,14 +43,16 @@ func Load(meta []byte, messup ...func(n Noder) (Noder, error)) (*Cloud, error) {
 }
 
 // NewCloud new a cloud
-func NewCloud(node ...Noder) *Cloud {
+func NewCloud(kubeconf string, node ...Noder) *Cloud {
 	nodes := map[string]Noder{}
 	for _, n := range node {
 		nodes[n.GetName()] = n
 	}
+
 	return &Cloud{
-		Type:  types.CloudTypeK8S,
-		Nodes: nodes,
+		KubeConfig: kubeconf,
+		Type:       types.CloudTypeK8S,
+		Nodes:      nodes,
 	}
 }
 
@@ -64,7 +70,7 @@ func (c *Cloud) Provision() error {
 
 	// when it's k3s cluster
 	if master != nil {
-		c.URL = fmt.Sprintf("https://%s:6443", master.GetIP())
+		c.url = fmt.Sprintf("https://%s:6443", master.GetIP())
 		if err := master.Provision(map[string]string{}); err != nil {
 			return err
 		}
@@ -73,22 +79,19 @@ func (c *Cloud) Provision() error {
 		if err != nil {
 			return err
 		}
-		c.Token = tok
+		c.token = tok
 
 		config, err := master.GetConfig()
 		if err != nil {
 			return err
 		}
-		c.Config = config
-	}
 
-	// when it's a docker agent
-	if len(agents) == 1 && agents[0].GetType() == NodeTypeDocker {
-		config, err := agents[0].GetConfig()
-		if err != nil {
+		if err := utils.EnsureFile(c.KubeConfig); err != nil {
 			return err
 		}
-		c.Config = config
+		if err := ioutil.WriteFile(c.KubeConfig, []byte(config), 0666); err != nil {
+			return err
+		}
 	}
 
 	if len(agents) > 0 {
@@ -98,8 +101,8 @@ func (c *Cloud) Provision() error {
 		for _, agent := range agents {
 			go func(node Noder) {
 				errCh <- node.Provision(map[string]string{
-					"url":   c.URL,
-					"token": c.Token,
+					"url":   c.url,
+					"token": c.token,
 				})
 			}(agent)
 		}
@@ -118,8 +121,8 @@ func (c *Cloud) Provision() error {
 func (c *Cloud) AddNode(n Noder, skipProvision bool) error {
 	if !skipProvision {
 		if err := n.Provision(map[string]string{
-			"url":   c.URL,
-			"token": c.Token,
+			"url":   c.url,
+			"token": c.token,
 		}); err != nil {
 			return err
 		}
@@ -173,16 +176,16 @@ func (c *Cloud) UnmarshalJSON(data []byte) error {
 		} else if k == "token" {
 			tok, ok := v.(string)
 			if ok {
-				c.Token = tok
+				c.token = tok
 			} else {
-				c.Token = ""
+				c.token = ""
 			}
 		} else if k == "config" {
 			config, ok := v.(string)
 			if ok {
-				c.Config = config
+				c.KubeConfig = config
 			} else {
-				c.Config = ""
+				c.KubeConfig = ""
 			}
 		} else if k == "type" {
 			typ, ok := v.(string)
@@ -194,9 +197,9 @@ func (c *Cloud) UnmarshalJSON(data []byte) error {
 		} else if k == "url" {
 			url, ok := v.(string)
 			if ok {
-				c.URL = url
+				c.url = url
 			} else {
-				c.URL = ""
+				c.url = ""
 			}
 		}
 	}
@@ -217,17 +220,17 @@ func (c *Cloud) MarshalJSON() ([]byte, error) {
 	}
 
 	body, err := json.Marshal(struct {
-		URL    string          `json:"url"`
-		Config string          `json:"config"`
-		Type   string          `json:"type"`
-		Token  string          `json:"token"`
-		Nodes  map[string]Node `json:"nodes"`
+		URL        string          `json:"url"`
+		KubeConfig string          `json:"config"`
+		Type       string          `json:"type"`
+		Token      string          `json:"token"`
+		Nodes      map[string]Node `json:"nodes"`
 	}{
-		URL:    c.URL,
-		Config: c.Config,
-		Type:   c.Type,
-		Token:  c.Token,
-		Nodes:  nodes,
+		KubeConfig: c.KubeConfig,
+		Type:       c.Type,
+		Token:      c.token,
+		URL:        c.url,
+		Nodes:      nodes,
 	})
 	if err != nil {
 		return nil, err
@@ -248,13 +251,13 @@ func (c *Cloud) Dump() ([]byte, error) {
 
 // GetConfig get config
 func (c *Cloud) GetConfig() (string, error) {
-	if c.Config != "" {
-		return c.Config, nil
+	if c.KubeConfig != "" {
+		return c.KubeConfig, nil
 	}
 	if err := c.Provision(); err != nil {
 		return "", err
 	}
-	return c.Config, nil
+	return c.KubeConfig, nil
 }
 
 // IsHealth check if cloud is in health
