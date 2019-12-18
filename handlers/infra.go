@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/metrue/fx/config"
@@ -11,7 +12,7 @@ import (
 	"github.com/metrue/fx/pkg/spinner"
 )
 
-func setupK8S(masterInfo string, agentsInfo string) ([]byte, error) {
+func setupK8S(configDir string, name, masterInfo string, agentsInfo string) ([]byte, error) {
 	info := strings.Split(masterInfo, "@")
 	if len(info) != 2 {
 		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
@@ -36,7 +37,8 @@ func setupK8S(masterInfo string, agentsInfo string) ([]byte, error) {
 			nodes = append(nodes, node)
 		}
 	}
-	cloud := k8sInfra.NewCloud(nodes...)
+	kubeconfigPath := filepath.Join(configDir, name+".kubeconfig")
+	cloud := k8sInfra.NewCloud(kubeconfigPath, nodes...)
 	if err := cloud.Provision(); err != nil {
 		return nil, err
 	}
@@ -91,7 +93,11 @@ func Setup(ctx context.Contexter) (err error) {
 
 	switch strings.ToLower(typ) {
 	case "k8s":
-		kubeconf, err := setupK8S(cli.String("master"), cli.String("agents"))
+		dir, err := fxConfig.Dir()
+		if err != nil {
+			return err
+		}
+		kubeconf, err := setupK8S(dir, name, cli.String("master"), cli.String("agents"))
 		if err != nil {
 			return err
 		}
