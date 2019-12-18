@@ -50,32 +50,39 @@ func TestConfig(t *testing.T) {
 		t.Fatalf("should get %s but got %s", "default", cloudMeta["name"])
 	}
 
-	// add k8s cloud
-	kCloud := k8sInfra.Cloud{
-		Type:   types.CloudTypeK8S,
-		Config: "sample kubeconfg",
-		Token:  "",
-		URL:    "",
-		Nodes: map[string]k8sInfra.Noder{
-			"master-node": &k8sInfra.Node{
-				IP:   "1.1.1.1",
-				User: "user-1",
-				Type: "k3s-master",
-				Name: "master-node",
-			},
-			"agent-node-1": &k8sInfra.Node{
-				IP:   "1.1.1.1",
-				User: "user-1",
-				Type: "k3s-agent",
-				Name: "agent-node-1",
-			},
-		},
+	n1, err := k8sInfra.CreateNode(
+		"1.1.1.1",
+		"user-1",
+		"k3s-master",
+		"master-node",
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
+	n2, err := k8sInfra.CreateNode(
+		"1.1.1.1",
+		"user-1",
+		"k3s-agent",
+		"agent-node-1",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	kName := "k8s-1"
+	kubeconf := "./tmp/" + kName + "config.yml"
+	defer func() {
+		if err := os.RemoveAll(kubeconf); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	// add k8s cloud
+	kCloud := k8sInfra.NewCloud(kubeconf, n1, n2)
 	kMeta, err := kCloud.Dump()
 	if err != nil {
 		t.Fatal(err)
 	}
-	kName := "k8s-1"
 	if err := c.AddCloud(kName, kMeta); err != nil {
 		t.Fatal(err)
 	}
