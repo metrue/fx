@@ -37,6 +37,7 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet me [@
 | PHP           | Supported     | [@chlins](https://github.com/chlins)| [/examples/PHP](https://github.com/metrue/fx/tree/master/examples/functions/PHP) |
 | Julia         | Supported     | [@matbesancon](https://github.com/matbesancon)| [/examples/Julia](https://github.com/metrue/fx/tree/master/examples/functions/Julia) |
 | D             | Supported     | [@andre2007](https://github.com/andre2007)| [/examples/D](https://github.com/metrue/fx/tree/master/examples/functions/D) |
+| Perl          | Supported     | fx            | [/examples/Perl](https://github.com/metrue/fx/tree/master/examples/functions/Perl) |
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | ||
 
 # Installation
