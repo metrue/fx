@@ -10,7 +10,7 @@ run() {
   local port=$2
   # localhost
   $fx up --name ${service}_${lang} --port ${port} --healthcheck test/functions/func.${lang}
-  $fx list # | jq ''
+  $fx list
   $fx down ${service}_${lang} || true
 }
 
@@ -32,7 +32,7 @@ export_image() {
 if [[ "$DOCKER_REMOTE_HOST_ADDR" != "" ]];then
   cloud_name='fx-remote-docker-host'
   $fx infra create --name ${cloud_name} --type docker --host ${DOCKER_REMOTE_HOST_USER}@${DOCKER_REMOTE_HOST_ADDR}
-  $fx use ${cloud_name}
+  $fx infra use ${cloud_name}
 fi
 
 port=20000
