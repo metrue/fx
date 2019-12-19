@@ -227,17 +227,27 @@ func (api *API) ListContainer(ctx context.Context, name string) ([]types.Service
 
 	svs := make(map[string]types.Service)
 	for _, container := range containers {
+		name := "UNKNOWN"
+		if len(container.Names) > 0 {
+			name = container.Names[0]
+		}
+
+		port := -1
+		ip := "UNKNOWN"
+		if len(container.Ports) > 0 {
+			ip = container.Ports[0].IP
+			port = int(container.Ports[0].PublicPort)
+		}
+
 		// container name have extra forward slash
 		// https://github.com/moby/moby/issues/6705
-		if strings.HasPrefix(container.Names[0], fmt.Sprintf("/%s", name)) {
-			svs[container.Image] = types.Service{
-				Name:  container.Names[0],
-				Image: container.Image,
-				ID:    container.ID,
-				Host:  container.Ports[0].IP,
-				Port:  int(container.Ports[0].PublicPort),
-				State: container.State,
-			}
+		svs[container.Image] = types.Service{
+			Name:  name,
+			Image: container.Image,
+			ID:    container.ID,
+			Host:  ip,
+			Port:  port,
+			State: container.State,
 		}
 	}
 	services := []types.Service{}
