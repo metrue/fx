@@ -23,6 +23,9 @@ func Build(ctx context.Contexter) (err error) {
 	}()
 
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
+	if err := utils.EnsureDir(workdir); err != nil {
+		return err
+	}
 	defer os.RemoveAll(workdir)
 
 	// Cases supports
@@ -66,11 +69,11 @@ func Build(ctx context.Contexter) (err error) {
 		if err := docker.BuildImage(ctx.GetContext(), workdir, name); err != nil {
 			return err
 		}
-
 		nameWithTag := name + ":latest"
 		if err := docker.TagImage(ctx.GetContext(), name, nameWithTag); err != nil {
 			return err
 		}
+
 		ctx.Set("image", nameWithTag)
 	}
 

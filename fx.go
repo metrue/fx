@@ -16,7 +16,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const version = "0.8.75"
+const version = "0.8.77"
 
 func init() {
 	go checkForUpdate()

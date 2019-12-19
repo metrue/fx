@@ -56,7 +56,13 @@ func Provision(ctx context.Contexter) (err error) {
 		return err
 	}
 	var deployer infra.Deployer
-	if cloud.GetType() == types.CloudTypeDocker {
+	if os.Getenv("KUBECONFIG") != "" {
+		cloudType = types.CloudTypeK8S
+		conf = os.Getenv("KUBECONFIG")
+		ctx.Set("cloud_type", types.CloudTypeK8S)
+	}
+
+	if cloudType == types.CloudTypeDocker {
 		var meta map[string]string
 		if err := json.Unmarshal([]byte(conf), &meta); err != nil {
 			return err
@@ -72,12 +78,7 @@ func Provision(ctx context.Contexter) (err error) {
 		if err != nil {
 			return err
 		}
-	} else if cloud.GetType() == types.CloudTypeK8S {
-		ctx.Set("cloud_type", types.CloudTypeK8S)
-
-		if os.Getenv("KUBECONFIG") != "" {
-			conf = os.Getenv("KUBECONFIG")
-		}
+	} else if cloudType == types.CloudTypeK8S {
 		deployer, err = k8sInfra.CreateDeployer(conf)
 		if err != nil {
 			return err

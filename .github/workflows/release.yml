@@ -33,7 +33,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           export KUBECONFIG="$(kind get kubeconfig-path)"
-          DEBUG=true go test -v ./...
+          make unit-test
 
       - name: build fx
         run: |
