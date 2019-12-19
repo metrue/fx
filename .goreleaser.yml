@@ -20,6 +20,8 @@ archives:
       linux: Tux
     files:
       - README.md
+dependencies:
+  - docker
 brews:
   -
     github:
