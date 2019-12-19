@@ -4,6 +4,7 @@ fx
 Poor man's function as a service.
 <br/>
 ![CI](https://github.com/metrue/fx/workflows/ci/badge.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/metrue/fx)
 [![CodeCov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
@@ -36,6 +37,7 @@ Feel free hacking fx to support the languages not listed. Welcome to tweet me [@
 | PHP           | Supported     | [@chlins](https://github.com/chlins)| [/examples/PHP](https://github.com/metrue/fx/tree/master/examples/functions/PHP) |
 | Julia         | Supported     | [@matbesancon](https://github.com/matbesancon)| [/examples/Julia](https://github.com/metrue/fx/tree/master/examples/functions/Julia) |
 | D             | Supported     | [@andre2007](https://github.com/andre2007)| [/examples/D](https://github.com/metrue/fx/tree/master/examples/functions/D) |
+| Perl          | Supported     | fx            | [/examples/Perl](https://github.com/metrue/fx/tree/master/examples/functions/Perl) |
 | R             | Working on [need your help](https://github.com/metrue/fx/issues/31)   | ||
 
 # Installation

@@ -26,17 +26,23 @@ func Pack(output string, input ...string) error {
 		return fmt.Errorf("source file or directory required")
 	}
 
-	var lang string
+	var language string
 	for _, f := range input {
 		if utils.IsRegularFile(f) {
-			lang = langFromFileName(f)
+			lang, err := langFromFileName(f)
+			if err == nil {
+				language = lang
+			}
 		} else if utils.IsDir(f) {
 			if err := filepath.Walk(f, func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					return err
 				}
 				if utils.IsRegularFile(path) {
-					lang = langFromFileName(path)
+					lang, err := langFromFileName(path)
+					if err == nil {
+						language = lang
+					}
 				}
 				return nil
 			}); err != nil {
@@ -45,11 +51,11 @@ func Pack(output string, input ...string) error {
 		}
 	}
 
-	if lang == "" {
+	if language == "" {
 		return fmt.Errorf("could not tell programe language of your input source codes")
 	}
 
-	if err := restore(output, lang); err != nil {
+	if err := restore(output, language); err != nil {
 		return err
 	}
 
@@ -79,7 +85,7 @@ func Pack(output string, input ...string) error {
 	}
 
 	if !hasFxHandleFile(input...) {
-		msg := `it requires a fx handle file when input is not a single file function, e.g.  
+		msg := `it requires a fx handle file when input is not a single file function, e.g.
 fx.go for Golang
 Fx.java for Java
 fx.php for PHP
@@ -87,6 +93,7 @@ fx.py for Python
 fx.js for JavaScript or Node
 fx.rb for Ruby
 fx.jl for Julia
+fx.pl for Perl
 fx.d for D`
 		return fmt.Errorf(msg)
 	}
@@ -152,54 +159,6 @@ func merge(dest string, input ...string) error {
 		}
 	}
 	return nil
-}
-
-func isHandler(name string) bool {
-	basename := filepath.Base(name)
-	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
-	return nameWithoutExt == "fx" ||
-		nameWithoutExt == "Fx" || // Fx is for Java
-		nameWithoutExt == "mod" // mod.rs is for Rust
-}
-
-func langFromFileName(fileName string) string {
-	extLangMap := map[string]string{
-		".js":   "node",
-		".go":   "go",
-		".rb":   "ruby",
-		".py":   "python",
-		".php":  "php",
-		".jl":   "julia",
-		".java": "java",
-		".d":    "d",
-		".rs":   "rust",
-	}
-	return extLangMap[filepath.Ext(fileName)]
-}
-
-func hasFxHandleFile(input ...string) bool {
-	var handleFile string
-	for _, file := range input {
-		if utils.IsRegularFile(file) && isHandler(file) {
-			handleFile = file
-			break
-		} else if utils.IsDir(file) {
-			if err := filepath.Walk(file, func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-
-				if utils.IsRegularFile(path) && isHandler(info.Name()) {
-					handleFile = path
-				}
-				return nil
-			}); err != nil {
-				return false
-			}
-		}
-	}
-
-	return handleFile != ""
 }
 
 // PackIntoK8SConfigMapFile pack function a K8S config map file
