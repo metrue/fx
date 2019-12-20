@@ -200,6 +200,8 @@ github.com/metrue/go-ssh-client v0.0.0-20191125030649-4ac058ee958b h1:JGD0sJ44Xz
 github.com/metrue/go-ssh-client v0.0.0-20191125030649-4ac058ee958b/go.mod h1:ERHOEBrDy6+8vfoJjjmhdmBpOzdvvP7bLtwYTTK6LOs=
 github.com/metrue/go-ssh-client v0.0.0-20191209160027-5773243a8bc9 h1:HHfMhG77ZLn3FOH3AGXW/F5RpAABVH6Fr5mVZZ97S6w=
 github.com/metrue/go-ssh-client v0.0.0-20191209160027-5773243a8bc9/go.mod h1:aPG/JtXTyLliKDDlkv+nzHbSbz2p2CBMAjNJRK4uhzY=
+github.com/metrue/go-ssh-client v0.0.0-20191219103445-1f07b67e2b29 h1:ENoMPMVc24XbBuVZ7guZmTB/7MSd+vqOkImSu9UUiJw=
+github.com/metrue/go-ssh-client v0.0.0-20191219103445-1f07b67e2b29/go.mod h1:aPG/JtXTyLliKDDlkv+nzHbSbz2p2CBMAjNJRK4uhzY=
 github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b/go.mod h1:01TrycV0kFyexm33Z7vhZRXopbI8J3TDReVlkTgMUxE=
 github.com/mholt/archiver v3.1.1+incompatible h1:1dCVxuqs0dJseYEhi5pl7MYPH9zDa1wBi7mF09cbNkU=
 github.com/mholt/archiver v3.1.1+incompatible/go.mod h1:Dh2dOXnSdiLxRiPoVfIr/fI1TwETms9B8CTWfeh7ROU=
