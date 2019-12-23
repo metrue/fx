@@ -35,10 +35,10 @@ jobs:
           docker build -t metrue/fx-d-base:latest -f ./assets/dockerfiles/base/d/Dockerfile ./assets/dockerfiles/base/d
           docker push metrue/fx-d-base:latest
 
-      # - name: build and publish fx java image
-      #   run: |
-      #     docker build -t metrue/fx-go-base:latest -f ./assets/dockerfiles/base/java/Dockerfile ./assets/dockerfiles/base/java
-      #     docker push metrue/fx-java-base:latest
+      - name: build and publish fx go image
+        run: |
+          docker build -t metrue/fx-go-base:latest -f ./assets/dockerfiles/base/go/Dockerfile ./assets/dockerfiles/base/go
+          docker push metrue/fx-go-base:latest
 
       - name: build and publish fx node image
         if: always()

@@ -1,6 +1,4 @@
-FROM ruby:latest
-
-RUN gem install sinatra
+FROM metrue/fx-ruby-base
 
 COPY . .
 EXPOSE 3000
