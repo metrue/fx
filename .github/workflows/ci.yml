@@ -13,6 +13,11 @@ jobs:
       - name: check out
         uses: actions/checkout@master
 
+      - name: install packr
+        run: |
+          go get -u github.com/gobuffalo/packr/packr
+          packr
+
       - name: kind create a k8s cluster
         run: |
           kind create cluster
