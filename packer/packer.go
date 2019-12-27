@@ -70,7 +70,7 @@ func Pack(output string, input ...string) error {
 					return err
 				}
 
-				if isHandler(path) {
+				if isHandler(path, language) {
 					if err := copy.Copy(input[0], path); err != nil {
 						return err
 					}
@@ -84,7 +84,7 @@ func Pack(output string, input ...string) error {
 		return nil
 	}
 
-	if !hasFxHandleFile(input...) {
+	if !hasFxHandleFile(language, input...) {
 		msg := `it requires a fx handle file when input is not a single file function, e.g.
 fx.go for Golang
 Fx.java for Java
