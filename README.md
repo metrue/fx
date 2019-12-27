@@ -206,8 +206,26 @@ But we would suggest you run `kubectl config current-context` to check if the cu
 * Amazon Elastic Kubernetes Service (EKS)
   TODO
 
-* Google Kubernetes Engine (GKET)
-  TODO
+* Google Kubernetes Engine (GKE)
+
+First you should create a Kubernetes cluster in your GKE, then make sure your KUBECONFIG is ready in `~/.kube/config`, if not, you can run following commands,
+
+``` shell
+$ gcloud auth login
+$ gcloud container clusters get-credentials <your cluster> --zone <zone> --project <project>
+```
+
+Then make sure you current context is GKE cluster, you can check it with command,
+
+``` shell
+$ kubectl config current-context
+```
+
+Then you can deploy your function onto GKE cluster with,
+
+```shell
+$ KUBECONFIG=~/.kube/config fx up examples/functions/JavaScript/func.js --name hellojs
+```
 
 * Setup your own Kubernetes cluster
 

@@ -23,12 +23,18 @@ var ExtLangMapping = map[string]string{
 	".pl":   "perl",
 }
 
-func isHandler(name string) bool {
+func isHandler(name string, lang string) bool {
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
-	return nameWithoutExt == "fx" ||
-		nameWithoutExt == "Fx" || // Fx is for Java
-		nameWithoutExt == "mod" // mod.rs is for Rust
+	if ExtLangMapping[filepath.Ext(basename)] != lang {
+		return false
+	}
+
+	return (nameWithoutExt == "fx" ||
+		// Fx is for Java
+		nameWithoutExt == "Fx" ||
+		// mod.rs is for Rust)
+		nameWithoutExt == "mod")
 }
 
 func langFromFileName(fileName string) (string, error) {
@@ -44,10 +50,10 @@ func langFromFileName(fileName string) (string, error) {
 	return lang, nil
 }
 
-func hasFxHandleFile(input ...string) bool {
+func hasFxHandleFile(lang string, input ...string) bool {
 	var handleFile string
 	for _, file := range input {
-		if utils.IsRegularFile(file) && isHandler(file) {
+		if utils.IsRegularFile(file) && isHandler(file, lang) {
 			handleFile = file
 			break
 		} else if utils.IsDir(file) {
@@ -56,7 +62,7 @@ func hasFxHandleFile(input ...string) bool {
 					return err
 				}
 
-				if utils.IsRegularFile(path) && isHandler(info.Name()) {
+				if utils.IsRegularFile(path) && isHandler(info.Name(), lang) {
 					handleFile = path
 				}
 				return nil

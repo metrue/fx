@@ -14,9 +14,10 @@ import (
 	"github.com/metrue/fx/handlers"
 	"github.com/metrue/fx/middlewares"
 	"github.com/urfave/cli"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.8.82"
+const version = "0.8.84"
 
 func init() {
 	go checkForUpdate()
