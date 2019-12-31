@@ -17,7 +17,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.8.84"
+const version = "0.8.85"
 
 func init() {
 	go checkForUpdate()
