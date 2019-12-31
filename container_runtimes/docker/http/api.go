@@ -23,6 +23,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
+	fxConfig "github.com/metrue/fx/config"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
@@ -402,7 +403,7 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 	}
 
 	hostConfig := &dockerTypesContainer.HostConfig{
-		AutoRemove:   true,
+		AutoRemove:   !fxConfig.DisableContainerAutoremove,
 		PortBindings: portMap,
 	}
 
