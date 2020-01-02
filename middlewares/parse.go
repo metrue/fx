@@ -22,6 +22,8 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			ctx.Set("name", name)
 			port := cli.Int("port")
 			ctx.Set("port", port)
+			force := cli.Bool("force")
+			ctx.Set("force", force)
 		case "down":
 			services := cli.Args()
 			if len(services) == 0 {
