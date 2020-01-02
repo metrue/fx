@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/apex/log"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/pkg/render"
@@ -20,6 +21,12 @@ func Up(ctx context.Contexter) (err error) {
 	name := ctx.Get("name").(string)
 	deployer := ctx.Get("deployer").(infra.Deployer)
 	bindings := ctx.Get("bindings").([]types.PortBinding)
+	force := ctx.Get("force").(bool)
+	if force && name != "" {
+		if err := deployer.Destroy(ctx.GetContext(), name); err != nil {
+			log.Warnf("destroy service %s failed: %v", name, err)
+		}
+	}
 
 	if err := deployer.Deploy(
 		ctx.GetContext(),
