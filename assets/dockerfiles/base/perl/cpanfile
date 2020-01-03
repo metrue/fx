@@ -1,2 +1,3 @@
 requires "EV";
+requires "JSON";
 requires "Mojolicious::Lite";

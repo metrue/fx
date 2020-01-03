@@ -57,11 +57,11 @@ jobs:
         run: |
           docker push metrue/fx-python-base:latest
 
-      # - name: build and publish fx rust image
-      #   if: always()
-      #   run: |
-      #     docker build -t metrue/fx-rust-base:latest -f ./assets/dockerfiles/base/rust/Dockerfile ./assets/dockerfiles/base/python
-      #     docker push metrue/fx-rust-base:latest
+      - name: build and publish fx perl image
+        if: always()
+        run: |
+          docker build -t metrue/fx-perl-base:latest -f ./assets/dockerfiles/base/perl/Dockerfile ./assets/dockerfiles/base/perl
+          docker push metrue/fx-perl-base:latest
 
       - name: build and publish fx julia image
         if: always()
