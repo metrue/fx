@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/metrue/fx/context"
+	"github.com/metrue/fx/utils"
 )
 
 // Parse parse input
@@ -15,7 +16,11 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		case "up":
 			sources := []string{}
 			for _, s := range cli.Args() {
-				sources = append(sources, s)
+				if utils.IsDir(s) || utils.IsRegularFile(s) {
+					sources = append(sources, s)
+				} else {
+					return fmt.Errorf("no such file or directory: %s", s)
+				}
 			}
 			ctx.Set("sources", sources)
 			name := cli.String("name")
