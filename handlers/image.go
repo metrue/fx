@@ -9,6 +9,7 @@ import (
 	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
+	"github.com/metrue/fx/hook"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/utils"
@@ -39,6 +40,14 @@ func BuildImage(ctx context.Contexter) (err error) {
 		if err := packer.Pack(workdir, sources...); err != nil {
 			return err
 		}
+		hooks := ctx.Get("hooks").([]*hook.Hook)
+		for _, h := range hooks {
+			if h.Name() == hook.HookNameBeforeBuild {
+				if err := h.Run(workdir); err != nil {
+					return err
+				}
+			}
+		}
 	}
 
 	docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
@@ -67,6 +76,14 @@ func ExportImage(ctx context.Contexter) (err error) {
 	} else {
 		if err := packer.Pack(outputDir, sources...); err != nil {
 			return err
+		}
+		hooks := ctx.Get("hooks").([]*hook.Hook)
+		for _, h := range hooks {
+			if h.Name() == hook.HookNameBeforeBuild {
+				if err := h.Run(outputDir); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
