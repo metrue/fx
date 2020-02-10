@@ -1,6 +1,6 @@
 run:
-  deadline: 10m
-  timeout: 10m
+  deadline: 20m
+  timeout: 20m
   issues-exit-code: 1
   tests: true
   skip-dirs:
