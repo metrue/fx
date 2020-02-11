@@ -7,6 +7,7 @@ import (
 
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
+	"github.com/metrue/fx/hook"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
@@ -52,6 +53,9 @@ func Build(ctx context.Contexter) (err error) {
 		}
 	} else {
 		if err := packer.Pack(workdir, sources...); err != nil {
+			return err
+		}
+		if err := hook.RunBeforeBuildHook(workdir); err != nil {
 			return err
 		}
 	}
