@@ -7,8 +7,8 @@ import (
 )
 
 func TestHookManager(t *testing.T) {
-	t.Run("default hookdir .hooks", func(t *testing.T) {
-		hooks, err := Descovery("")
+	t.Run("descovery in default hookdir .hooks", func(t *testing.T) {
+		hooks, err := descovery("")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -22,13 +22,19 @@ func TestHookManager(t *testing.T) {
 		}
 	})
 
-	t.Run("empty hookdir", func(t *testing.T) {
-		hooks, err := Descovery(filepath.Join(os.TempDir(), ".hooks"))
+	t.Run("descovery in empty hookdir", func(t *testing.T) {
+		hooks, err := descovery(filepath.Join(os.TempDir(), ".hooks"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		if len(hooks) != 0 {
 			t.Fatalf("should get 0 hooks, but got %d", len(hooks))
+		}
+	})
+
+	t.Run("run before_build hook", func(t *testing.T) {
+		if err := RunBeforeBuildHook("fixture"); err != nil {
+			t.Fatal(err)
 		}
 	})
 }

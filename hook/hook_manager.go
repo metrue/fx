@@ -10,8 +10,23 @@ import (
 // HookNameBeforeBuild before build hook
 const HookNameBeforeBuild = "before_build"
 
-// Descovery hooks in given directory
-func Descovery(hookdir string) ([]*Hook, error) {
+// RunBeforeBuildHook trigger before_build hook
+func RunBeforeBuildHook(workdir string) error {
+	hooks, err := descovery("")
+	if err != nil {
+		return err
+	}
+	for _, h := range hooks {
+		if h.Name() == HookNameBeforeBuild {
+			if err := h.Run(workdir); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func descovery(hookdir string) ([]*Hook, error) {
 	if hookdir == "" {
 		dir, err := os.Getwd()
 		if err != nil {

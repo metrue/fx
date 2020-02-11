@@ -40,13 +40,8 @@ func BuildImage(ctx context.Contexter) (err error) {
 		if err := packer.Pack(workdir, sources...); err != nil {
 			return err
 		}
-		hooks := ctx.Get("hooks").([]*hook.Hook)
-		for _, h := range hooks {
-			if h.Name() == hook.HookNameBeforeBuild {
-				if err := h.Run(workdir); err != nil {
-					return err
-				}
-			}
+		if err := hook.RunBeforeBuildHook(workdir); err != nil {
+			return err
 		}
 	}
 
@@ -77,13 +72,8 @@ func ExportImage(ctx context.Contexter) (err error) {
 		if err := packer.Pack(outputDir, sources...); err != nil {
 			return err
 		}
-		hooks := ctx.Get("hooks").([]*hook.Hook)
-		for _, h := range hooks {
-			if h.Name() == hook.HookNameBeforeBuild {
-				if err := h.Run(outputDir); err != nil {
-					return err
-				}
-			}
+		if err := hook.RunBeforeBuildHook(outputDir); err != nil {
+			return err
 		}
 	}
 
