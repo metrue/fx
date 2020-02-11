@@ -55,13 +55,8 @@ func Build(ctx context.Contexter) (err error) {
 		if err := packer.Pack(workdir, sources...); err != nil {
 			return err
 		}
-		hooks := ctx.Get("hooks").([]*hook.Hook)
-		for _, h := range hooks {
-			if h.Name() == hook.HookNameBeforeBuild {
-				if err := h.Run(workdir); err != nil {
-					return err
-				}
-			}
+		if err := hook.RunBeforeBuildHook(workdir); err != nil {
+			return err
 		}
 	}
 
