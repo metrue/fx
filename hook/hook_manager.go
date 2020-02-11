@@ -10,7 +10,7 @@ import (
 // HookNameBeforeBuild before build hook
 const HookNameBeforeBuild = "before_build"
 
-// Descovery hooks in given
+// Descovery hooks in given directory
 func Descovery(hookdir string) ([]*Hook, error) {
 	if hookdir == "" {
 		dir, err := os.Getwd()
