@@ -86,12 +86,6 @@ func (d *Deployer) Ping(ctx context.Context) error {
 
 // List services
 func (d *Deployer) List(ctx context.Context, name string) (svcs []types.Service, err error) {
-	const task = "listing"
-	spinner.Start(task)
-	defer func() {
-		spinner.Stop(task, err)
-	}()
-
 	// FIXME support remote host
 	return d.cli.ListContainer(ctx, name)
 }
