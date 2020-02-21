@@ -42,6 +42,8 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
+			format := cli.String("format")
+			ctx.Set("format", format)
 		case "image_build":
 			sources := []string{}
 			for _, s := range cli.Args() {

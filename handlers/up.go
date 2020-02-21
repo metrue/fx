@@ -4,7 +4,7 @@ import (
 	"github.com/apex/log"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/infra"
-	"github.com/metrue/fx/pkg/render"
+	"github.com/metrue/fx/pkg/renderrer"
 	"github.com/metrue/fx/types"
 )
 
@@ -42,6 +42,5 @@ func Up(ctx context.Contexter) (err error) {
 	if err != nil {
 		return err
 	}
-	render.Table([]types.Service{service})
-	return nil
+	return renderrer.Render([]types.Service{service}, "table")
 }

@@ -179,6 +179,13 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "format, f",
+					Value: "table",
+					Usage: "output format, 'table' and 'JSON' supported",
+				},
+			},
 			Action: handle(
 				middlewares.Parse("list"),
 				middlewares.LoadConfig,
