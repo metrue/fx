@@ -149,9 +149,21 @@ func merge(dest string, input ...string) error {
 					return err
 				}
 
-				if err := copy.Copy(file, dest); err != nil {
+				stat, err := os.Stat(path)
+				if err != nil {
 					return err
 				}
+				if stat.Mode().IsRegular() {
+					destDir := filepath.Join(dest, filepath.Dir(path))
+					if err := utils.EnsureDir(destDir); err != nil {
+						return err
+					}
+
+					if err := copy.Copy(file, destDir); err != nil {
+						return err
+					}
+				}
+
 				return nil
 			}); err != nil {
 				return err

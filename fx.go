@@ -17,7 +17,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.8.88"
+const version = "0.9.2"
 
 func init() {
 	go checkForUpdate()
@@ -179,6 +179,13 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list deployed services",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "format, f",
+					Value: "table",
+					Usage: "output format, 'table' and 'JSON' supported",
+				},
+			},
 			Action: handle(
 				middlewares.Parse("list"),
 				middlewares.LoadConfig,
