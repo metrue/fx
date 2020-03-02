@@ -159,6 +159,10 @@ By default. **fx** use localhost as target infrastructure to run your service, a
 
 You can create types (docker and k8s) of infrastructures for **fx** to deploy functions
 
+* Prerequisite for Docker host
+
+You have to make sure you can `ssh root@<your host>` without password.
+
 ```shell
 $ fx infra create --name infra_us --type docker --host <user>@<ip>                                            ## create docker type infrasture on <ip>
 $ fx infra create --name infra_bj --type k8s --master <user>@<ip> --agents '<user1>@<ip1>,<user2>@<ip2>'      ## create k8s type infrasture use <ip> as master node, and <ip1> and <ip2> as agents nodes
