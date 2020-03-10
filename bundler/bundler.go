@@ -8,6 +8,7 @@ import (
 
 	"github.com/gobuffalo/packd"
 	"github.com/gobuffalo/packr/v2"
+	"github.com/metrue/fx/constants"
 	"github.com/metrue/fx/utils"
 )
 
@@ -19,22 +20,9 @@ type Bundler interface {
 
 // IsHandler check if it's handle file
 func IsHandler(name string, lang string) bool {
-	extLangMapping := map[string]string{
-		".js":   "node",
-		".go":   "go",
-		".rb":   "ruby",
-		".py":   "python",
-		".php":  "php",
-		".jl":   "julia",
-		".java": "java",
-		".d":    "d",
-		".rs":   "rust",
-		".pl":   "perl",
-	}
-
 	basename := filepath.Base(name)
 	nameWithoutExt := strings.TrimSuffix(basename, filepath.Ext(basename))
-	if extLangMapping[filepath.Ext(basename)] != lang {
+	if constants.ExtLangMapping[filepath.Ext(basename)] != lang {
 		return false
 	}
 

@@ -23,13 +23,11 @@ func BuildImage(ctx context.Contexter) (err error) {
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
 	defer os.RemoveAll(workdir)
 
-	sources := ctx.Get("sources").([]string)
+	fn := ctx.Get("fn").(string)
+	deps := ctx.Get("deps").([]string)
 	language := ctx.Get("language").(string)
 
-	if len(sources) == 0 {
-		return fmt.Errorf("source file/directory of function required")
-	}
-	if err := bundle.Bundle(workdir, language, sources[0], sources[1:]...); err != nil {
+	if err := bundle.Bundle(workdir, language, fn, deps...); err != nil {
 		return err
 	}
 	if err := hook.RunBeforeBuildHook(workdir); err != nil {
@@ -48,13 +46,11 @@ func BuildImage(ctx context.Contexter) (err error) {
 // ExportImage export service's code into a directory
 func ExportImage(ctx context.Contexter) (err error) {
 	outputDir := ctx.Get("output").(string)
-	sources := ctx.Get("sources").([]string)
+	fn := ctx.Get("fn").(string)
+	deps := ctx.Get("deps").([]string)
 	language := ctx.Get("language").(string)
 
-	if len(sources) == 0 {
-		return fmt.Errorf("source file/directory of function required")
-	}
-	if err := bundle.Bundle(outputDir, language, sources[0], sources[1:]...); err != nil {
+	if err := bundle.Bundle(outputDir, language, fn, deps...); err != nil {
 		return err
 	}
 	if err := hook.RunBeforeBuildHook(outputDir); err != nil {

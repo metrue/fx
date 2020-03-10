@@ -14,15 +14,23 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 		cli := ctx.GetCliContext()
 		switch action {
 		case "up":
-			sources := []string{}
-			for _, s := range cli.Args() {
-				if utils.IsDir(s) || utils.IsRegularFile(s) {
-					sources = append(sources, s)
-				} else {
-					return fmt.Errorf("no such file or directory: %s", s)
+			if !cli.Args().Present() {
+				return fmt.Errorf("no function given")
+			}
+
+			if !utils.IsRegularFile(cli.Args().First()) {
+				return fmt.Errorf("invalid function source file: %s", cli.Args().First())
+			}
+			ctx.Set("fn", cli.Args().First())
+
+			deps := []string{}
+			for ind, s := range cli.Args() {
+				if ind != 0 {
+					deps = append(deps, s)
 				}
 			}
-			ctx.Set("sources", sources)
+			ctx.Set("deps", deps)
+
 			name := cli.String("name")
 			ctx.Set("name", name)
 			port := cli.Int("port")
@@ -45,22 +53,46 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			format := cli.String("format")
 			ctx.Set("format", format)
 		case "image_build":
-			sources := []string{}
-			for _, s := range cli.Args() {
-				sources = append(sources, s)
+			if !cli.Args().Present() {
+				return fmt.Errorf("no function given")
 			}
-			ctx.Set("sources", sources)
+
+			if !utils.IsRegularFile(cli.Args().First()) {
+				return fmt.Errorf("invalid function source file: %s", cli.Args().First())
+			}
+			ctx.Set("fn", cli.Args().First())
+
+			deps := []string{}
+			for ind, s := range cli.Args() {
+				if ind != 0 {
+					deps = append(deps, s)
+				}
+			}
+			ctx.Set("deps", deps)
+
 			tag := cli.String("tag")
 			if tag == "" {
 				tag = uuid.New().String()
 			}
 			ctx.Set("tag", tag)
 		case "image_export":
-			sources := []string{}
-			for _, s := range cli.Args() {
-				sources = append(sources, s)
+			if !cli.Args().Present() {
+				return fmt.Errorf("no function given")
 			}
-			ctx.Set("sources", sources)
+
+			if !utils.IsRegularFile(cli.Args().First()) {
+				return fmt.Errorf("invalid function source file: %s", cli.Args().First())
+			}
+			ctx.Set("fn", cli.Args().First())
+
+			deps := []string{}
+			for ind, s := range cli.Args() {
+				if ind != 0 {
+					deps = append(deps, s)
+				}
+			}
+			ctx.Set("deps", deps)
+
 			outputDir := cli.String("output")
 			if outputDir == "" {
 				return fmt.Errorf("output directory required")
