@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/packd"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/metrue/fx/constants"
+	"github.com/metrue/fx/utils"
 )
 
 // Bundler defines interface
