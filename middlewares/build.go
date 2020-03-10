@@ -50,6 +50,7 @@ func Build(ctx context.Contexter) (err error) {
 	if err := hook.RunBeforeBuildHook(workdir); err != nil {
 		return err
 	}
+
 	cloudType := ctx.Get("cloud_type").(string)
 	name := ctx.Get("name").(string)
 	if cloudType == types.CloudTypeK8S {

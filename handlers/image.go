@@ -30,6 +30,7 @@ func BuildImage(ctx context.Contexter) (err error) {
 	if err := bundle.Bundle(workdir, language, fn, deps...); err != nil {
 		return err
 	}
+
 	if err := hook.RunBeforeBuildHook(workdir); err != nil {
 		return err
 	}
@@ -48,11 +49,13 @@ func ExportImage(ctx context.Contexter) (err error) {
 	outputDir := ctx.Get("output").(string)
 	fn := ctx.Get("fn").(string)
 	deps := ctx.Get("deps").([]string)
+
 	language := ctx.Get("language").(string)
 
 	if err := bundle.Bundle(outputDir, language, fn, deps...); err != nil {
 		return err
 	}
+
 	if err := hook.RunBeforeBuildHook(outputDir); err != nil {
 		return err
 	}
