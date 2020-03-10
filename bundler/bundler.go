@@ -79,6 +79,7 @@ func Bundle(box *packr.Box, output string, language string, fn string, deps ...s
 		return err
 	}
 
+	// Replace the default handler source file with given function source file
 	if err := filepath.Walk(output, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err

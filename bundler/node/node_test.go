@@ -1,4 +1,4 @@
-package javascript
+package node
 
 import (
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
-func TestKoaBundler(t *testing.T) {
+func TestNodeBundler(t *testing.T) {
 	t.Run("Scaffold", func(t *testing.T) {
 		outputDir, err := ioutil.TempDir("", "fx_koa")
 		if err != nil {

@@ -7,8 +7,8 @@ import (
 	"github.com/metrue/fx/bundler/d"
 	golang "github.com/metrue/fx/bundler/go"
 	"github.com/metrue/fx/bundler/java"
-	"github.com/metrue/fx/bundler/javascript"
 	"github.com/metrue/fx/bundler/julia"
+	"github.com/metrue/fx/bundler/node"
 	"github.com/metrue/fx/bundler/perl"
 	"github.com/metrue/fx/bundler/python"
 	"github.com/metrue/fx/bundler/ruby"
@@ -22,7 +22,7 @@ func Bundle(workdir string, language string, fn string, deps ...string) error {
 	case "d":
 		bundler = d.New()
 	case "node":
-		bundler = javascript.New()
+		bundler = node.New()
 	case "go":
 		bundler = golang.New()
 	case "java":

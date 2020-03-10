@@ -1,4 +1,4 @@
-package javascript
+package node
 
 import (
 	"github.com/gobuffalo/packr/v2"
@@ -7,28 +7,28 @@ import (
 
 const language = "node"
 
-// Koa defines javascript bundler
-type Koa struct {
+// Node defines node bundler
+type Node struct {
 	assets *packr.Box
 }
 
 // New a koa bundler
-func New() *Koa {
-	return &Koa{
+func New() *Node {
+	return &Node{
 		assets: packr.New("", "./assets"),
 	}
 }
 
 // Scaffold a koa app
-func (k *Koa) Scaffold(output string) error {
+func (k *Node) Scaffold(output string) error {
 	return bundler.Restore(k.assets, output)
 }
 
 // Bundle a function into a koa project
-func (k *Koa) Bundle(output string, fn string, deps ...string) error {
+func (k *Node) Bundle(output string, fn string, deps ...string) error {
 	return bundler.Bundle(k.assets, output, language, fn, deps...)
 }
 
 var (
-	_ bundler.Bundler = &Koa{}
+	_ bundler.Bundler = &Node{}
 )
