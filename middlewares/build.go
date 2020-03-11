@@ -39,20 +39,18 @@ func Build(ctx context.Contexter) (err error) {
 	// 		fx up func.js helper.js ./lib/
 
 	// When only one directory given and there is a Dockerfile in given directory, treat it as a containerized project and skip packing
-	sources := ctx.Get("sources").([]string)
+	fn := ctx.Get("fn").(string)
+	deps := ctx.Get("deps").([]string)
 	language := ctx.Get("language").(string)
 
-	if len(sources) == 0 {
-		return fmt.Errorf("source file/directory of function required")
-	}
-
-	if err := bundle.Bundle(workdir, language, sources[0], sources[1:]...); err != nil {
+	if err := bundle.Bundle(workdir, language, fn, deps...); err != nil {
 		return err
 	}
 
 	if err := hook.RunBeforeBuildHook(workdir); err != nil {
 		return err
 	}
+
 	cloudType := ctx.Get("cloud_type").(string)
 	name := ctx.Get("name").(string)
 	if cloudType == types.CloudTypeK8S {
