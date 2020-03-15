@@ -13,7 +13,7 @@ type D struct {
 // New a koa bundler
 func New() *D {
 	return &D{
-		assets: packr.New("", "./assets"),
+		assets: packr.New("d", "./assets"),
 	}
 }
 

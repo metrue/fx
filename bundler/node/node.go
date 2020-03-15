@@ -15,7 +15,7 @@ type Node struct {
 // New a koa bundler
 func New() *Node {
 	return &Node{
-		assets: packr.New("", "./assets"),
+		assets: packr.New("node", "./assets"),
 	}
 }
 
