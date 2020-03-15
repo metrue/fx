@@ -17,7 +17,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.9.2"
+const version = "0.9.31"
 
 func init() {
 	go checkForUpdate()
@@ -159,6 +159,7 @@ func main() {
 				middlewares.LoadConfig,
 				middlewares.Provision,
 				middlewares.Parse("up"),
+				middlewares.Language(),
 				middlewares.Binding,
 				middlewares.Build,
 				handlers.Up,
@@ -221,6 +222,7 @@ func main() {
 						middlewares.LoadConfig,
 						middlewares.Provision,
 						middlewares.Parse("image_build"),
+						middlewares.Language(),
 						handlers.BuildImage,
 					),
 				},
@@ -237,6 +239,7 @@ func main() {
 						middlewares.LoadConfig,
 						middlewares.Provision,
 						middlewares.Parse("image_export"),
+						middlewares.Language(),
 						handlers.ExportImage,
 					),
 				},

@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -32,18 +33,21 @@ func TestParse(t *testing.T) {
 		ctx := mockCtx.NewMockContexter(ctrl)
 		argset := flag.NewFlagSet("test", 0)
 		cli := cli.NewContext(nil, argset, nil)
-		pwd, err := os.Getwd()
+		fd, err := ioutil.TempFile("", "fx_func_*.js")
 		if err != nil {
 			t.Fatal(err)
 		}
-		argset.Parse([]string{pwd})
+		defer os.Remove(fd.Name())
+
+		argset.Parse([]string{fd.Name()})
 		ctx.EXPECT().GetCliContext().Return(cli)
-		ctx.EXPECT().Set("sources", []string{pwd})
+		ctx.EXPECT().Set("fn", fd.Name())
+		ctx.EXPECT().Set("deps", []string{})
 		ctx.EXPECT().Set("name", "")
 		ctx.EXPECT().Set("port", 0)
 		ctx.EXPECT().Set("force", false)
 		if err := Parse("up")(ctx); err != nil {
-			t.Fatal("should got file or directory not existed error")
+			t.Fatal(err)
 		}
 	})
 }

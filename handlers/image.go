@@ -6,14 +6,12 @@ import (
 	"time"
 
 	"github.com/apex/log"
+	"github.com/metrue/fx/bundle"
 	"github.com/metrue/fx/constants"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/hook"
-	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
-	"github.com/metrue/fx/utils"
-	"github.com/otiai10/copy"
 )
 
 // BuildImage build image
@@ -25,24 +23,16 @@ func BuildImage(ctx context.Contexter) (err error) {
 	workdir := fmt.Sprintf("/tmp/fx-%d", time.Now().Unix())
 	defer os.RemoveAll(workdir)
 
-	sources := ctx.Get("sources").([]string)
+	fn := ctx.Get("fn").(string)
+	deps := ctx.Get("deps").([]string)
+	language := ctx.Get("language").(string)
 
-	if len(sources) == 0 {
-		return fmt.Errorf("source file/directory of function required")
+	if err := bundle.Bundle(workdir, language, fn, deps...); err != nil {
+		return err
 	}
-	if len(sources) == 1 &&
-		utils.IsDir(sources[0]) &&
-		utils.HasDockerfile(sources[0]) {
-		if err := copy.Copy(sources[0], workdir); err != nil {
-			return err
-		}
-	} else {
-		if err := packer.Pack(workdir, sources...); err != nil {
-			return err
-		}
-		if err := hook.RunBeforeBuildHook(workdir); err != nil {
-			return err
-		}
+
+	if err := hook.RunBeforeBuildHook(workdir); err != nil {
+		return err
 	}
 
 	docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
@@ -57,24 +47,17 @@ func BuildImage(ctx context.Contexter) (err error) {
 // ExportImage export service's code into a directory
 func ExportImage(ctx context.Contexter) (err error) {
 	outputDir := ctx.Get("output").(string)
-	sources := ctx.Get("sources").([]string)
+	fn := ctx.Get("fn").(string)
+	deps := ctx.Get("deps").([]string)
 
-	if len(sources) == 0 {
-		return fmt.Errorf("source file/directory of function required")
+	language := ctx.Get("language").(string)
+
+	if err := bundle.Bundle(outputDir, language, fn, deps...); err != nil {
+		return err
 	}
-	if len(sources) == 1 &&
-		utils.IsDir(sources[0]) &&
-		utils.HasDockerfile(sources[0]) {
-		if err := copy.Copy(sources[0], outputDir); err != nil {
-			return err
-		}
-	} else {
-		if err := packer.Pack(outputDir, sources...); err != nil {
-			return err
-		}
-		if err := hook.RunBeforeBuildHook(outputDir); err != nil {
-			return err
-		}
+
+	if err := hook.RunBeforeBuildHook(outputDir); err != nil {
+		return err
 	}
 
 	log.Infof("exported to %v: %v", outputDir, constants.CheckedSymbol)
