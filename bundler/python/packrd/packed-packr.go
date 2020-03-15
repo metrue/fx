@@ -24,7 +24,7 @@ var _ = func() error {
 	g.DefaultResolver = hgr
 
 	func() {
-		b := packr.New("./assets", "./assets")
+		b := packr.New("python", "./assets")
 		b.SetResolver("Dockerfile", packr.Pointer{ForwardBox: gk, ForwardPath: "46416dc28552c117e810b36196e043ca"})
 		b.SetResolver("app.py", packr.Pointer{ForwardBox: gk, ForwardPath: "65d09a53a70631fa1bbd7c5e1906d910"})
 		b.SetResolver("fx.py", packr.Pointer{ForwardBox: gk, ForwardPath: "0541aa67f1217ee20e491552a545a7ca"})

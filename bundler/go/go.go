@@ -13,7 +13,7 @@ type Gin struct {
 // New a koa bundler
 func New() *Gin {
 	return &Gin{
-		assets: packr.New("", "./assets"),
+		assets: packr.New("go", "./assets"),
 	}
 }
 

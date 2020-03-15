@@ -13,7 +13,7 @@ type Java struct {
 // New a koa bundler
 func New() *Java {
 	return &Java{
-		assets: packr.New("", "./assets"),
+		assets: packr.New("java", "./assets"),
 	}
 }
 

@@ -13,7 +13,7 @@ type Julia struct {
 // New a koa bundler
 func New() *Julia {
 	return &Julia{
-		assets: packr.New("", "./assets"),
+		assets: packr.New("julia", "./assets"),
 	}
 }
 
