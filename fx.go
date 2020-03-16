@@ -110,24 +110,7 @@ func main() {
 					},
 
 					Action: handle(
-						middlewares.LoadConfig,
 						handlers.Setup,
-					),
-				},
-				{
-					Name:  "list",
-					Usage: "list all infrastructures",
-					Action: handle(
-						middlewares.LoadConfig,
-						handlers.ListInfra,
-					),
-				},
-				{
-					Name:  "use",
-					Usage: "set current context to target cloud with given name",
-					Action: handle(
-						middlewares.LoadConfig,
-						handlers.UseInfra,
 					),
 				},
 			},
@@ -164,7 +147,6 @@ func main() {
 				},
 			},
 			Action: handle(
-				middlewares.LoadConfig,
 				middlewares.Parse("up"),
 				middlewares.Provision,
 				middlewares.Language(),
@@ -179,7 +161,6 @@ func main() {
 			ArgsUsage: "[service 1, service 2, ....]",
 			Action: handle(
 				middlewares.Parse("down"),
-				middlewares.LoadConfig,
 				middlewares.Provision,
 				handlers.Down,
 			),
@@ -197,7 +178,6 @@ func main() {
 			},
 			Action: handle(
 				middlewares.Parse("list"),
-				middlewares.LoadConfig,
 				middlewares.Provision,
 				handlers.List,
 			),
@@ -227,7 +207,6 @@ func main() {
 						},
 					},
 					Action: handle(
-						middlewares.LoadConfig,
 						middlewares.Parse("image_build"),
 						middlewares.Provision,
 						middlewares.Language(),
@@ -244,7 +223,6 @@ func main() {
 						},
 					},
 					Action: handle(
-						middlewares.LoadConfig,
 						middlewares.Parse("image_export"),
 						middlewares.Language(),
 						handlers.ExportImage,

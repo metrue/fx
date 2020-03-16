@@ -2,15 +2,35 @@ package handlers
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/metrue/fx/config"
 	"github.com/metrue/fx/context"
 	dockerInfra "github.com/metrue/fx/infra/docker"
 	k8sInfra "github.com/metrue/fx/infra/k8s"
 	"github.com/metrue/fx/pkg/spinner"
+	"github.com/metrue/fx/utils"
+	"github.com/mitchellh/go-homedir"
 )
+
+func configDir() (string, error) {
+	const defaultFxConfig = "~/.fx/config.yml"
+	configFile, err := homedir.Expand(defaultFxConfig)
+	if err != nil {
+		return "", err
+	}
+	if os.Getenv("FX_CONFIG") != "" {
+		configFile = os.Getenv("FX_CONFIG")
+	}
+	p, err := filepath.Abs(configFile)
+	if err != nil {
+		return "", err
+	}
+	return path.Dir(p), nil
+}
 
 func setupK8S(configDir string, name, masterInfo string, agentsInfo string) ([]byte, error) {
 	info := strings.Split(masterInfo, "@")
@@ -89,11 +109,9 @@ func Setup(ctx context.Contexter) (err error) {
 		return fmt.Errorf("invalid type, 'docker' and 'k8s' support")
 	}
 
-	fxConfig := ctx.Get("config").(*config.Config)
-
 	switch strings.ToLower(typ) {
 	case "k8s":
-		dir, err := fxConfig.Dir()
+		dir, err := configDir()
 		if err != nil {
 			return err
 		}
@@ -101,13 +119,20 @@ func Setup(ctx context.Contexter) (err error) {
 		if err != nil {
 			return err
 		}
-		return fxConfig.AddCloud(name, kubeconf)
+		// TODO just write to ~/.fx/<name>.kubeconf
+
+		kubeconfigPath := path.Join(dir, name+".kubeconf")
+		if err := utils.EnsureFile(kubeconfigPath); err != nil {
+			return err
+		}
+		if err := ioutil.WriteFile(kubeconfigPath, kubeconf, 0644); err != nil {
+			return err
+		}
 	case "docker":
-		config, err := setupDocker(cli.String("host"), name)
+		_, err := setupDocker(cli.String("host"), name)
 		if err != nil {
 			return err
 		}
-		return fxConfig.AddCloud(name, config)
 	}
 	return nil
 }
