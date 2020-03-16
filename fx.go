@@ -146,6 +146,14 @@ func main() {
 					Name:  "port, p",
 					Usage: "port number",
 				},
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
+				},
 				cli.BoolFlag{
 					Name:  "healthcheck, hc",
 					Usage: "do a health check after service up",
@@ -157,8 +165,8 @@ func main() {
 			},
 			Action: handle(
 				middlewares.LoadConfig,
-				middlewares.Provision,
 				middlewares.Parse("up"),
+				middlewares.Provision,
 				middlewares.Language(),
 				middlewares.Binding,
 				middlewares.Build,
@@ -220,8 +228,8 @@ func main() {
 					},
 					Action: handle(
 						middlewares.LoadConfig,
-						middlewares.Provision,
 						middlewares.Parse("image_build"),
+						middlewares.Provision,
 						middlewares.Language(),
 						handlers.BuildImage,
 					),
@@ -237,7 +245,6 @@ func main() {
 					},
 					Action: handle(
 						middlewares.LoadConfig,
-						middlewares.Provision,
 						middlewares.Parse("image_export"),
 						middlewares.Language(),
 						handlers.ExportImage,

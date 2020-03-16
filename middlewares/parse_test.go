@@ -3,6 +3,7 @@ package middlewares
 import (
 	"io/ioutil"
 	"os"
+	"os/user"
 	"testing"
 
 	"flag"
@@ -39,10 +40,18 @@ func TestParse(t *testing.T) {
 		}
 		defer os.Remove(fd.Name())
 
+		user, err := user.Current()
+		if err != nil {
+			t.Fatal(err)
+		}
+		host := user.Username + "@localhost"
+
 		argset.Parse([]string{fd.Name()})
 		ctx.EXPECT().GetCliContext().Return(cli)
 		ctx.EXPECT().Set("fn", fd.Name())
 		ctx.EXPECT().Set("deps", []string{})
+		ctx.EXPECT().Set("host", host)
+		ctx.EXPECT().Set("kubeconf", "")
 		ctx.EXPECT().Set("name", "")
 		ctx.EXPECT().Set("port", 0)
 		ctx.EXPECT().Set("force", false)

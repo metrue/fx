@@ -2,6 +2,8 @@ package middlewares
 
 import (
 	"fmt"
+	"os"
+	"os/user"
 
 	"github.com/google/uuid"
 	"github.com/metrue/fx/context"
@@ -37,6 +39,25 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			ctx.Set("port", port)
 			force := cli.Bool("force")
 			ctx.Set("force", force)
+
+			host := cli.String("host")
+			if os.Getenv("FX_HOST") != "" {
+				host = os.Getenv("FX_HOST")
+			}
+			if host == "" {
+				user, err := user.Current()
+				if err != nil {
+					return err
+				}
+				host = user.Username + "@localhost"
+			}
+			ctx.Set("host", host)
+			kubeconf := cli.String("kubeconf")
+			if os.Getenv("FX_KUBECONF") != "" {
+				kubeconf = os.Getenv("FX_KUBECONF")
+			}
+			ctx.Set("kubeconf", kubeconf)
+
 		case "down":
 			services := cli.Args()
 			if len(services) == 0 {
