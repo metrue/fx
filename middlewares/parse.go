@@ -14,7 +14,7 @@ type argsField struct {
 	Env  string
 }
 
-func set(ctx context.Contexter, fields []argsField) error {
+func set(ctx context.Contexter, fields []argsField) {
 	cli := ctx.GetCliContext()
 	for _, f := range fields {
 		if f.Type == "string" {
@@ -29,7 +29,6 @@ func set(ctx context.Contexter, fields []argsField) error {
 			ctx.Set(f.Name, os.Getenv(f.Env))
 		}
 	}
-	return nil
 }
 
 // Parse parse input
