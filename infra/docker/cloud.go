@@ -1,7 +1,6 @@
 package docker
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -81,22 +80,17 @@ func (c *Cloud) GetType() string {
 	return c.Type
 }
 
-func (c *Cloud) GetConfig() (string, error) {
-	return "", nil
-}
-
-func (c *Cloud) Dump() ([]byte, error) {
-	return json.Marshal(c)
-}
-
 // IsHealth check if cloud is in health
 func (c *Cloud) IsHealth() (bool, error) {
-	ok, err := c.sshClient.Connectable(sshConnectionTimeout)
-	if err != nil {
-		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, c.Port, err)
-	}
-	if !ok {
-		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH ", c.User, c.IP, c.Port)
+	local := c.IP == "127.0.0.1" || c.IP == "localhost"
+	if !local {
+		ok, err := c.sshClient.Connectable(sshConnectionTimeout)
+		if err != nil {
+			return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, c.Port, err)
+		}
+		if !ok {
+			return false, fmt.Errorf("could not connect to %s@%s:%s via SSH ", c.User, c.IP, c.Port)
+		}
 	}
 
 	if err := c.runCmd(infra.Scripts["check_fx_agent"].(string)); err != nil {

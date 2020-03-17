@@ -9,9 +9,7 @@ import (
 // Clouder cloud interface
 type Clouder interface {
 	Provision() error
-	GetConfig() (string, error)
 	GetType() string
-	Dump() ([]byte, error)
 	IsHealth() (bool, error)
 }
 

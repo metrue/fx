@@ -9,13 +9,20 @@ import (
 // List command handle
 func List(ctx context.Contexter) (err error) {
 	cli := ctx.GetCliContext()
-	deployer := ctx.Get("deployer").(infra.Deployer)
 	format := ctx.Get("format").(string)
 
-	services, err := deployer.List(ctx.GetContext(), cli.Args().First())
-	if err != nil {
-		return err
+	for _, targetDeployer := range []string{"docker_deployer", "k8s_deployer"} {
+		deployer, ok := ctx.Get(targetDeployer).(infra.Deployer)
+		if !ok {
+			continue
+		}
+		services, err := deployer.List(ctx.GetContext(), cli.Args().First())
+		if err != nil {
+			return err
+		}
+		if err := renderrer.Render(services, format); err != nil {
+			return err
+		}
 	}
-
-	return renderrer.Render(services, format)
+	return nil
 }
