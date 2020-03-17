@@ -4,7 +4,8 @@ DOCKER_REMOTE_HOST_ADDR ?= "127.0.0.1"
 DOCKER_REMOTE_HOST_USER ?= $(whoami)
 
 lint:
-	golangci-lint run
+	docker pull golangci/golangci-lint
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint golangci-lint run -v
 
 generate:
 	packr

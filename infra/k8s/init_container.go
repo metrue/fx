@@ -2,7 +2,6 @@ package k8s
 
 import (
 	appsv1 "k8s.io/api/apps/v1"
-	apiv1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -64,7 +63,7 @@ func injectInitContainer(name string, deployment *appsv1.Deployment) *appsv1.Dep
 			},
 		},
 	}
-	deployment.Spec.Template.Spec.InitContainers = []apiv1.Container{initContainer}
+	deployment.Spec.Template.Spec.InitContainers = []v1.Container{initContainer}
 	deployment.Spec.Template.Spec.Volumes = volumes
 	return deployment
 }
