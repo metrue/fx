@@ -4,12 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/metrue/fx/constants"
-	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/context"
 	dockerInfra "github.com/metrue/fx/infra/docker"
-	k8sInfra "github.com/metrue/fx/infra/k8s"
-	"github.com/metrue/fx/types"
 )
 
 // Provision make sure infrastructure is healthy
@@ -34,6 +30,10 @@ func Provision(ctx context.Contexter) (err error) {
 		if err != nil {
 			return err
 		}
+		if err := cloud.Provision(); err != nil {
+			return err
+		}
+
 		ok, err := cloud.IsHealth()
 		if err != nil {
 			return err
@@ -41,27 +41,6 @@ func Provision(ctx context.Contexter) (err error) {
 		if !ok {
 			return fmt.Errorf("target docker host is not healthy")
 		}
-
-		// TODO port should be configurable
-		docker, err := dockerHTTP.Create(ip, constants.AgentPort)
-		if err != nil {
-			return err
-		}
-		ctx.Set("docker", docker)
-
-		deployer, err := dockerInfra.CreateDeployer(docker)
-		if err != nil {
-			return err
-		}
-		ctx.Set("cloud_type", types.CloudTypeDocker)
-		ctx.Set("deployer", deployer)
-	} else if kubeconf != "" {
-		deployer, err := k8sInfra.CreateDeployer(kubeconf)
-		if err != nil {
-			return err
-		}
-		ctx.Set("cloud_type", types.CloudTypeK8S)
-		ctx.Set("deployer", deployer)
 	}
 
 	return nil

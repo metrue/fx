@@ -9,9 +9,6 @@ import (
 // Clouder cloud interface
 type Clouder interface {
 	Provision() error
-	GetConfig() (string, error)
-	GetType() string
-	Dump() ([]byte, error)
 	IsHealth() (bool, error)
 }
 
@@ -23,9 +20,4 @@ type Deployer interface {
 	GetStatus(ctx context.Context, name string) (types.Service, error)
 	List(ctx context.Context, name string) ([]types.Service, error)
 	Ping(ctx context.Context) error
-}
-
-// Infra infrastructure provision interface
-type Infra interface {
-	Deployer
 }

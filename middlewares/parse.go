@@ -18,7 +18,6 @@ type argsField struct {
 func set(ctx context.Contexter, cli *cli.Context, fields []argsField) {
 	for _, f := range fields {
 		if f.Type == "string" {
-			fmt.Println(f.Name, cli.String(f.Name))
 			ctx.Set(f.Name, cli.String(f.Name))
 		} else if f.Type == "int" {
 			ctx.Set(f.Name, cli.Int(f.Name))
@@ -77,6 +76,8 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			ctx.Set("services", svc)
 
 			set(ctx, cli, []argsField{
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
 			})
@@ -87,6 +88,8 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			format := cli.String("format")
 			ctx.Set("format", format)
 			set(ctx, cli, []argsField{
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
 			})
@@ -110,6 +113,8 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			ctx.Set("deps", deps)
 			set(ctx, cli, []argsField{
 				argsField{Name: "tag", Type: "string"},
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
 			})

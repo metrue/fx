@@ -92,42 +92,6 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:  "infra",
-			Usage: "manage infrastructure",
-			Subcommands: []cli.Command{
-				{
-					Name:  "create",
-					Usage: "create a infra for fx service",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "type, t",
-							Usage: "infracture type, 'docker', 'k8s' and 'k3s' support",
-						},
-						cli.StringFlag{
-							Name:  "name, n",
-							Usage: "name to identify the infrastructure",
-						},
-						cli.StringFlag{
-							Name:  "host",
-							Usage: "user and ip of your host, eg. 'root@182.12.1.12'",
-						},
-						cli.StringFlag{
-							Name:  "master",
-							Usage: "serve as master node in K3S cluster, eg. 'root@182.12.1.12'",
-						},
-						cli.StringFlag{
-							Name:  "agents",
-							Usage: "serve as agent node in K3S cluster, eg. 'root@187.1. 2. 3,root@123.3.2.1'",
-						},
-					},
-
-					Action: handle(
-						handlers.Setup,
-					),
-				},
-			},
-		},
-		{
 			Name:      "up",
 			Usage:     "deploy a function",
 			ArgsUsage: "[func.go func.js func.py func.rb ...]",
@@ -174,6 +138,7 @@ func main() {
 				middlewares.Provision,
 				middlewares.Language(),
 				middlewares.Binding,
+				middlewares.Driver,
 				middlewares.Build,
 				handlers.Up,
 			),
@@ -206,6 +171,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("down"),
 				middlewares.Provision,
+				middlewares.Driver,
 				handlers.Down,
 			),
 		},
@@ -242,6 +208,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("list"),
 				middlewares.Provision,
+				middlewares.Driver,
 				handlers.List,
 			),
 		},
