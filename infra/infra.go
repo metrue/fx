@@ -9,7 +9,6 @@ import (
 // Clouder cloud interface
 type Clouder interface {
 	Provision() error
-	GetType() string
 	IsHealth() (bool, error)
 }
 

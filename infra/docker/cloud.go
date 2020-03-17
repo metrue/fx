@@ -75,11 +75,6 @@ func (c *Cloud) Provision() error {
 	return nil
 }
 
-// GetType cloud type
-func (c *Cloud) GetType() string {
-	return c.Type
-}
-
 // IsHealth check if cloud is in health
 func (c *Cloud) IsHealth() (bool, error) {
 	local := c.IP == "127.0.0.1" || c.IP == "localhost"
