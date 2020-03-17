@@ -5,22 +5,21 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/go-ssh-client"
-	"github.com/mitchellh/go-homedir"
 )
 
 // Cloud define a docker host
 type Cloud struct {
-	IP   string `json:"ip"`
-	User string `json:"user"`
-	Name string `json:"name"`
-	Type string `json:"type"`
+	IP      string `json:"ip"`
+	User    string `json:"user"`
+	Port    string `json:"port"`
+	Type    string `json:"type"`
+	KeyFile string `json:"key_file"`
 
 	sshClient ssh.Clienter
 }
@@ -28,28 +27,25 @@ type Cloud struct {
 const sshConnectionTimeout = 10 * time.Second
 
 // New new a docker cloud
-func New(ip string, user string, name string) *Cloud {
+func New(ip string, user string, port string, keyfile string) *Cloud {
 	return &Cloud{
-		IP:   ip,
-		User: user,
-		Name: name,
-		Type: types.CloudTypeDocker,
+		IP:      ip,
+		User:    user,
+		Port:    port,
+		KeyFile: keyfile,
+		Type:    types.CloudTypeDocker,
 	}
 }
 
 // Create a docker node
-func Create(ip string, user string, name string) (*Cloud, error) {
-	key, err := sshkey()
-	if err != nil {
-		return nil, err
-	}
-	port := sshport()
-	sshClient := ssh.New(ip).WithUser(user).WithKey(key).WithPort(port)
+func Create(ip string, user string, port string, keyfile string) (*Cloud, error) {
+	sshClient := ssh.New(ip).WithUser(user).WithKey(keyfile).WithPort(port)
 	return &Cloud{
-		IP:   ip,
-		User: user,
-		Name: name,
-		Type: types.CloudTypeDocker,
+		IP:      ip,
+		User:    user,
+		Port:    port,
+		Type:    types.CloudTypeDocker,
+		KeyFile: keyfile,
 
 		sshClient: sshClient,
 	}, nil
@@ -57,19 +53,7 @@ func Create(ip string, user string, name string) (*Cloud, error) {
 
 // Load a docker node from meta
 func Load(meta []byte) (*Cloud, error) {
-	var cloud Cloud
-	if err := json.Unmarshal(meta, &cloud); err != nil {
-		return nil, err
-	}
-	key, err := sshkey()
-	if err != nil {
-		return nil, err
-	}
-	port := sshport()
-	sshClient := ssh.New(cloud.IP).WithUser(cloud.User).WithKey(key).WithPort(port)
-	cloud.sshClient = sshClient
-
-	return &cloud, nil
+	return nil, nil
 }
 
 // Provision a host
@@ -98,11 +82,7 @@ func (c *Cloud) GetType() string {
 }
 
 func (c *Cloud) GetConfig() (string, error) {
-	data, err := json.Marshal(c)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
+	return "", nil
 }
 
 func (c *Cloud) Dump() ([]byte, error) {
@@ -113,10 +93,10 @@ func (c *Cloud) Dump() ([]byte, error) {
 func (c *Cloud) IsHealth() (bool, error) {
 	ok, err := c.sshClient.Connectable(sshConnectionTimeout)
 	if err != nil {
-		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, sshport(), err)
+		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, c.Port, err)
 	}
 	if !ok {
-		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH ", c.User, c.IP, sshport())
+		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH ", c.User, c.IP, c.Port)
 	}
 
 	if err := c.runCmd(infra.Scripts["check_fx_agent"].(string)); err != nil {
@@ -159,33 +139,6 @@ func (c *Cloud) runCmd(script string, options ...ssh.CommandOptions) error {
 	}
 
 	return c.sshClient.RunCommand(script, option)
-}
-
-// NOTE the reason putting sshkey() and sshport here inside node.go is because
-// ssh key and ssh port is related to node it self, we may extend this in future
-func sshkey() (string, error) {
-	path := os.Getenv("SSH_KEY_FILE")
-	if path != "" {
-		absPath, err := filepath.Abs(path)
-		if err != nil {
-			return "", err
-		}
-		return absPath, nil
-	}
-
-	key, err := homedir.Expand("~/.ssh/id_rsa")
-	if err != nil {
-		return "", err
-	}
-	return key, nil
-}
-
-func sshport() string {
-	port := os.Getenv("SSH_PORT")
-	if port != "" {
-		return port
-	}
-	return "22"
 }
 
 var (

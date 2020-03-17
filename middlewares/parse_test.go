@@ -3,7 +3,6 @@ package middlewares
 import (
 	"io/ioutil"
 	"os"
-	"os/user"
 	"testing"
 
 	"flag"
@@ -13,8 +12,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-func TestParse(t *testing.T) {
-	t.Run("source code not existed", func(t *testing.T) {
+func TestParseUp(t *testing.T) {
+	t.Run("SourceCodeNotReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -27,7 +26,7 @@ func TestParse(t *testing.T) {
 			t.Fatal("should got file or directory not existed error")
 		}
 	})
-	t.Run("source code ready", func(t *testing.T) {
+	t.Run("SourceCodeReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -40,17 +39,13 @@ func TestParse(t *testing.T) {
 		}
 		defer os.Remove(fd.Name())
 
-		user, err := user.Current()
-		if err != nil {
-			t.Fatal(err)
-		}
-		host := user.Username + "@localhost"
-
 		argset.Parse([]string{fd.Name()})
 		ctx.EXPECT().GetCliContext().Return(cli)
 		ctx.EXPECT().Set("fn", fd.Name())
 		ctx.EXPECT().Set("deps", []string{})
-		ctx.EXPECT().Set("host", host)
+		ctx.EXPECT().Set("host", "")
+		ctx.EXPECT().Set("ssh_port", "")
+		ctx.EXPECT().Set("ssh_key", "")
 		ctx.EXPECT().Set("kubeconf", "")
 		ctx.EXPECT().Set("name", "")
 		ctx.EXPECT().Set("port", 0)

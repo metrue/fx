@@ -14,6 +14,7 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
 	"github.com/metrue/fx/middlewares"
+	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
@@ -84,6 +85,11 @@ func main() {
 	}
 	defaultHost := user.Username + "@localhost"
 
+	defaultSSHKeyFile, err := homedir.Expand("~/.ssh/id_rsa")
+	if err != nil {
+		panic(err)
+	}
+
 	app.Commands = []cli.Command{
 		{
 			Name:  "infra",
@@ -141,6 +147,16 @@ func main() {
 					Value: defaultHost,
 				},
 				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
 					Name:  "kubeconf, C",
 					Usage: "kubeconf of kubernetes cluster",
 				},
@@ -168,6 +184,16 @@ func main() {
 			ArgsUsage: "[service 1, service 2, ....]",
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "target host, <user>@<host>",
 					Value: defaultHost,
@@ -194,6 +220,16 @@ func main() {
 					Usage: "output format, 'table' and 'JSON' supported",
 				},
 				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "target host, <user>@<host>",
 					Value: defaultHost,
@@ -214,6 +250,16 @@ func main() {
 			Usage: "run a function instantly",
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "fx server host, default is localhost",
 					Value: defaultHost,
@@ -229,6 +275,16 @@ func main() {
 					Name:  "build",
 					Usage: "build a image",
 					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "ssh_port, P",
+							Usage: "SSH port for target host",
+							Value: "22",
+						},
+						cli.StringFlag{
+							Name:  "ssh_key, K",
+							Usage: "SSH key file for login target host",
+							Value: defaultSSHKeyFile,
+						},
 						cli.StringFlag{
 							Name:  "tag, t",
 							Usage: "image tag",

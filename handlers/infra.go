@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/metrue/fx/context"
-	dockerInfra "github.com/metrue/fx/infra/docker"
 	k8sInfra "github.com/metrue/fx/infra/k8s"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/utils"
@@ -65,24 +64,6 @@ func setupK8S(configDir string, name, masterInfo string, agentsInfo string) ([]b
 	return cloud.Dump()
 }
 
-func setupDocker(hostInfo string, name string) ([]byte, error) {
-	info := strings.Split(hostInfo, "@")
-	if len(info) != 2 {
-		return nil, fmt.Errorf("incorrect master info, should be <user>@<ip> format")
-	}
-	user := info[0]
-	host := info[1]
-
-	cloud, err := dockerInfra.Create(host, user, name)
-	if err != nil {
-		return nil, err
-	}
-	if err := cloud.Provision(); err != nil {
-		return nil, err
-	}
-	return cloud.Dump()
-}
-
 // Setup infra
 func Setup(ctx context.Contexter) (err error) {
 	const task = "setup infra"
@@ -97,11 +78,7 @@ func Setup(ctx context.Contexter) (err error) {
 	if name == "" {
 		return fmt.Errorf("name required")
 	}
-	if typ == "docker" {
-		if cli.String("host") == "" {
-			return fmt.Errorf("host required, eg. 'root@123.1.2.12'")
-		}
-	} else if typ == "k8s" {
+	if typ == "k8s" {
 		if cli.String("master") == "" {
 			return fmt.Errorf("master required, eg. 'root@123.1.2.12'")
 		}
@@ -126,11 +103,6 @@ func Setup(ctx context.Contexter) (err error) {
 			return err
 		}
 		if err := ioutil.WriteFile(kubeconfigPath, kubeconf, 0644); err != nil {
-			return err
-		}
-	case "docker":
-		_, err := setupDocker(cli.String("host"), name)
-		if err != nil {
 			return err
 		}
 	}
