@@ -21,8 +21,3 @@ type Deployer interface {
 	List(ctx context.Context, name string) ([]types.Service, error)
 	Ping(ctx context.Context) error
 }
-
-// Infra infrastructure provision interface
-type Infra interface {
-	Deployer
-}
