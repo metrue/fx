@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/user"
 	"regexp"
 
 	"github.com/apex/log"
@@ -77,6 +78,11 @@ func main() {
 			fmt.Println(aurora.Red("*****************"))
 		}
 	}()
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	defaultHost := user.Username + "@localhost"
 
 	app.Commands = []cli.Command{
 		{
@@ -132,6 +138,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
 				},
 				cli.StringFlag{
 					Name:  "kubeconf, C",
@@ -163,6 +170,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
 				},
 				cli.StringFlag{
 					Name:  "kubeconf, C",
@@ -188,6 +196,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
 				},
 				cli.StringFlag{
 					Name:  "kubeconf, C",
@@ -207,6 +216,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "fx server host, default is localhost",
+					Value: defaultHost,
 				},
 			},
 			Action: handle(handlers.Call),
@@ -222,6 +232,7 @@ func main() {
 						cli.StringFlag{
 							Name:  "tag, t",
 							Usage: "image tag",
+							Value: uuid.New().String(),
 						},
 					},
 					Action: handle(

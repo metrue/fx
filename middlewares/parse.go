@@ -3,12 +3,34 @@ package middlewares
 import (
 	"fmt"
 	"os"
-	"os/user"
 
-	"github.com/google/uuid"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/utils"
 )
+
+type argsField struct {
+	Type string
+	Name string
+	Env  string
+}
+
+func set(ctx context.Contexter, fields []argsField) error {
+	cli := ctx.GetCliContext()
+	for _, f := range fields {
+		if f.Type == "string" {
+			ctx.Set(f.Name, cli.String(f.Name))
+		} else if f.Type == "int" {
+			ctx.Set(f.Name, cli.Int(f.Name))
+		} else if f.Type == "bool" {
+			ctx.Set(f.Name, cli.Bool(f.Name))
+		}
+
+		if f.Env != "" && os.Getenv(f.Env) != "" {
+			ctx.Set(f.Name, os.Getenv(f.Env))
+		}
+	}
+	return nil
+}
 
 // Parse parse input
 func Parse(action string) func(ctx context.Contexter) (err error) {
@@ -33,30 +55,13 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("deps", deps)
 
-			name := cli.String("name")
-			ctx.Set("name", name)
-			port := cli.Int("port")
-			ctx.Set("port", port)
-			force := cli.Bool("force")
-			ctx.Set("force", force)
-
-			host := cli.String("host")
-			if os.Getenv("FX_HOST") != "" {
-				host = os.Getenv("FX_HOST")
-			}
-			if host == "" {
-				user, err := user.Current()
-				if err != nil {
-					return err
-				}
-				host = user.Username + "@localhost"
-			}
-			ctx.Set("host", host)
-			kubeconf := cli.String("kubeconf")
-			if os.Getenv("FX_KUBECONF") != "" {
-				kubeconf = os.Getenv("FX_KUBECONF")
-			}
-			ctx.Set("kubeconf", kubeconf)
+			set(ctx, []argsField{
+				argsField{Name: "name", Type: "string"},
+				argsField{Name: "port", Type: "int"},
+				argsField{Name: "force", Type: "bool"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
 
 		case "down":
 			services := cli.Args()
@@ -69,47 +74,20 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("services", svc)
 
-			host := cli.String("host")
-			if os.Getenv("FX_HOST") != "" {
-				host = os.Getenv("FX_HOST")
-			}
-			if host == "" {
-				user, err := user.Current()
-				if err != nil {
-					return err
-				}
-				host = user.Username + "@localhost"
-			}
-			ctx.Set("host", host)
-			kubeconf := cli.String("kubeconf")
-			if os.Getenv("FX_KUBECONF") != "" {
-				kubeconf = os.Getenv("FX_KUBECONF")
-			}
-			ctx.Set("kubeconf", kubeconf)
+			set(ctx, []argsField{
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
 
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
 			format := cli.String("format")
 			ctx.Set("format", format)
-
-			host := cli.String("host")
-			if os.Getenv("FX_HOST") != "" {
-				host = os.Getenv("FX_HOST")
-			}
-			if host == "" {
-				user, err := user.Current()
-				if err != nil {
-					return err
-				}
-				host = user.Username + "@localhost"
-			}
-			ctx.Set("host", host)
-			kubeconf := cli.String("kubeconf")
-			if os.Getenv("FX_KUBECONF") != "" {
-				kubeconf = os.Getenv("FX_KUBECONF")
-			}
-			ctx.Set("kubeconf", kubeconf)
+			set(ctx, []argsField{
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
 
 		case "image_build":
 			if !cli.Args().Present() {
@@ -128,12 +106,12 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				}
 			}
 			ctx.Set("deps", deps)
+			set(ctx, []argsField{
+				argsField{Name: "tag", Type: "string"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
 
-			tag := cli.String("tag")
-			if tag == "" {
-				tag = uuid.New().String()
-			}
-			ctx.Set("tag", tag)
 		case "image_export":
 			if !cli.Args().Present() {
 				return fmt.Errorf("no function given")
