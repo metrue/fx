@@ -11,12 +11,12 @@ func List(ctx context.Contexter) (err error) {
 	cli := ctx.GetCliContext()
 	format := ctx.Get("format").(string)
 
-	for _, targetDeployer := range []string{"docker_deployer", "k8s_deployer"} {
-		deployer, ok := ctx.Get(targetDeployer).(infra.Deployer)
+	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
+		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
 		if !ok {
 			continue
 		}
-		services, err := deployer.List(ctx.GetContext(), cli.Args().First())
+		services, err := driver.List(ctx.GetContext(), cli.Args().First())
 		if err != nil {
 			return err
 		}

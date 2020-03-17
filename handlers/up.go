@@ -22,18 +22,18 @@ func Up(ctx context.Contexter) (err error) {
 	bindings := ctx.Get("bindings").([]types.PortBinding)
 	force := ctx.Get("force").(bool)
 
-	for _, targetDeployer := range []string{"docker_deployer", "k8s_deployer"} {
-		deployer, ok := ctx.Get(targetDeployer).(infra.Deployer)
+	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
+		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
 		if !ok {
 			continue
 		}
 		if force && name != "" {
-			if err := deployer.Destroy(ctx.GetContext(), name); err != nil {
+			if err := driver.Destroy(ctx.GetContext(), name); err != nil {
 				log.Warnf("destroy service %s failed: %v", name, err)
 			}
 		}
 
-		if err := deployer.Deploy(
+		if err := driver.Deploy(
 			ctx.GetContext(),
 			fn,
 			name,
@@ -43,7 +43,7 @@ func Up(ctx context.Contexter) (err error) {
 			return err
 		}
 
-		service, err := deployer.GetStatus(ctx.GetContext(), name)
+		service, err := driver.GetStatus(ctx.GetContext(), name)
 		if err != nil {
 			return err
 		}

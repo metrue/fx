@@ -138,6 +138,7 @@ func main() {
 				middlewares.Provision,
 				middlewares.Language(),
 				middlewares.Binding,
+				middlewares.Driver,
 				middlewares.Build,
 				handlers.Up,
 			),
@@ -170,6 +171,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("down"),
 				middlewares.Provision,
+				middlewares.Driver,
 				handlers.Down,
 			),
 		},
@@ -206,6 +208,7 @@ func main() {
 			Action: handle(
 				middlewares.Parse("list"),
 				middlewares.Provision,
+				middlewares.Driver,
 				handlers.List,
 			),
 		},

@@ -11,8 +11,6 @@ import (
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/hook"
-	dockerInfra "github.com/metrue/fx/infra/docker"
-	k8sInfra "github.com/metrue/fx/infra/k8s"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/utils"
@@ -76,12 +74,6 @@ func Build(ctx context.Contexter) (err error) {
 			return err
 		}
 		ctx.Set("image", nameWithTag)
-
-		deployer, err := dockerInfra.CreateDeployer(docker)
-		if err != nil {
-			return err
-		}
-		ctx.Set("docker_deployer", deployer)
 	}
 
 	if kubeconf != "" {
@@ -90,12 +82,6 @@ func Build(ctx context.Contexter) (err error) {
 			return err
 		}
 		ctx.Set("data", data)
-
-		deployer, err := k8sInfra.CreateDeployer(kubeconf)
-		if err != nil {
-			return err
-		}
-		ctx.Set("k8s_deployer", deployer)
 	}
 
 	return nil
