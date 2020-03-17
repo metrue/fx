@@ -24,18 +24,19 @@ func TestUp(t *testing.T) {
 		data := "sample-data"
 		ctx.EXPECT().Get("name").Return(name)
 		ctx.EXPECT().Get("image").Return(image)
-		ctx.EXPECT().Get("deployer").Return(deployer)
+		ctx.EXPECT().Get("docker_deployer").Return(deployer)
+		ctx.EXPECT().Get("k8s_deployer").Return(deployer)
 		ctx.EXPECT().Get("bindings").Return(bindings)
 		ctx.EXPECT().Get("data").Return(data)
 		ctx.EXPECT().Get("force").Return(false)
-		ctx.EXPECT().GetContext().Return(context.Background()).Times(2)
-		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil)
+		ctx.EXPECT().GetContext().Return(context.Background()).Times(4)
+		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil).Times(2)
 		deployer.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
 			ID:   "id-1",
 			Name: name,
 			Host: "127.0.0.1",
 			Port: 2100,
-		}, nil)
+		}, nil).Times(2)
 		if err := Up(ctx); err != nil {
 			t.Fatal(err)
 		}
@@ -54,19 +55,20 @@ func TestUp(t *testing.T) {
 		data := "sample-data"
 		ctx.EXPECT().Get("name").Return(name)
 		ctx.EXPECT().Get("image").Return(image)
-		ctx.EXPECT().Get("deployer").Return(deployer)
+		ctx.EXPECT().Get("docker_deployer").Return(deployer)
+		ctx.EXPECT().Get("k8s_deployer").Return(deployer)
 		ctx.EXPECT().Get("bindings").Return(bindings)
 		ctx.EXPECT().Get("data").Return(data)
 		ctx.EXPECT().Get("force").Return(true)
-		ctx.EXPECT().GetContext().Return(context.Background()).Times(3)
-		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil)
-		deployer.EXPECT().Destroy(gomock.Any(), name).Return(nil)
+		ctx.EXPECT().GetContext().Return(context.Background()).Times(6)
+		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil).Times(2)
+		deployer.EXPECT().Destroy(gomock.Any(), name).Return(nil).Times(2)
 		deployer.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
 			ID:   "id-1",
 			Name: name,
 			Host: "127.0.0.1",
 			Port: 2100,
-		}, nil)
+		}, nil).Times(2)
 		if err := Up(ctx); err != nil {
 			t.Fatal(err)
 		}
