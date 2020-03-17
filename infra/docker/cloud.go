@@ -83,7 +83,7 @@ func (c *Cloud) GetType() string {
 // IsHealth check if cloud is in health
 func (c *Cloud) IsHealth() (bool, error) {
 	local := c.IP == "127.0.0.1" || c.IP == "localhost"
-	if !local {
+	if !local || os.Getenv("CI") != "" {
 		ok, err := c.sshClient.Connectable(sshConnectionTimeout)
 		if err != nil {
 			return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, c.Port, err)
