@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/metrue/fx/infra"
 	"github.com/metrue/fx/types"
@@ -23,6 +24,8 @@ type Cloud struct {
 
 	sshClient ssh.Clienter
 }
+
+const sshConnectionTimeout = 10 * time.Second
 
 // New new a docker cloud
 func New(ip string, user string, name string) *Cloud {
@@ -108,6 +111,14 @@ func (c *Cloud) Dump() ([]byte, error) {
 
 // IsHealth check if cloud is in health
 func (c *Cloud) IsHealth() (bool, error) {
+	ok, err := c.sshClient.Connectable(sshConnectionTimeout)
+	if err != nil {
+		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH: '%s'", c.User, c.IP, sshport(), err)
+	}
+	if !ok {
+		return false, fmt.Errorf("could not connect to %s@%s:%s via SSH ", c.User, c.IP, sshport())
+	}
+
 	if err := c.runCmd(infra.Scripts["check_fx_agent"].(string)); err != nil {
 		if err := c.runCmd(infra.Scripts["start_fx_agent"].(string)); err != nil {
 			return false, err
@@ -123,7 +134,9 @@ func (c *Cloud) setsshClient(client ssh.Clienter) {
 
 // nolint:unparam
 func (c *Cloud) runCmd(script string, options ...ssh.CommandOptions) error {
-	option := ssh.CommandOptions{}
+	option := ssh.CommandOptions{
+		Timeout: sshConnectionTimeout,
+	}
 	if len(options) >= 1 {
 		option = options[0]
 	}

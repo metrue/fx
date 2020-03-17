@@ -34,7 +34,7 @@ func Provision(ctx context.Contexter) (err error) {
 		}
 		ok, err := cloud.IsHealth()
 		if err != nil {
-			return fmt.Errorf("target docker host is not healthy:  %s", err)
+			return err
 		}
 		if !ok {
 			return fmt.Errorf("target docker host is not healthy")
