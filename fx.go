@@ -159,6 +159,16 @@ func main() {
 			Name:      "down",
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
+				},
+			},
 			Action: handle(
 				middlewares.Parse("down"),
 				middlewares.Provision,
@@ -174,6 +184,14 @@ func main() {
 					Name:  "format, f",
 					Value: "table",
 					Usage: "output format, 'table' and 'JSON' supported",
+				},
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
 				},
 			},
 			Action: handle(

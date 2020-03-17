@@ -68,11 +68,49 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				svc = append(svc, service)
 			}
 			ctx.Set("services", svc)
+
+			host := cli.String("host")
+			if os.Getenv("FX_HOST") != "" {
+				host = os.Getenv("FX_HOST")
+			}
+			if host == "" {
+				user, err := user.Current()
+				if err != nil {
+					return err
+				}
+				host = user.Username + "@localhost"
+			}
+			ctx.Set("host", host)
+			kubeconf := cli.String("kubeconf")
+			if os.Getenv("FX_KUBECONF") != "" {
+				kubeconf = os.Getenv("FX_KUBECONF")
+			}
+			ctx.Set("kubeconf", kubeconf)
+
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
 			format := cli.String("format")
 			ctx.Set("format", format)
+
+			host := cli.String("host")
+			if os.Getenv("FX_HOST") != "" {
+				host = os.Getenv("FX_HOST")
+			}
+			if host == "" {
+				user, err := user.Current()
+				if err != nil {
+					return err
+				}
+				host = user.Username + "@localhost"
+			}
+			ctx.Set("host", host)
+			kubeconf := cli.String("kubeconf")
+			if os.Getenv("FX_KUBECONF") != "" {
+				kubeconf = os.Getenv("FX_KUBECONF")
+			}
+			ctx.Set("kubeconf", kubeconf)
+
 		case "image_build":
 			if !cli.Args().Present() {
 				return fmt.Errorf("no function given")
