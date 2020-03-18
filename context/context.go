@@ -52,6 +52,7 @@ func (ctx *Context) GetCliContext() *cli.Context {
 
 // Set a value with name
 func (ctx *Context) Set(name string, value interface{}) {
+	// nolint
 	newCtx := context.WithValue(ctx.Context, name, value)
 	ctx.Context = newCtx
 }

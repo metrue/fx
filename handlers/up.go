@@ -19,28 +19,37 @@ func Up(ctx context.Contexter) (err error) {
 		image = ""
 	}
 	name := ctx.Get("name").(string)
-	deployer := ctx.Get("deployer").(infra.Deployer)
 	bindings := ctx.Get("bindings").([]types.PortBinding)
 	force := ctx.Get("force").(bool)
-	if force && name != "" {
-		if err := deployer.Destroy(ctx.GetContext(), name); err != nil {
-			log.Warnf("destroy service %s failed: %v", name, err)
+
+	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
+		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
+		if !ok {
+			continue
+		}
+		if force && name != "" {
+			if err := driver.Destroy(ctx.GetContext(), name); err != nil {
+				log.Warnf("destroy service %s failed: %v", name, err)
+			}
+		}
+
+		if err := driver.Deploy(
+			ctx.GetContext(),
+			fn,
+			name,
+			image,
+			bindings,
+		); err != nil {
+			return err
+		}
+
+		service, err := driver.GetStatus(ctx.GetContext(), name)
+		if err != nil {
+			return err
+		}
+		if err := renderrer.Render([]types.Service{service}, "table"); err != nil {
+			return err
 		}
 	}
-
-	if err := deployer.Deploy(
-		ctx.GetContext(),
-		fn,
-		name,
-		image,
-		bindings,
-	); err != nil {
-		return err
-	}
-
-	service, err := deployer.GetStatus(ctx.GetContext(), name)
-	if err != nil {
-		return err
-	}
-	return renderrer.Render([]types.Service{service}, "table")
+	return nil
 }

@@ -9,13 +9,20 @@ import (
 // List command handle
 func List(ctx context.Contexter) (err error) {
 	cli := ctx.GetCliContext()
-	deployer := ctx.Get("deployer").(infra.Deployer)
 	format := ctx.Get("format").(string)
 
-	services, err := deployer.List(ctx.GetContext(), cli.Args().First())
-	if err != nil {
-		return err
+	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
+		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
+		if !ok {
+			continue
+		}
+		services, err := driver.List(ctx.GetContext(), cli.Args().First())
+		if err != nil {
+			return err
+		}
+		if err := renderrer.Render(services, format); err != nil {
+			return err
+		}
 	}
-
-	return renderrer.Render(services, format)
+	return nil
 }

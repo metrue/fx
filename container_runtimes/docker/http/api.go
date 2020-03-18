@@ -18,7 +18,6 @@ import (
 	"github.com/apex/log"
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	dockerTypesContainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-querystring/query"
@@ -397,12 +396,12 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		portSet[port] = struct{}{}
 		portMap[port] = bindings
 	}
-	config := &dockerTypesContainer.Config{
+	config := &container.Config{
 		Image:        image,
 		ExposedPorts: portSet,
 	}
 
-	hostConfig := &dockerTypesContainer.HostConfig{
+	hostConfig := &container.HostConfig{
 		AutoRemove:   !fxConfig.DisableContainerAutoremove,
 		PortBindings: portMap,
 	}

@@ -19,8 +19,7 @@ jobs:
 
       - name: lint
         run: |
-          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
-          golangci-lint run -v
+          make lint
 
       - name: unit test
         env:
@@ -43,11 +42,6 @@ jobs:
           make docker-build
           make test
           # make docker-publish #TODO in release workflow
-      - name: test fx docker cloud
-        run: |
-          make start_docker_infra
-          make test_docker_infra
-          make stop_docker_infra
 
       - name: test fx cli
         env:

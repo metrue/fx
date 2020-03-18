@@ -2,11 +2,34 @@ package middlewares
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/google/uuid"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/utils"
+	"github.com/urfave/cli"
 )
+
+type argsField struct {
+	Type string
+	Name string
+	Env  string
+}
+
+func set(ctx context.Contexter, cli *cli.Context, fields []argsField) {
+	for _, f := range fields {
+		if f.Type == "string" {
+			ctx.Set(f.Name, cli.String(f.Name))
+		} else if f.Type == "int" {
+			ctx.Set(f.Name, cli.Int(f.Name))
+		} else if f.Type == "bool" {
+			ctx.Set(f.Name, cli.Bool(f.Name))
+		}
+
+		if f.Env != "" && os.Getenv(f.Env) != "" {
+			ctx.Set(f.Name, os.Getenv(f.Env))
+		}
+	}
+}
 
 // Parse parse input
 func Parse(action string) func(ctx context.Contexter) (err error) {
@@ -31,12 +54,16 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("deps", deps)
 
-			name := cli.String("name")
-			ctx.Set("name", name)
-			port := cli.Int("port")
-			ctx.Set("port", port)
-			force := cli.Bool("force")
-			ctx.Set("force", force)
+			set(ctx, cli, []argsField{
+				argsField{Name: "name", Type: "string"},
+				argsField{Name: "port", Type: "int"},
+				argsField{Name: "force", Type: "bool"},
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
+
 		case "down":
 			services := cli.Args()
 			if len(services) == 0 {
@@ -47,11 +74,26 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				svc = append(svc, service)
 			}
 			ctx.Set("services", svc)
+
+			set(ctx, cli, []argsField{
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
+
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
 			format := cli.String("format")
 			ctx.Set("format", format)
+			set(ctx, cli, []argsField{
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
+
 		case "image_build":
 			if !cli.Args().Present() {
 				return fmt.Errorf("no function given")
@@ -69,12 +111,14 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				}
 			}
 			ctx.Set("deps", deps)
+			set(ctx, cli, []argsField{
+				argsField{Name: "tag", Type: "string"},
+				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
+				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
+				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
+				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
+			})
 
-			tag := cli.String("tag")
-			if tag == "" {
-				tag = uuid.New().String()
-			}
-			ctx.Set("tag", tag)
 		case "image_export":
 			if !cli.Args().Present() {
 				return fmt.Errorf("no function given")
