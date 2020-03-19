@@ -36,11 +36,26 @@ $ curl 127.0.0.1:2000
 
 ##  Deploy a function onto remote host
 
-* make sure your instance can be ssh login
+* make sure you can ssh login to target host with root
+
+Update `/etc/ssh/sshd_config` to allow login with root.
+
+```
+PermitRootLogin yes
+```
+
+Then restart sshd with,
+
+```shell
+$ sudo service sshd restart
+```
+
 * make sure your instance accept port 8866
+
+[FYI](https://lightsail.aws.amazon.com/ls/docs/en_us/articles/understanding-firewall-and-port-mappings-in-amazon-lightsail)
 
 then you can deploy function to remote host
 
 ```shell
-DOCKER_REMOTE_HOST_ADDR=<your host> DOCKER_REMOTE_HOST_USER=<your user> DOCKER_REMOTE_HOST_PASSWORD=<your password> fx up -p 2000 test/functions/func.js
+fx up --host root@<your host> test/functions/func.js 
 ```
