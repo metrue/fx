@@ -135,9 +135,9 @@ func main() {
 			},
 			Action: handle(
 				middlewares.Parse("up"),
-				middlewares.Provision,
 				middlewares.Language(),
 				middlewares.Binding,
+				middlewares.SSH,
 				middlewares.Driver,
 				middlewares.Build,
 				handlers.Up,
@@ -170,7 +170,7 @@ func main() {
 			},
 			Action: handle(
 				middlewares.Parse("down"),
-				middlewares.Provision,
+				middlewares.SSH,
 				middlewares.Driver,
 				handlers.Down,
 			),
@@ -207,7 +207,7 @@ func main() {
 			},
 			Action: handle(
 				middlewares.Parse("list"),
-				middlewares.Provision,
+				middlewares.SSH,
 				middlewares.Driver,
 				handlers.List,
 			),
@@ -260,7 +260,6 @@ func main() {
 					},
 					Action: handle(
 						middlewares.Parse("image_build"),
-						middlewares.Provision,
 						middlewares.Language(),
 						handlers.BuildImage,
 					),

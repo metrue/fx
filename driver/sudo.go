@@ -1,4 +1,4 @@
-package infra
+package driver
 
 // Sudo append sudo when user is not root
 func Sudo(cmd string, user string) string {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	mockCtx "github.com/metrue/fx/context/mocks"
-	mockDeployer "github.com/metrue/fx/infra/mocks"
+	mockDeployer "github.com/metrue/fx/driver/mocks"
 )
 
 func TestDown(t *testing.T) {
@@ -14,7 +14,7 @@ func TestDown(t *testing.T) {
 	defer ctrl.Finish()
 
 	ctx := mockCtx.NewMockContexter(ctrl)
-	deployer := mockDeployer.NewMockDeployer(ctrl)
+	deployer := mockDeployer.NewMockDriver(ctrl)
 
 	services := []string{"sample-name"}
 	ctx.EXPECT().Get("services").Return(services)

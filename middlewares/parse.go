@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/utils"
@@ -15,10 +16,23 @@ type argsField struct {
 	Env  string
 }
 
-func set(ctx context.Contexter, cli *cli.Context, fields []argsField) {
+func set(ctx context.Contexter, cli *cli.Context, fields []argsField) error {
 	for _, f := range fields {
 		if f.Type == "string" {
-			ctx.Set(f.Name, cli.String(f.Name))
+			if f.Name == "host" {
+				addr := strings.Split(cli.String(f.Name), "@")
+				fmt.Println("===>", cli.String(f.Name))
+				if len(addr) != 2 {
+					return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
+				}
+				user := addr[0]
+				ip := addr[1]
+				ctx.Set("host", ip)
+				ctx.Set("user", user)
+			} else {
+
+				ctx.Set(f.Name, cli.String(f.Name))
+			}
 		} else if f.Type == "int" {
 			ctx.Set(f.Name, cli.Int(f.Name))
 		} else if f.Type == "bool" {
@@ -29,6 +43,7 @@ func set(ctx context.Contexter, cli *cli.Context, fields []argsField) {
 			ctx.Set(f.Name, os.Getenv(f.Env))
 		}
 	}
+	return nil
 }
 
 // Parse parse input
@@ -54,7 +69,7 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("deps", deps)
 
-			set(ctx, cli, []argsField{
+			if err := set(ctx, cli, []argsField{
 				argsField{Name: "name", Type: "string"},
 				argsField{Name: "port", Type: "int"},
 				argsField{Name: "force", Type: "bool"},
@@ -62,7 +77,9 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
-			})
+			}); err != nil {
+				return err
+			}
 
 		case "down":
 			services := cli.Args()
@@ -75,24 +92,28 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("services", svc)
 
-			set(ctx, cli, []argsField{
+			if err := set(ctx, cli, []argsField{
 				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
 				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
-			})
+			}); err != nil {
+				return err
+			}
 
 		case "list":
 			name := cli.Args().First()
 			ctx.Set("filter", name)
 			format := cli.String("format")
 			ctx.Set("format", format)
-			set(ctx, cli, []argsField{
+			if err := set(ctx, cli, []argsField{
 				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
 				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
-			})
+			}); err != nil {
+				return err
+			}
 
 		case "image_build":
 			if !cli.Args().Present() {
@@ -111,13 +132,15 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 				}
 			}
 			ctx.Set("deps", deps)
-			set(ctx, cli, []argsField{
+			if err := set(ctx, cli, []argsField{
 				argsField{Name: "tag", Type: "string"},
 				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
 				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
 				argsField{Name: "kubeconf", Type: "string", Env: "FX_KUBECONF"},
-			})
+			}); err != nil {
+				return err
+			}
 
 		case "image_export":
 			if !cli.Args().Present() {

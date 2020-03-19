@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/driver"
 )
 
 // Down command handle
 func Down(ctx context.Contexter) (err error) {
 	services := ctx.Get("services").([]string)
-	runner := ctx.Get("deployer").(infra.Deployer)
+	runner := ctx.Get("deployer").(driver.Driver)
 	for _, svc := range services {
 		if err := runner.Destroy(ctx.GetContext(), svc); err != nil {
 			return err

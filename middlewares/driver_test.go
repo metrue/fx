@@ -1,17 +1,17 @@
 package middlewares
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	mockCtx "github.com/metrue/fx/context/mocks"
+	sshMocks "github.com/metrue/go-ssh-client/mocks"
 )
 
 func TestDriver(t *testing.T) {
-	// TODO enable
-	t.Skip()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := mockCtx.NewMockContexter(ctrl)
@@ -49,7 +49,11 @@ users:
 
 	defer os.Remove(kubeconf.Name())
 
-	ctx.EXPECT().Get("host").Return("root@127.0.0.1")
+	sshClient := sshMocks.NewMockClienter(ctrl)
+	cntx := context.Background()
+	ctx.EXPECT().GetContext().Return(cntx).Times(1)
+	ctx.EXPECT().Get("ssh").Return(sshClient)
+	ctx.EXPECT().Get("host").Return("127.0.0.1")
 	ctx.EXPECT().Get("kubeconf").Return(kubeconf.Name())
 	ctx.EXPECT().Set("docker_driver", gomock.Any())
 	ctx.EXPECT().Set("k8s_driver", gomock.Any())

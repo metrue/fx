@@ -12,6 +12,17 @@ import (
 	"github.com/urfave/cli"
 )
 
+type stringValue string
+
+func (s stringValue) Set(v string) error {
+	s = stringValue(v)
+	return nil
+}
+
+func (s stringValue) String() string {
+	return string(s)
+}
+
 func TestParseUp(t *testing.T) {
 	t.Run("SourceCodeNotReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
@@ -32,6 +43,9 @@ func TestParseUp(t *testing.T) {
 
 		ctx := mockCtx.NewMockContexter(ctrl)
 		argset := flag.NewFlagSet("test", 0)
+		host := "127.0.0.1"
+		user := "root"
+		argset.Var(stringValue(user+"@"+host), "host", "host info")
 		cli := cli.NewContext(nil, argset, nil)
 		fd, err := ioutil.TempFile("", "fx_func_*.js")
 		if err != nil {
@@ -43,7 +57,8 @@ func TestParseUp(t *testing.T) {
 		ctx.EXPECT().GetCliContext().Return(cli)
 		ctx.EXPECT().Set("fn", fd.Name())
 		ctx.EXPECT().Set("deps", []string{})
-		ctx.EXPECT().Set("host", "")
+		ctx.EXPECT().Set("host", host)
+		ctx.EXPECT().Set("user", user)
 		ctx.EXPECT().Set("ssh_port", "")
 		ctx.EXPECT().Set("ssh_key", "")
 		ctx.EXPECT().Set("kubeconf", "")
