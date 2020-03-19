@@ -70,8 +70,6 @@ You can go the release page to [download](https://github.com/metrue/fx/releases)
 
 ## Usage
 
-Make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
-
 ```
 NAME:
    fx - makes function as a service
@@ -98,9 +96,9 @@ GLOBAL OPTIONS:
 
 ### Deploy function
 
-* Local Docker environment
+#### Local Docker environment
 
-By default, function will be deployed on localhost.
+By default, function will be deployed on localhost， make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server first. then type `fx -h` on your terminal to check out basic help.
 
 ```
 $ fx up --name hello ./examples/functions/JavaScript/func.js
@@ -112,7 +110,7 @@ $ fx up --name hello ./examples/functions/JavaScript/func.js
 +------------------------------------------------------------------+-----------+---------------+
 ```
 
-* Remote host
+#### Remote host
 
 Use `--host` to specify the target host for your function,
 
@@ -126,7 +124,7 @@ $ fx up --host roo@<your host> --name hello ./examples/functions/JavaScript/func
 +------------------------------------------------------------------+-----------+---------------+
 ```
 
-* Kubernetes
+#### Kubernetes
 
 ```
 $ FX_KUBECONF=~/.kube/config fx up examples/functions/JavaScript/func.js --name hello
