@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/user"
 	"regexp"
 
 	"github.com/apex/log"
@@ -13,11 +14,12 @@ import (
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/handlers"
 	"github.com/metrue/fx/middlewares"
+	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.9.31"
+const version = "0.9.32"
 
 func init() {
 	go checkForUpdate()
@@ -77,61 +79,18 @@ func main() {
 			fmt.Println(aurora.Red("*****************"))
 		}
 	}()
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	defaultHost := user.Username + "@localhost"
+
+	defaultSSHKeyFile, err := homedir.Expand("~/.ssh/id_rsa")
+	if err != nil {
+		panic(err)
+	}
 
 	app.Commands = []cli.Command{
-		{
-			Name:  "infra",
-			Usage: "manage infrastructure",
-			Subcommands: []cli.Command{
-				{
-					Name:  "create",
-					Usage: "create a infra for fx service",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:  "type, t",
-							Usage: "infracture type, 'docker', 'k8s' and 'k3s' support",
-						},
-						cli.StringFlag{
-							Name:  "name, n",
-							Usage: "name to identify the infrastructure",
-						},
-						cli.StringFlag{
-							Name:  "host",
-							Usage: "user and ip of your host, eg. 'root@182.12.1.12'",
-						},
-						cli.StringFlag{
-							Name:  "master",
-							Usage: "serve as master node in K3S cluster, eg. 'root@182.12.1.12'",
-						},
-						cli.StringFlag{
-							Name:  "agents",
-							Usage: "serve as agent node in K3S cluster, eg. 'root@187.1. 2. 3,root@123.3.2.1'",
-						},
-					},
-
-					Action: handle(
-						middlewares.LoadConfig,
-						handlers.Setup,
-					),
-				},
-				{
-					Name:  "list",
-					Usage: "list all infrastructures",
-					Action: handle(
-						middlewares.LoadConfig,
-						handlers.ListInfra,
-					),
-				},
-				{
-					Name:  "use",
-					Usage: "set current context to target cloud with given name",
-					Action: handle(
-						middlewares.LoadConfig,
-						handlers.UseInfra,
-					),
-				},
-			},
-		},
 		{
 			Name:      "up",
 			Usage:     "deploy a function",
@@ -146,6 +105,25 @@ func main() {
 					Name:  "port, p",
 					Usage: "port number",
 				},
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
+				},
+				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
+				},
 				cli.BoolFlag{
 					Name:  "healthcheck, hc",
 					Usage: "do a health check after service up",
@@ -156,11 +134,11 @@ func main() {
 				},
 			},
 			Action: handle(
-				middlewares.LoadConfig,
-				middlewares.Provision,
 				middlewares.Parse("up"),
 				middlewares.Language(),
 				middlewares.Binding,
+				middlewares.SSH,
+				middlewares.Driver,
 				middlewares.Build,
 				handlers.Up,
 			),
@@ -169,10 +147,31 @@ func main() {
 			Name:      "down",
 			Usage:     "destroy a service",
 			ArgsUsage: "[service 1, service 2, ....]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
+				},
+			},
 			Action: handle(
 				middlewares.Parse("down"),
-				middlewares.LoadConfig,
-				middlewares.Provision,
+				middlewares.SSH,
+				middlewares.Driver,
 				handlers.Down,
 			),
 		},
@@ -186,11 +185,30 @@ func main() {
 					Value: "table",
 					Usage: "output format, 'table' and 'JSON' supported",
 				},
+				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
+					Name:  "host, H",
+					Usage: "target host, <user>@<host>",
+					Value: defaultHost,
+				},
+				cli.StringFlag{
+					Name:  "kubeconf, C",
+					Usage: "kubeconf of kubernetes cluster",
+				},
 			},
 			Action: handle(
 				middlewares.Parse("list"),
-				middlewares.LoadConfig,
-				middlewares.Provision,
+				middlewares.SSH,
+				middlewares.Driver,
 				handlers.List,
 			),
 		},
@@ -199,8 +217,19 @@ func main() {
 			Usage: "run a function instantly",
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name:  "ssh_port, P",
+					Usage: "SSH port for target host",
+					Value: "22",
+				},
+				cli.StringFlag{
+					Name:  "ssh_key, K",
+					Usage: "SSH key file for login target host",
+					Value: defaultSSHKeyFile,
+				},
+				cli.StringFlag{
 					Name:  "host, H",
 					Usage: "fx server host, default is localhost",
+					Value: defaultHost,
 				},
 			},
 			Action: handle(handlers.Call),
@@ -214,13 +243,22 @@ func main() {
 					Usage: "build a image",
 					Flags: []cli.Flag{
 						cli.StringFlag{
+							Name:  "ssh_port, P",
+							Usage: "SSH port for target host",
+							Value: "22",
+						},
+						cli.StringFlag{
+							Name:  "ssh_key, K",
+							Usage: "SSH key file for login target host",
+							Value: defaultSSHKeyFile,
+						},
+						cli.StringFlag{
 							Name:  "tag, t",
 							Usage: "image tag",
+							Value: uuid.New().String(),
 						},
 					},
 					Action: handle(
-						middlewares.LoadConfig,
-						middlewares.Provision,
 						middlewares.Parse("image_build"),
 						middlewares.Language(),
 						handlers.BuildImage,
@@ -236,8 +274,6 @@ func main() {
 						},
 					},
 					Action: handle(
-						middlewares.LoadConfig,
-						middlewares.Provision,
 						middlewares.Parse("image_export"),
 						middlewares.Language(),
 						handlers.ExportImage,

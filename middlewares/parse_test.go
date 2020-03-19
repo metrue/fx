@@ -12,8 +12,20 @@ import (
 	"github.com/urfave/cli"
 )
 
-func TestParse(t *testing.T) {
-	t.Run("source code not existed", func(t *testing.T) {
+type stringValue string
+
+func (s stringValue) Set(v string) error {
+	// nolint
+	s = stringValue(v)
+	return nil
+}
+
+func (s stringValue) String() string {
+	return string(s)
+}
+
+func TestParseUp(t *testing.T) {
+	t.Run("SourceCodeNotReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -26,12 +38,15 @@ func TestParse(t *testing.T) {
 			t.Fatal("should got file or directory not existed error")
 		}
 	})
-	t.Run("source code ready", func(t *testing.T) {
+	t.Run("SourceCodeReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		ctx := mockCtx.NewMockContexter(ctrl)
 		argset := flag.NewFlagSet("test", 0)
+		host := "127.0.0.1"
+		user := "root"
+		argset.Var(stringValue(user+"@"+host), "host", "host info")
 		cli := cli.NewContext(nil, argset, nil)
 		fd, err := ioutil.TempFile("", "fx_func_*.js")
 		if err != nil {
@@ -43,6 +58,11 @@ func TestParse(t *testing.T) {
 		ctx.EXPECT().GetCliContext().Return(cli)
 		ctx.EXPECT().Set("fn", fd.Name())
 		ctx.EXPECT().Set("deps", []string{})
+		ctx.EXPECT().Set("host", host)
+		ctx.EXPECT().Set("user", user)
+		ctx.EXPECT().Set("ssh_port", "")
+		ctx.EXPECT().Set("ssh_key", "")
+		ctx.EXPECT().Set("kubeconf", "")
 		ctx.EXPECT().Set("name", "")
 		ctx.EXPECT().Set("port", 0)
 		ctx.EXPECT().Set("force", false)

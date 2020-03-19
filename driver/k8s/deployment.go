@@ -6,7 +6,6 @@ import (
 	"github.com/metrue/fx/types"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -29,7 +28,7 @@ func generateDeploymentSpec(
 		Name:            "fx-placeholder-container-name",
 		Image:           image,
 		Ports:           ports,
-		ImagePullPolicy: v1.PullIfNotPresent,
+		ImagePullPolicy: apiv1.PullIfNotPresent,
 	}
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{

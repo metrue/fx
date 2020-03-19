@@ -6,48 +6,63 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
-	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/driver"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 )
 
-// Deployer manage container
-type Deployer struct {
-	cli containerruntimes.ContainerRuntime
+// Driver manage container
+type Driver struct {
+	dockerClient containerruntimes.ContainerRuntime
 }
 
-// CreateClient create a docker instance
-func CreateClient(client containerruntimes.ContainerRuntime) (d *Deployer, err error) {
-	return &Deployer{cli: client}, nil
+// Options to initialize a fx docker driver
+type Options struct {
+	DockerClient containerruntimes.ContainerRuntime
+}
+
+// New a fx docker driver
+func New(options Options) *Driver {
+	return &Driver{
+		dockerClient: options.DockerClient,
+	}
+}
+
+// Ping check healty status of driver
+func (d *Driver) Ping(ctx context.Context) error {
+	if _, err := d.dockerClient.Version(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Deploy create a Docker container from given image, and bind the constants.FxContainerExposePort to given port
-func (d *Deployer) Deploy(ctx context.Context, fn string, name string, image string, ports []types.PortBinding) (err error) {
+func (d *Driver) Deploy(ctx context.Context, fn string, name string, image string, ports []types.PortBinding) (err error) {
 	spinner.Start("deploying " + name)
 	defer func() {
 		spinner.Stop("deploying "+name, err)
 	}()
-	return d.cli.StartContainer(ctx, name, image, ports)
+	return d.dockerClient.StartContainer(ctx, name, image, ports)
 }
 
 // Update a container
-func (d *Deployer) Update(ctx context.Context, name string) error {
+func (d *Driver) Update(ctx context.Context, name string) error {
 	return nil
 }
 
 // Destroy stop and remove container
-func (d *Deployer) Destroy(ctx context.Context, name string) (err error) {
+func (d *Driver) Destroy(ctx context.Context, name string) (err error) {
 	spinner.Start("destroying " + name)
 	defer func() {
 		spinner.Stop("destroying "+name, err)
 	}()
-	return d.cli.StopContainer(ctx, name)
+	return d.dockerClient.StopContainer(ctx, name)
 }
 
 // GetStatus get a service status
-func (d *Deployer) GetStatus(ctx context.Context, name string) (types.Service, error) {
+func (d *Driver) GetStatus(ctx context.Context, name string) (types.Service, error) {
 	var container dockerTypes.ContainerJSON
-	if err := d.cli.InspectContainer(ctx, name, &container); err != nil {
+	if err := d.dockerClient.InspectContainer(ctx, name, &container); err != nil {
 		return types.Service{}, err
 	}
 
@@ -55,6 +70,7 @@ func (d *Deployer) GetStatus(ctx context.Context, name string) (types.Service, e
 		ID:   container.ID,
 		Name: container.Name,
 	}
+
 	for _, bindings := range container.NetworkSettings.Ports {
 		if len(bindings) > 0 {
 			binding := bindings[0]
@@ -76,20 +92,12 @@ func (d *Deployer) GetStatus(ctx context.Context, name string) (types.Service, e
 	return service, nil
 }
 
-// Ping check healty status of infra
-func (d *Deployer) Ping(ctx context.Context) error {
-	if _, err := d.cli.Version(ctx); err != nil {
-		return err
-	}
-	return nil
-}
-
 // List services
-func (d *Deployer) List(ctx context.Context, name string) (svcs []types.Service, err error) {
+func (d *Driver) List(ctx context.Context, name string) (svcs []types.Service, err error) {
 	// FIXME support remote host
-	return d.cli.ListContainer(ctx, name)
+	return d.dockerClient.ListContainer(ctx, name)
 }
 
 var (
-	_ infra.Deployer = &Deployer{}
+	_ driver.Driver = &Driver{}
 )

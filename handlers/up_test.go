@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	mockCtx "github.com/metrue/fx/context/mocks"
-	mockDeployer "github.com/metrue/fx/infra/mocks"
+	mockDeployer "github.com/metrue/fx/driver/mocks"
 	"github.com/metrue/fx/types"
 )
 
@@ -16,7 +16,7 @@ func TestUp(t *testing.T) {
 		defer ctrl.Finish()
 
 		ctx := mockCtx.NewMockContexter(ctrl)
-		deployer := mockDeployer.NewMockDeployer(ctrl)
+		driver := mockDeployer.NewMockDriver(ctrl)
 
 		bindings := []types.PortBinding{}
 		name := "sample-name"
@@ -24,18 +24,19 @@ func TestUp(t *testing.T) {
 		data := "sample-data"
 		ctx.EXPECT().Get("name").Return(name)
 		ctx.EXPECT().Get("image").Return(image)
-		ctx.EXPECT().Get("deployer").Return(deployer)
+		ctx.EXPECT().Get("docker_driver").Return(driver)
+		ctx.EXPECT().Get("k8s_driver").Return(driver)
 		ctx.EXPECT().Get("bindings").Return(bindings)
 		ctx.EXPECT().Get("data").Return(data)
 		ctx.EXPECT().Get("force").Return(false)
-		ctx.EXPECT().GetContext().Return(context.Background()).Times(2)
-		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil)
-		deployer.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
+		ctx.EXPECT().GetContext().Return(context.Background()).Times(4)
+		driver.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil).Times(2)
+		driver.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
 			ID:   "id-1",
 			Name: name,
 			Host: "127.0.0.1",
 			Port: 2100,
-		}, nil)
+		}, nil).Times(2)
 		if err := Up(ctx); err != nil {
 			t.Fatal(err)
 		}
@@ -46,7 +47,7 @@ func TestUp(t *testing.T) {
 		defer ctrl.Finish()
 
 		ctx := mockCtx.NewMockContexter(ctrl)
-		deployer := mockDeployer.NewMockDeployer(ctrl)
+		driver := mockDeployer.NewMockDriver(ctrl)
 
 		bindings := []types.PortBinding{}
 		name := "sample-name"
@@ -54,19 +55,20 @@ func TestUp(t *testing.T) {
 		data := "sample-data"
 		ctx.EXPECT().Get("name").Return(name)
 		ctx.EXPECT().Get("image").Return(image)
-		ctx.EXPECT().Get("deployer").Return(deployer)
+		ctx.EXPECT().Get("docker_driver").Return(driver)
+		ctx.EXPECT().Get("k8s_driver").Return(driver)
 		ctx.EXPECT().Get("bindings").Return(bindings)
 		ctx.EXPECT().Get("data").Return(data)
 		ctx.EXPECT().Get("force").Return(true)
-		ctx.EXPECT().GetContext().Return(context.Background()).Times(3)
-		deployer.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil)
-		deployer.EXPECT().Destroy(gomock.Any(), name).Return(nil)
-		deployer.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
+		ctx.EXPECT().GetContext().Return(context.Background()).Times(6)
+		driver.EXPECT().Deploy(gomock.Any(), data, name, image, bindings).Return(nil).Times(2)
+		driver.EXPECT().Destroy(gomock.Any(), name).Return(nil).Times(2)
+		driver.EXPECT().GetStatus(gomock.Any(), name).Return(types.Service{
 			ID:   "id-1",
 			Name: name,
 			Host: "127.0.0.1",
 			Port: 2100,
-		}, nil)
+		}, nil).Times(2)
 		if err := Up(ctx); err != nil {
 			t.Fatal(err)
 		}

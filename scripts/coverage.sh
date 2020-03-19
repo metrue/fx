@@ -2,7 +2,7 @@
 
 echo "mode: atomic\n" > coverage.txt
 
-for d in `go list ./... | grep -v 'mocks\|images\|examples\|assets'`; do
+for d in `go list ./... | grep -v 'mocks\|images\|examples\|assets\|packrd'`; do
   echo $d
   go test -race -coverprofile=profile.out -covermode=atomic $d
   if [ $? -ne 0 ];then

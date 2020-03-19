@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/metrue/fx/bundle"
-	containerruntimes "github.com/metrue/fx/container_runtimes"
+	"github.com/metrue/fx/constants"
+	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/context"
 	"github.com/metrue/fx/hook"
 	"github.com/metrue/fx/packer"
 	"github.com/metrue/fx/pkg/spinner"
-	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
 )
 
@@ -42,6 +42,9 @@ func Build(ctx context.Contexter) (err error) {
 	fn := ctx.Get("fn").(string)
 	deps := ctx.Get("deps").([]string)
 	language := ctx.Get("language").(string)
+	host := ctx.Get("host").(string)
+	kubeconf := ctx.Get("kubeconf").(string)
+	name := ctx.Get("name").(string)
 
 	if err := bundle.Bundle(workdir, language, fn, deps...); err != nil {
 		return err
@@ -51,16 +54,12 @@ func Build(ctx context.Contexter) (err error) {
 		return err
 	}
 
-	cloudType := ctx.Get("cloud_type").(string)
-	name := ctx.Get("name").(string)
-	if cloudType == types.CloudTypeK8S {
-		data, err := packer.PackIntoK8SConfigMapFile(workdir)
+	if host != "" {
+		// TODO port should be configurable
+		docker, err := dockerHTTP.Create(host, constants.AgentPort)
 		if err != nil {
 			return err
 		}
-		ctx.Set("data", data)
-	} else {
-		docker := ctx.Get("docker").(containerruntimes.ContainerRuntime)
 		if err := docker.BuildImage(ctx.GetContext(), workdir, name); err != nil {
 			return err
 		}
@@ -68,8 +67,15 @@ func Build(ctx context.Contexter) (err error) {
 		if err := docker.TagImage(ctx.GetContext(), name, nameWithTag); err != nil {
 			return err
 		}
-
 		ctx.Set("image", nameWithTag)
+	}
+
+	if kubeconf != "" {
+		data, err := packer.PackIntoK8SConfigMapFile(workdir)
+		if err != nil {
+			return err
+		}
+		ctx.Set("data", data)
 	}
 
 	return nil

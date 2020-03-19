@@ -18,7 +18,6 @@ import (
 	"github.com/apex/log"
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	dockerTypesContainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-querystring/query"
@@ -32,8 +31,30 @@ import (
 
 // API interact with dockerd http api
 type API struct {
+	host     string
+	port     string
 	endpoint string
 	version  string
+}
+
+// New a API
+func New(host string, port string) *API {
+	return &API{
+		host: host,
+		port: port,
+	}
+}
+
+// Initialize an API
+func (api *API) Initialize() error {
+	addr := api.host + ":" + api.port
+	v, err := version(addr)
+	if err != nil {
+		return err
+	}
+	endpoint := fmt.Sprintf("http://%s:%s/v%s", api.host, api.port, v)
+	api.endpoint = endpoint
+	return nil
 }
 
 // Create a API
@@ -134,7 +155,8 @@ func (api *API) post(path string, body []byte, expectStatus int, v interface{}) 
 
 // Version get version of docker engine
 func (api *API) Version(ctx context.Context) (string, error) {
-	return version(api.endpoint)
+	addr := api.host + ":" + api.port
+	return version(addr)
 }
 
 func version(endpoint string) (string, error) {
@@ -397,12 +419,12 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		portSet[port] = struct{}{}
 		portMap[port] = bindings
 	}
-	config := &dockerTypesContainer.Config{
+	config := &container.Config{
 		Image:        image,
 		ExposedPorts: portSet,
 	}
 
-	hostConfig := &dockerTypesContainer.HostConfig{
+	hostConfig := &container.HostConfig{
 		AutoRemove:   !fxConfig.DisableContainerAutoremove,
 		PortBindings: portMap,
 	}
