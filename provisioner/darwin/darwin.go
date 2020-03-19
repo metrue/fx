@@ -39,7 +39,7 @@ func (d *Docker) Provision(ctx context.Context, isRemote bool) error {
 		if err := d.runCmd(scripts["has_docker"], isRemote); err != nil {
 			return errors.New("could not find docker on the $PATH")
 		}
-		return errors.New("Cannot connect to the Docker daemon, is the docker daemon running?")
+		return errors.New("cannot connect to the Docker daemon, is the docker daemon running?")
 	}
 
 	if err := d.runCmd(scripts["check_fx_agent"], isRemote); err != nil {
