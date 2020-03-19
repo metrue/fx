@@ -231,14 +231,26 @@ func main() {
 							Value: defaultSSHKeyFile,
 						},
 						cli.StringFlag{
-							Name:  "tag, t",
-							Usage: "image tag",
+							Name:  "host, H",
+							Usage: "target host, <user>@<host>",
+							Value: defaultHost,
+						},
+						cli.StringFlag{
+							Name:  "kubeconf, C",
+							Usage: "kubeconf of kubernetes cluster",
+						},
+						cli.StringFlag{
+							Name:  "name, n",
+							Usage: "image name",
 							Value: uuid.New().String(),
 						},
 					},
 					Action: handle(
 						middlewares.Parse("image_build"),
 						middlewares.Language(),
+						middlewares.SSH,
+						middlewares.Driver,
+						middlewares.Build,
 						handlers.BuildImage,
 					),
 				},

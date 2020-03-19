@@ -1,4 +1,4 @@
-package provisioners
+package linux
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/metrue/fx/provisioner"
 	"github.com/metrue/go-ssh-client"
 )
 
@@ -14,6 +15,7 @@ const sshConnectionTimeout = 10 * time.Second
 
 var scripts = map[string]interface{}{
 	"docker_version": "docker version",
+	"has_docker":     "type docker",
 	"install_docker": "curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz -o docker.tgz && tar zxvf docker.tgz && mv docker/* /usr/bin && rm -rf docker docker.tgz",
 	"start_dockerd":  "dockerd >/dev/null 2>&1 & sleep 2",
 	"check_fx_agent": "docker inspect fx-agent",
@@ -35,8 +37,10 @@ func New(sshClient ssh.Clienter) *Docker {
 // Provision a host
 func (d *Docker) Provision(ctx context.Context, isRemote bool) error {
 	if err := d.runCmd(scripts["docker_version"].(string), isRemote); err != nil {
-		if err := d.runCmd(scripts["install_docker"].(string), isRemote); err != nil {
-			return err
+		if err := d.runCmd(scripts["has_docker"].(string), isRemote); err != nil {
+			if err := d.runCmd(scripts["install_docker"].(string), isRemote); err != nil {
+				return err
+			}
 		}
 
 		if err := d.runCmd(scripts["start_dockerd"].(string), isRemote); err != nil {
@@ -86,5 +90,5 @@ func (d *Docker) runCmd(script string, isRemote bool, options ...ssh.CommandOpti
 }
 
 var (
-	_ Provisioner = &Docker{}
+	_ provisioner.Provisioner = &Docker{}
 )

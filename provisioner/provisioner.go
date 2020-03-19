@@ -1,4 +1,4 @@
-package provisioners
+package provisioner
 
 import "context"
 
