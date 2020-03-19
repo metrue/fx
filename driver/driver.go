@@ -1,4 +1,4 @@
-package infra
+package driver
 
 import (
 	"context"
@@ -6,14 +6,8 @@ import (
 	"github.com/metrue/fx/types"
 )
 
-// Clouder cloud interface
-type Clouder interface {
-	Provision() error
-	IsHealth() (bool, error)
-}
-
-// Deployer deploy interface
-type Deployer interface {
+// Driver fx function running driver
+type Driver interface {
 	Deploy(ctx context.Context, fn string, name string, image string, bindings []types.PortBinding) error
 	Destroy(ctx context.Context, name string) error
 	Update(ctx context.Context, name string) error

@@ -3,7 +3,6 @@ package middlewares
 import (
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/metrue/fx/bundle"
@@ -56,13 +55,8 @@ func Build(ctx context.Contexter) (err error) {
 	}
 
 	if host != "" {
-		addr := strings.Split(host, "@")
-		if len(addr) != 2 {
-			return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
-		}
-		ip := addr[1]
 		// TODO port should be configurable
-		docker, err := dockerHTTP.Create(ip, constants.AgentPort)
+		docker, err := dockerHTTP.Create(host, constants.AgentPort)
 		if err != nil {
 			return err
 		}

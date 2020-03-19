@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/apex/log"
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/driver"
 	"github.com/metrue/fx/pkg/renderrer"
 	"github.com/metrue/fx/types"
 )
@@ -23,7 +23,7 @@ func Up(ctx context.Contexter) (err error) {
 	force := ctx.Get("force").(bool)
 
 	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
-		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
+		driver, ok := ctx.Get(targetdriver).(driver.Driver)
 		if !ok {
 			continue
 		}

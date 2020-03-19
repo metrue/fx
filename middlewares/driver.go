@@ -2,34 +2,42 @@ package middlewares
 
 import (
 	"fmt"
-	"strings"
+	"time"
 
+	"github.com/apex/log"
 	"github.com/metrue/fx/constants"
 	dockerHTTP "github.com/metrue/fx/container_runtimes/docker/http"
 	"github.com/metrue/fx/context"
-	dockerInfra "github.com/metrue/fx/infra/docker"
-	k8sInfra "github.com/metrue/fx/infra/k8s"
+	dockerDriver "github.com/metrue/fx/driver/docker"
+	k8sInfra "github.com/metrue/fx/driver/k8s"
+	"github.com/metrue/fx/provisioners"
+	"github.com/metrue/go-ssh-client"
 )
 
 // Driver initialize infrastructure driver
 func Driver(ctx context.Contexter) (err error) {
 	host := ctx.Get("host").(string)
+	sshClient := ctx.Get("ssh").(ssh.Clienter)
 	kubeconf := ctx.Get("kubeconf").(string)
 	if host != "" {
-		addr := strings.Split(host, "@")
-		if len(addr) != 2 {
-			return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
-		}
-		ip := addr[1]
 		// TODO port should be configurable
-		docker, err := dockerHTTP.Create(ip, constants.AgentPort)
-		if err != nil {
-			return err
-		}
+		docker := dockerHTTP.New(host, constants.AgentPort)
+		driver := dockerDriver.New(dockerDriver.Options{
+			DockerClient: docker,
+		})
 
-		driver, err := dockerInfra.CreateDeployer(docker)
-		if err != nil {
-			return err
+		if err := driver.Ping(ctx.GetContext()); err != nil {
+			log.Infof("provisioning %s ...", host)
+
+			provisioner := provisioners.New(sshClient)
+			isRemote := (host != "127.0.0.1" && host != "localhost")
+			if err := provisioner.Provision(ctx.GetContext(), isRemote); err != nil {
+				return err
+			}
+			time.Sleep(2 * time.Second)
+		}
+		if err := docker.Initialize(); err != nil {
+			return fmt.Errorf("initialize docker client failed: %s", err)
 		}
 		ctx.Set("docker_driver", driver)
 	}

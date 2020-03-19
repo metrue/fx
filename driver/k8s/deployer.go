@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/driver"
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 	"k8s.io/client-go/kubernetes"
@@ -35,6 +35,11 @@ func Create(kubeconfig string) (*K8S, error) {
 		return nil, err
 	}
 	return &K8S{clientset}, nil
+}
+
+// Provision TODO may need support manually k8s cluster creation
+func (k *K8S) Provision(ctx context.Context, isRemote bool) error {
+	return nil
 }
 
 // Deploy a image to be a service
@@ -186,5 +191,5 @@ func (k *K8S) Ping(ctx context.Context) error {
 }
 
 var (
-	_ infra.Deployer = &K8S{}
+	_ driver.Driver = &K8S{}
 )

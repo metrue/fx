@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/metrue/fx/context"
-	"github.com/metrue/fx/infra"
+	"github.com/metrue/fx/driver"
 	"github.com/metrue/fx/pkg/renderrer"
 )
 
@@ -12,7 +12,7 @@ func List(ctx context.Contexter) (err error) {
 	format := ctx.Get("format").(string)
 
 	for _, targetdriver := range []string{"docker_driver", "k8s_driver"} {
-		driver, ok := ctx.Get(targetdriver).(infra.Deployer)
+		driver, ok := ctx.Get(targetdriver).(driver.Driver)
 		if !ok {
 			continue
 		}

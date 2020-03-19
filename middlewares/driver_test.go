@@ -1,17 +1,19 @@
 package middlewares
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	mockCtx "github.com/metrue/fx/context/mocks"
+	"github.com/metrue/go-ssh-client"
+	sshMocks "github.com/metrue/go-ssh-client/mocks"
 )
 
 func TestDriver(t *testing.T) {
-	// TODO enable
-	t.Skip()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := mockCtx.NewMockContexter(ctrl)
@@ -49,11 +51,22 @@ users:
 
 	defer os.Remove(kubeconf.Name())
 
-	ctx.EXPECT().Get("host").Return("root@127.0.0.1")
+	sshClient := sshMocks.NewMockClienter(ctrl)
+	sshClient.EXPECT().Connectable(10*time.Second).Return(true, nil).Times(2)
+	sshClient.EXPECT().RunCommand("docker version", ssh.CommandOptions{
+		Timeout: 10 * time.Second,
+	}).Return(nil)
+	sshClient.EXPECT().RunCommand("docker inspect fx-agent", ssh.CommandOptions{
+		Timeout: 10 * time.Second,
+	}).Return(nil)
+
+	cntx := context.Background()
+	ctx.EXPECT().GetContext().Return(cntx).Times(2)
+	ctx.EXPECT().Get("ssh").Return(sshClient)
+	ctx.EXPECT().Get("host").Return("1.2.3.4")
 	ctx.EXPECT().Get("kubeconf").Return(kubeconf.Name())
-	ctx.EXPECT().Set("docker_driver", gomock.Any())
-	ctx.EXPECT().Set("k8s_driver", gomock.Any())
-	if err := Driver(ctx); err != nil {
-		t.Fatal(err)
+	// TODO mock http call
+	if err := Driver(ctx); err == nil {
+		t.Fatal("should failed on initial docker client dude to /version api not ready")
 	}
 }
