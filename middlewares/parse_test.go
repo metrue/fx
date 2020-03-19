@@ -15,6 +15,7 @@ import (
 type stringValue string
 
 func (s stringValue) Set(v string) error {
+	// nolint
 	s = stringValue(v)
 	return nil
 }

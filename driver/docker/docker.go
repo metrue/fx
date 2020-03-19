@@ -3,7 +3,6 @@ package docker
 import (
 	"context"
 	"strconv"
-	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
@@ -11,8 +10,6 @@ import (
 	"github.com/metrue/fx/pkg/spinner"
 	"github.com/metrue/fx/types"
 )
-
-const sshConnectionTimeout = 10 * time.Second
 
 // Driver manage container
 type Driver struct {
