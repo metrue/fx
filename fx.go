@@ -213,28 +213,6 @@ func main() {
 			),
 		},
 		{
-			Name:  "call",
-			Usage: "run a function instantly",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "ssh_port, P",
-					Usage: "SSH port for target host",
-					Value: "22",
-				},
-				cli.StringFlag{
-					Name:  "ssh_key, K",
-					Usage: "SSH key file for login target host",
-					Value: defaultSSHKeyFile,
-				},
-				cli.StringFlag{
-					Name:  "host, H",
-					Usage: "fx server host, default is localhost",
-					Value: defaultHost,
-				},
-			},
-			Action: handle(handlers.Call),
-		},
-		{
 			Name:  "image",
 			Usage: "manage image of service",
 			Subcommands: []cli.Command{
@@ -280,11 +258,6 @@ func main() {
 					),
 				},
 			},
-		},
-		{
-			Name:   "doctor",
-			Usage:  "health check for fx",
-			Action: handle(handlers.Doctor),
 		},
 	}
 
