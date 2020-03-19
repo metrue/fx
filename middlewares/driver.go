@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 
 	"github.com/apex/log"
@@ -10,7 +11,9 @@ import (
 	"github.com/metrue/fx/context"
 	dockerDriver "github.com/metrue/fx/driver/docker"
 	k8sInfra "github.com/metrue/fx/driver/k8s"
-	"github.com/metrue/fx/provisioners"
+	"github.com/metrue/fx/provisioner"
+	darwin "github.com/metrue/fx/provisioner/darwin"
+	linux "github.com/metrue/fx/provisioner/linux"
 	"github.com/metrue/go-ssh-client"
 )
 
@@ -29,7 +32,14 @@ func Driver(ctx context.Contexter) (err error) {
 		if err := driver.Ping(ctx.GetContext()); err != nil {
 			log.Infof("provisioning %s ...", host)
 
-			provisioner := provisioners.New(sshClient)
+			var provisioner provisioner.Provisioner
+			// TODO actually we should get os of target host, not the host of fx
+			// running on
+			if runtime.GOOS == "darwin" {
+				provisioner = darwin.New(sshClient)
+			} else {
+				provisioner = linux.New(sshClient)
+			}
 			isRemote := (host != "127.0.0.1" && host != "localhost")
 			if err := provisioner.Provision(ctx.GetContext(), isRemote); err != nil {
 				return err

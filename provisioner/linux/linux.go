@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/metrue/fx/provisioners"
+	"github.com/metrue/fx/provisioner"
 	"github.com/metrue/go-ssh-client"
 )
 
@@ -90,5 +90,5 @@ func (d *Docker) runCmd(script string, isRemote bool, options ...ssh.CommandOpti
 }
 
 var (
-	_ provisioners.Provisioner = &Docker{}
+	_ provisioner.Provisioner = &Docker{}
 )

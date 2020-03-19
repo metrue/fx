@@ -1,4 +1,4 @@
-package provisioners
+package darwin
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/metrue/fx/provisioner"
 	"github.com/metrue/go-ssh-client"
 )
 
@@ -16,8 +17,6 @@ const sshConnectionTimeout = 10 * time.Second
 var scripts = map[string]string{
 	"docker_version": "docker version",
 	"has_docker":     "type docker",
-	"install_docker": "curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz -o docker.tgz && tar zxvf docker.tgz && mv docker/* /usr/bin && rm -rf docker docker.tgz",
-	"start_dockerd":  "dockerd >/dev/null 2>&1 & sleep 2",
 	"check_fx_agent": "docker inspect fx-agent",
 	"start_fx_agent": "docker run -d --name=fx-agent --rm -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:8866:1234 bobrik/socat TCP-LISTEN:1234,fork UNIX-CONNECT:/var/run/docker.sock",
 }
@@ -40,7 +39,7 @@ func (d *Docker) Provision(ctx context.Context, isRemote bool) error {
 		if err := d.runCmd(scripts["has_docker"], isRemote); err != nil {
 			return errors.New("could not find docker on the $PATH")
 		}
-		return errors.New("docker is not running on current host")
+		return errors.New("Cannot connect to the Docker daemon, is the docker daemon running?")
 	}
 
 	if err := d.runCmd(scripts["check_fx_agent"], isRemote); err != nil {
@@ -85,5 +84,5 @@ func (d *Docker) runCmd(script string, isRemote bool, options ...ssh.CommandOpti
 }
 
 var (
-	_ Provisioner = &Docker{}
+	_ provisioner.Provisioner = &Docker{}
 )

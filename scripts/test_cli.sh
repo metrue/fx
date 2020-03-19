@@ -27,14 +27,6 @@ export_image() {
 }
 
 # main
-# clean up
-# docker stop fx-agent || true && docker rm fx-agent || true
-if [[ "$DOCKER_REMOTE_HOST_ADDR" != "" ]];then
-  cloud_name='fx-remote-docker-host'
-  $fx infra create --name ${cloud_name} --type docker --host ${DOCKER_REMOTE_HOST_USER}@${DOCKER_REMOTE_HOST_ADDR}
-  $fx infra use ${cloud_name}
-fi
-
 port=20000
 for lang in ${1}; do
   run $lang $port
