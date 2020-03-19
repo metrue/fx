@@ -15,7 +15,6 @@ Poor man's function as a service.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Manage Infrastructure](#manage-infrastructure)
 - [Contribute](#contribute)
 
 
@@ -81,10 +80,9 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.8.7
+   0.9.32
 
 COMMANDS:
-   infra     manage infrastructure
    up        deploy a function
    down      destroy a service
    list, ls  list deployed services
@@ -98,22 +96,40 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-### Deploy your function to Docker
+### Deploy function
+
+* Local Docker environment
+
+By default, function will be deployed on localhost.
 
 ```
-$ fx up --name hello-fx ./examples/functions/JavaScript/func.js
+$ fx up --name hello ./examples/functions/JavaScript/func.js
 
 +------------------------------------------------------------------+-----------+---------------+
 |                                ID                                |   NAME    |   ENDPOINT    |
 +------------------------------------------------------------------+-----------+---------------+
-| 5b24d36608ee392c937a61a530805f74551ddec304aea3aca2ffa0fabcf98cf3 | /hello-fx | 0.0.0.0:58328 |
+| 5b24d36608ee392c937a61a530805f74551ddec304aea3aca2ffa0fabcf98cf3 | /hello    | 0.0.0.0:58328 |
 +------------------------------------------------------------------+-----------+---------------+
 ```
 
-### Deploy your function to Kubernetes
+* Remote host
+
+Use `--host` to specify the target host for your function,
+
+```shell
+$ fx up --host roo@<your host> --name hello ./examples/functions/JavaScript/func.js
+
++------------------------------------------------------------------+-----------+---------------+
+|                                ID                                |   NAME    |   ENDPOINT    |
++------------------------------------------------------------------+-----------+---------------+
+| 5b24d36608ee392c937a61a530805f74551ddec304aea3aca2ffa0fabcf98cf3 | /hello    | 0.0.0.0:58345 |
++------------------------------------------------------------------+-----------+---------------+
+```
+
+* Kubernetes
 
 ```
-$ KUBECONFIG=~/.kube/config ./build/fx up examples/functions/JavaScript/func.js --name hello-fx
+$ FX_KUBECONF=~/.kube/config fx up examples/functions/JavaScript/func.js --name hello
 
 +-------------------------------+------+----------------+
 | ID                     | NAME        |    ENDPOINT    |
@@ -122,7 +138,7 @@ $ KUBECONFIG=~/.kube/config ./build/fx up examples/functions/JavaScript/func.js 
 +------------------------+-------------+----------------+
 ```
 
-### Test your service
+### Test service
 
 then you can test your service:
 
@@ -149,31 +165,6 @@ hello world
 
 ```
 
-## Manage Infrastructure
-
-**fx** is originally designed to turn a function into a runnable Docker container in a easiest way, on a host with Docker running, you can just deploy your function with `fx up` command,  and now **fx** supports deploy function to be a service onto Kubernetes cluster infrasture, and we encourage you to do that other than on bare Docker environment, there are lots of advantage to run your function on Kubernetes like self-healing, load balancing, easy horizontal scaling, etc. It's pretty simple to deploy your function onto Kubernetes with **fx**, you just set KUBECONFIG in your enviroment.
-
-By default. **fx** use localhost as target infrastructure to run your service, and you can also setup your remote virtual machines as **fx**'s infrastructure and deploy your functions onto it.
-
-### `fx infra create`
-
-You can create types (docker and k8s) of infrastructures for **fx** to deploy functions
-
-```shell
-$ fx infra create --name infra_us --type docker --host <user>@<ip>                                            ## create docker type infrasture on <ip>
-$ fx infra create --name infra_bj --type k8s --master <user>@<ip> --agents '<user1>@<ip1>,<user2>@<ip2>'      ## create k8s type infrasture use <ip> as master node, and <ip1> and <ip2> as agents nodes
-```
-
-### `fx infra use`
-
-To use a infrastructure, you can use `fx infra use` command to activate it.
-
-```shell
-fx infra use <infrastructure name>
-```
-
-and you can list your infrastructure with `fx infra list`
-
 ## Use Public Cloud Kubernetes Service as infrastructure to run your functions
 
 * Azure Kubernetes Service (AKS)
@@ -198,7 +189,7 @@ aks-nodepool1-31718369-0   Ready    agent   6m44s   v1.12.8
 Since AKS's config will be merged into `~/.kube/config` and set to be current context after you run `az aks get-credentials` command, so you can just set KUBECONFIG to default config also,
 
 ```shell
-$ export KUBECONFIG=~/.kube/config  # then fx will take the config to deloy function
+$ export FX_KUBECONF=~/.kube/config  # then fx will take the config to deloy function
 ```
 
 But we would suggest you run `kubectl config current-context` to check if the current context is what you want.
@@ -224,7 +215,7 @@ $ kubectl config current-context
 Then you can deploy your function onto GKE cluster with,
 
 ```shell
-$ KUBECONFIG=~/.kube/config fx up examples/functions/JavaScript/func.js --name hellojs
+$ FX_KUBECONF=~/.kube/config fx up examples/functions/JavaScript/func.js --name hellojs
 ```
 
 * Setup your own Kubernetes cluster
