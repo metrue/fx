@@ -78,15 +78,13 @@ USAGE:
    fx [global options] command [command options] [arguments...]
 
 VERSION:
-   0.9.32
+   0.9.33
 
 COMMANDS:
    up        deploy a function
    down      destroy a service
    list, ls  list deployed services
-   call      run a function instantly
    image     manage image of service
-   doctor    health check for fx
    help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
