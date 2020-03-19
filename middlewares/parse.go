@@ -21,7 +21,6 @@ func set(ctx context.Contexter, cli *cli.Context, fields []argsField) error {
 		if f.Type == "string" {
 			if f.Name == "host" {
 				addr := strings.Split(cli.String(f.Name), "@")
-				fmt.Println("===>", cli.String(f.Name))
 				if len(addr) != 2 {
 					return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
 				}
