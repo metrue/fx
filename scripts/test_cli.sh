@@ -11,13 +11,13 @@ run() {
   # localhost
   $fx up --name ${service}_${lang} --port ${port} --healthcheck test/functions/func.${lang}
   $fx list
-  $fx down ${service}_${lang} || true
+  $fx down ${service}_${lang}
 }
 
 build_image() {
   local lang=$1
-  local tag=$2
-  $fx image build -t ${tag} test/functions/func.${lang}
+  local name=$2
+  $fx image build -n ${name} test/functions/func.${lang}
 }
 
 export_image() {
