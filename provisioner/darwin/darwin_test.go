@@ -1,4 +1,4 @@
-package provisioners
+package darwin
 
 import (
 	"context"
@@ -43,8 +43,8 @@ func TestDriverProvision(t *testing.T) {
 		sshClient := sshMocks.NewMockClienter(ctrl)
 		n := New(sshClient)
 		sshClient.EXPECT().Connectable(sshConnectionTimeout).Return(true, nil).AnyTimes()
-		sshClient.EXPECT().RunCommand(scripts["docker_version"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["docker_version"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
 		if err := n.Provision(context.Background(), true); err != nil {
 			t.Fatal(err)
 		}
@@ -58,12 +58,10 @@ func TestDriverProvision(t *testing.T) {
 		n := New(sshClient)
 		sshClient.EXPECT().Connectable(sshConnectionTimeout).Return(true, nil).AnyTimes()
 		err := errors.New("docker command not found")
-		sshClient.EXPECT().RunCommand(scripts["docker_version"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err)
-		sshClient.EXPECT().RunCommand(scripts["install_docker"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["start_dockerd"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		if err := n.Provision(context.Background(), true); err != nil {
-			t.Fatal(err)
+		sshClient.EXPECT().RunCommand(scripts["docker_version"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err)
+		sshClient.EXPECT().RunCommand(scripts["has_docker"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err)
+		if err := n.Provision(context.Background(), true); err == nil {
+			t.Fatal("should tell user to install docker first")
 		}
 	})
 
@@ -75,15 +73,15 @@ func TestDriverProvision(t *testing.T) {
 		n := New(sshClient)
 		sshClient.EXPECT().Connectable(sshConnectionTimeout).Return(true, nil).AnyTimes()
 		err := errors.New("fx agent not found")
-		sshClient.EXPECT().RunCommand(scripts["docker_version"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err)
-		sshClient.EXPECT().RunCommand(scripts["start_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["docker_version"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err)
+		sshClient.EXPECT().RunCommand(scripts["start_fx_agent"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
 		if err := n.Provision(context.Background(), true); err != nil {
 			t.Fatal(err)
 		}
 	})
 
-	t.Run("DockerAndFxAgentNotReady", func(t *testing.T) {
+	t.Run("DockerAndFxAgentReady", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
@@ -91,13 +89,8 @@ func TestDriverProvision(t *testing.T) {
 		n := New(sshClient)
 
 		sshClient.EXPECT().Connectable(sshConnectionTimeout).Return(true, nil).AnyTimes()
-		err2 := errors.New("fx agent not found")
-		err1 := errors.New("docker command not found")
-		sshClient.EXPECT().RunCommand(scripts["docker_version"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err1)
-		sshClient.EXPECT().RunCommand(scripts["install_docker"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["start_dockerd"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
-		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(err2)
-		sshClient.EXPECT().RunCommand(scripts["start_fx_agent"].(string), ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["docker_version"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
+		sshClient.EXPECT().RunCommand(scripts["check_fx_agent"], ssh.CommandOptions{Timeout: sshConnectionTimeout}).Return(nil)
 		if err := n.Provision(context.Background(), true); err != nil {
 			t.Fatal(err)
 		}

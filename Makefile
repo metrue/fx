@@ -27,7 +27,7 @@ clean:
 	rm -rf ${DIST_DIR}
 
 unit-test:
-	CI=true ./scripts/coverage.sh
+	./scripts/coverage.sh
 
 cli-test-ci:
 	./scripts/test_cli.sh 'js'

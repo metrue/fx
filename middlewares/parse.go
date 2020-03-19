@@ -132,7 +132,7 @@ func Parse(action string) func(ctx context.Contexter) (err error) {
 			}
 			ctx.Set("deps", deps)
 			if err := set(ctx, cli, []argsField{
-				argsField{Name: "tag", Type: "string"},
+				argsField{Name: "name", Type: "string"},
 				argsField{Name: "ssh_port", Type: "string", Env: "SSH_PORT"},
 				argsField{Name: "ssh_key", Type: "string", Env: "SSH_KEY_FILE"},
 				argsField{Name: "host", Type: "string", Env: "FX_HOST"},
