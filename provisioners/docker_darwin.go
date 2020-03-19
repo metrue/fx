@@ -2,6 +2,7 @@ package provisioners
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -12,8 +13,9 @@ import (
 
 const sshConnectionTimeout = 10 * time.Second
 
-var scripts = map[string]interface{}{
+var scripts = map[string]string{
 	"docker_version": "docker version",
+	"has_docker":     "type docker",
 	"install_docker": "curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz -o docker.tgz && tar zxvf docker.tgz && mv docker/* /usr/bin && rm -rf docker docker.tgz",
 	"start_dockerd":  "dockerd >/dev/null 2>&1 & sleep 2",
 	"check_fx_agent": "docker inspect fx-agent",
@@ -34,18 +36,15 @@ func New(sshClient ssh.Clienter) *Docker {
 
 // Provision a host
 func (d *Docker) Provision(ctx context.Context, isRemote bool) error {
-	if err := d.runCmd(scripts["docker_version"].(string), isRemote); err != nil {
-		if err := d.runCmd(scripts["install_docker"].(string), isRemote); err != nil {
-			return err
+	if err := d.runCmd(scripts["docker_version"], isRemote); err != nil {
+		if err := d.runCmd(scripts["has_docker"], isRemote); err != nil {
+			return errors.New("could not find docker on the $PATH")
 		}
-
-		if err := d.runCmd(scripts["start_dockerd"].(string), isRemote); err != nil {
-			return err
-		}
+		return errors.New("docker is not running on current host")
 	}
 
-	if err := d.runCmd(scripts["check_fx_agent"].(string), isRemote); err != nil {
-		if err := d.runCmd(scripts["start_fx_agent"].(string), isRemote); err != nil {
+	if err := d.runCmd(scripts["check_fx_agent"], isRemote); err != nil {
+		if err := d.runCmd(scripts["start_fx_agent"], isRemote); err != nil {
 			return err
 		}
 	}
