@@ -14,13 +14,14 @@ func TestDown(t *testing.T) {
 	defer ctrl.Finish()
 
 	ctx := mockCtx.NewMockContexter(ctrl)
-	deployer := mockDeployer.NewMockDriver(ctrl)
+	driver := mockDeployer.NewMockDriver(ctrl)
 
 	services := []string{"sample-name"}
 	ctx.EXPECT().Get("services").Return(services)
-	ctx.EXPECT().Get("deployer").Return(deployer)
-	ctx.EXPECT().GetContext().Return(context.Background())
-	deployer.EXPECT().Destroy(gomock.Any(), services[0]).Return(nil)
+	ctx.EXPECT().Get("docker_driver").Return(driver)
+	ctx.EXPECT().Get("k8s_driver").Return(driver)
+	ctx.EXPECT().GetContext().Return(context.Background()).Times(2)
+	driver.EXPECT().Destroy(gomock.Any(), services[0]).Return(nil).Times(2)
 	if err := Down(ctx); err != nil {
 		t.Fatal(err)
 	}
