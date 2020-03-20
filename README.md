@@ -105,7 +105,7 @@ $ fx up --name hello ./examples/functions/JavaScript/func.js
 
 #### Remote host
 
-Use `--host` to specify the target host for your function,
+Use `--host` to specify the target host for your function, or you can just set it to `FX_HOST` environment variable.
 
 ```shell
 $ fx up --host roo@<your host> --name hello ./examples/functions/JavaScript/func.js
