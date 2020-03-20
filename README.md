@@ -15,8 +15,6 @@ Poor man's function as a service.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contribute](#contribute)
-
 
 ## Introduction
 
@@ -77,9 +75,6 @@ NAME:
 USAGE:
    fx [global options] command [command options] [arguments...]
 
-VERSION:
-   0.9.33
-
 COMMANDS:
    up        deploy a function
    down      destroy a service
@@ -110,7 +105,7 @@ $ fx up --name hello ./examples/functions/JavaScript/func.js
 
 #### Remote host
 
-Use `--host` to specify the target host for your function,
+Use `--host` to specify the target host for your function, or you can just set it to `FX_HOST` environment variable.
 
 ```shell
 $ fx up --host roo@<your host> --name hello ./examples/functions/JavaScript/func.js
@@ -218,31 +213,6 @@ $ FX_KUBECONF=~/.kube/config fx up examples/functions/JavaScript/func.js --name 
 
 ```shell
 fx infra create --type k3s --name fx-cluster-1 --master root@123.11.2.3 --agents 'root@1.1.1.1,root@2.2.2.2'
-```
-
-## Contribute
-
-fx uses [Project](https://github.com/metrue/fx/projects/4) to manage the development.
-
-#### Prerequisites
-
-Docker: make sure [Docker](https://docs.docker.com/engine/installation/) installed and running on your server.
-
-
-<a name="buildtest"></a>
-#### Build & Test
-
-```
-$ git clone https://github.com/metrue/fx
-$ cd fx
-$ make build
-```
-
-Then you can build and test:
-
-```
-$ make build
-$ ./build/fx -h
 ```
 
 
