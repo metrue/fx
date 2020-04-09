@@ -37,7 +37,7 @@ require (
 	github.com/pierrec/lz4 v0.0.0-20190222153722-062282ea0dcf // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.6.2
+	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.5.1
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/urfave/cli v1.22.3
