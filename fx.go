@@ -19,7 +19,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
-const version = "0.9.34"
+const version = "0.9.35"
 
 func init() {
 	go checkForUpdate()
@@ -77,6 +77,7 @@ func main() {
 			fmt.Println(aurora.Red("*****************"))
 			fmt.Println(r)
 			fmt.Println(aurora.Red("*****************"))
+			os.Exit(1)
 		}
 	}()
 	user, err := user.Current()
