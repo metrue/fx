@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package ruby
 
-import _ "github.com/metrue/fx/bundler/ruby/packrd"
+import _ "github.com/metrue/fx/packrd"

@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package julia
 
-import _ "github.com/metrue/fx/bundler/julia/packrd"
+import _ "github.com/metrue/fx/packrd"

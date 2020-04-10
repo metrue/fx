@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package java
 
-import _ "github.com/metrue/fx/bundler/java/packrd"
+import _ "github.com/metrue/fx/packrd"
