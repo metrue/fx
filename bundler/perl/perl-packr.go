@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package perl
 
-import _ "github.com/metrue/fx/bundler/perl/packrd"
+import _ "github.com/metrue/fx/packrd"

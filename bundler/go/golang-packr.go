@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package golang
 
-import _ "github.com/metrue/fx/bundler/go/packrd"
+import _ "github.com/metrue/fx/packrd"

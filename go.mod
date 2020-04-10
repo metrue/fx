@@ -43,9 +43,7 @@ require (
 	github.com/urfave/cli v1.22.3
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915 // indirect
-	golang.org/x/sys v0.0.0-20191223224216-5a3cf8467b4e // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/yaml.v2 v2.2.7 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.0.0-20190925180651-d58b53da08f5
 	k8s.io/apimachinery v0.0.0-20190925235427-62598f38f24e
