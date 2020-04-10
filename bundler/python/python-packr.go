@@ -5,4 +5,4 @@
 // and any other packr generated files.
 package python
 
-import _ "github.com/metrue/fx/bundler/python/packrd"
+import _ "github.com/metrue/fx/packrd"
