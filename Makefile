@@ -33,7 +33,7 @@ cli-test-ci:
 	./scripts/test_cli.sh 'js'
 
 cli-test:
-	./scripts/test_cli.sh 'js rb py go java d rs pl'
+	./scripts/test_cli.sh 'js rb py go java d pl'
 
 http-test:
 	./scripts/http_test.sh
