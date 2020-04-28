@@ -44,7 +44,7 @@ func TreeToDir(tree map[string]string, outputDir string) error {
 		if err := utils.EnsureFile(fn); err != nil {
 			return err
 		}
-		if err := ioutil.WriteFile(fn, []byte(v), 0666); err != nil {
+		if err := ioutil.WriteFile(fn, []byte(v), 0600); err != nil {
 			return err
 		}
 	}
