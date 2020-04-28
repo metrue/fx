@@ -26,7 +26,7 @@ func Merge(dest string, input ...string) error {
 			if err != nil {
 				return err
 			}
-			if err := ioutil.WriteFile(targetFilePath, body, 0644); err != nil {
+			if err := ioutil.WriteFile(targetFilePath, body, 0600); err != nil {
 				return err
 			}
 		} else if stat.Mode().IsDir() {
