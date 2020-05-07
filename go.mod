@@ -7,6 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/apex/log v1.1.4
 	github.com/briandowns/spinner v1.11.1
+	github.com/cheggaaa/pb/v3 v3.0.4
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v0.0.0-20190313072916-46036c230805
 	github.com/docker/go-connections v0.4.0
