@@ -52,7 +52,8 @@ users:
 	defer os.Remove(kubeconf.Name())
 
 	sshClient := sshMocks.NewMockClienter(ctrl)
-	sshClient.EXPECT().Connectable(10*time.Second).Return(true, nil).Times(2)
+	sshClient.EXPECT().Connectable(10*time.Second).Return(true, nil).Times(3)
+	sshClient.EXPECT().RunCommand("uname -a", gomock.Any()).Return(nil)
 	sshClient.EXPECT().RunCommand("docker version", ssh.CommandOptions{
 		Timeout: 10 * time.Second,
 	}).Return(nil)
