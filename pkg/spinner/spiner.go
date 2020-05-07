@@ -2,48 +2,42 @@ package spinner
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 
-	"github.com/briandowns/spinner"
-	aurora "github.com/logrusorgru/aurora"
+	"github.com/cheggaaa/pb/v3"
+	"github.com/logrusorgru/aurora"
 )
 
-var s *spinner.Spinner
+var bars map[string]*pb.ProgressBar
 
 func init() {
-	style := spinner.CharSets[36]
-	interval := 100 * time.Millisecond
-	s = spinner.New(style, interval)
+	bars = make(map[string]*pb.ProgressBar)
 }
 
 // Start spinner
 func Start(task string) {
-	colors := []string{
-		"red",
-		"green",
-		"yellow",
-		"blue",
-		"magenta",
-		"cyan",
-		"white",
+	count := 100
+	b, ok := bars[task]
+	if !ok {
+		b = pb.StartNew(count)
+		bars[task] = b
 	}
-
-	rand.Seed(time.Now().UnixNano())
-	// nolint
-	s.Color(colors[rand.Intn(len(colors))])
-	s.Prefix = task + " "
-	if s.Active() {
-		s.Restart()
-	} else {
-		s.Start()
-	}
+	go func() {
+		fmt.Printf("Starting %s\n", task)
+		for i := 0; i < count; i++ {
+			b.Increment()
+			time.Sleep(50 * time.Millisecond)
+		}
+	}()
 }
 
 // Stop spinner
 func Stop(task string, err error) {
-	if err != nil {
-		fmt.Println(aurora.Red("\u2717"))
+	b, ok := bars[task]
+	if ok {
+		b.Finish()
 	}
-	s.Stop()
+	if err != nil {
+		fmt.Printf("%s: %s\n", task, aurora.Red("\u2717"))
+	}
 }

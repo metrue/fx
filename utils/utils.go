@@ -29,6 +29,7 @@ func Download(filepath string, url string) (err error) {
 	}
 	defer resp.Body.Close()
 
+	// nolint: gosec
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		return err
@@ -70,6 +71,7 @@ func Unzip(source string, target string) (err error) {
 		}
 		defer targetFile.Close()
 
+		// nolint: gosec
 		if _, err := io.Copy(targetFile, fileReader); err != nil {
 			return err
 		}
@@ -96,6 +98,7 @@ func CopyFile(src, dst string) (err error) {
 		}
 	}()
 
+	// nolint: gosec
 	_, err = io.Copy(out, in)
 	if err != nil {
 		return

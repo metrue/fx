@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/metrue/fx/provisioner"
 	"github.com/metrue/go-ssh-client"
 )
-
-const sshConnectionTimeout = 10 * time.Second
 
 var scripts = map[string]string{
 	"docker_version": "docker version",
@@ -52,7 +49,7 @@ func (d *Docker) Provision(ctx context.Context, isRemote bool) error {
 
 func (d *Docker) runCmd(script string, isRemote bool, options ...ssh.CommandOptions) error {
 	option := ssh.CommandOptions{
-		Timeout: sshConnectionTimeout,
+		Timeout: provisioner.SSHConnectionTimeout,
 	}
 	if len(options) >= 1 {
 		option = options[0]
@@ -72,7 +69,7 @@ func (d *Docker) runCmd(script string, isRemote bool, options ...ssh.CommandOpti
 		}
 		return nil
 	}
-	ok, err := d.sshClient.Connectable(sshConnectionTimeout)
+	ok, err := d.sshClient.Connectable(provisioner.SSHConnectionTimeout)
 	if err != nil {
 		return fmt.Errorf("could not connect via SSH: '%s'", err)
 	}
