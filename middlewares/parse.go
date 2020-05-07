@@ -29,7 +29,6 @@ func set(ctx context.Contexter, cli *cli.Context, fields []argsField) error {
 				ctx.Set("host", ip)
 				ctx.Set("user", user)
 			} else {
-
 				ctx.Set(f.Name, cli.String(f.Name))
 			}
 		} else if f.Type == "int" {
