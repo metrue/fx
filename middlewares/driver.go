@@ -33,21 +33,24 @@ func Driver(ctx context.Contexter) (err error) {
 		if err := driver.Ping(ctx.GetContext()); err != nil {
 			log.Infof("provisioning %s ...", host)
 
-			ok, err := sshClient.Connectable(provisioner.SSHConnectionTimeout)
-			if err != nil {
-				return err
-			}
-			if !ok {
-				return fmt.Errorf("target host could not be connected with SSH")
-			}
-
-			var buf bytes.Buffer
-			if err := sshClient.RunCommand("uname -a", ssh.CommandOptions{Stdout: &buf}); err != nil {
-				return err
-			}
-
 			isRemote := (host != "127.0.0.1" && host != "localhost")
-			if strings.Contains(strings.ToLower(buf.String()), "darwin") {
+			hostOS := "linux"
+			if isRemote {
+				ok, err := sshClient.Connectable(provisioner.SSHConnectionTimeout)
+				if err != nil {
+					return err
+				}
+				if !ok {
+					return fmt.Errorf("target host could not be connected with SSH")
+				}
+
+				var buf bytes.Buffer
+				if err := sshClient.RunCommand("uname -a", ssh.CommandOptions{Stdout: &buf}); err != nil {
+					return err
+				}
+				hostOS = buf.String()
+			}
+			if strings.Contains(hostOS, "darwin") {
 				if err := darwin.New(sshClient).Provision(ctx.GetContext(), isRemote); err != nil {
 					return err
 				}
@@ -56,8 +59,8 @@ func Driver(ctx context.Contexter) (err error) {
 					return err
 				}
 			}
-			time.Sleep(2 * time.Second)
 		}
+		time.Sleep(2 * time.Second)
 		if err := docker.Initialize(); err != nil {
 			return fmt.Errorf("initialize docker client failed: %s", err)
 		}
