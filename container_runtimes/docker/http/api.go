@@ -543,6 +543,9 @@ func (api *API) RemoveContainer(id string) error {
 	defer resp.Body.Close()
 
 	output, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.Wrap(err, "read response body of remove container request failed")
+	}
 	if resp.StatusCode != 204 {
 		return fmt.Errorf("could not remove container %s: %s", id, string(output))
 	}
