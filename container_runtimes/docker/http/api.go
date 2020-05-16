@@ -485,11 +485,12 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 	if !info.State.Running {
 		logs, err := api.logs(createRes.ID)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "could not get logs of container "+createRes.ID)
 		}
 
 		if err := api.RemoveContainer(createRes.ID); err != nil {
-			return errors.Wrap(err, "remove container failed")
+			msg := fmt.Sprintf("remove container %s failed, and container started with logs: %s", createRes.ID, string(logs))
+			return errors.Wrap(err, msg)
 		}
 
 		return fmt.Errorf("container start failure: %s", logs)
