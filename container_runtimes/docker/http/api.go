@@ -484,7 +484,7 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 	}
 
 	if !info.State.Running {
-		logs, err := api.logs(ctx, createRes.ID)
+		logs, err := api.logs(createRes.ID)
 		if err != nil {
 			return err
 		}
@@ -494,7 +494,7 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 	return nil
 }
 
-func (api *API) logs(ctx context.Context, id string) ([]byte, error) {
+func (api *API) logs(id string) ([]byte, error) {
 	query := url.Values{}
 	query.Set("stdout", "true")
 	query.Set("stderr", "true")
