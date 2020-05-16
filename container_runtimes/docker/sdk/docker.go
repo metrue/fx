@@ -244,6 +244,11 @@ func (d *Docker) Version(ctx context.Context) (string, error) {
 	return ping.APIVersion, nil
 }
 
+// RemoveContainer remove container
+func (d *Docker) RemoveContainer(ctx context.Context, id string) error {
+	panic("no implemented yet")
+}
+
 var (
 	_ containerruntimes.ContainerRuntime = &Docker{}
 )
