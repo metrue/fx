@@ -475,12 +475,50 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		return errors.New(msg)
 	}
 
-	if _, err = api.inspect(createRes.ID); err != nil {
-		msg := fmt.Sprintf("inspect container %s error", name)
-		return errors.Wrap(err, msg)
+	// wait seconds for container starting
+	time.Sleep(3 * time.Second)
+
+	info, err := api.inspect(createRes.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to inspect container "+createRes.ID)
+	}
+
+	if !info.State.Running {
+		logs, err := api.logs(ctx, createRes.ID)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("container start failure: %s", logs)
 	}
 
 	return nil
+}
+
+func (api *API) logs(ctx context.Context, id string) ([]byte, error) {
+	query := url.Values{}
+	query.Set("stdout", "true")
+	query.Set("stderr", "true")
+	path := fmt.Sprintf("/containers/%s/logs?%s", id, query.Encode())
+	url := fmt.Sprintf("%s%s", api.endpoint, path)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return b, nil
+	}
+	return nil, fmt.Errorf("get logs of container %s failed: %d", id, resp.StatusCode)
 }
 
 // StopContainer stop a container
