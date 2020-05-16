@@ -18,7 +18,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/google/uuid"
-	fxConfig "github.com/metrue/fx/config"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
@@ -162,7 +161,7 @@ func (d *Docker) StartContainer(ctx context.Context, name string, image string, 
 	}
 
 	hostConfig := &dockerTypesContainer.HostConfig{
-		AutoRemove:   !fxConfig.DisableContainerAutoremove,
+		AutoRemove:   false,
 		PortBindings: portMap,
 	}
 	resp, err := d.ContainerCreate(ctx, config, hostConfig, nil, name)
