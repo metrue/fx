@@ -22,7 +22,6 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/google/go-querystring/query"
 	"github.com/google/uuid"
-	fxConfig "github.com/metrue/fx/config"
 	containerruntimes "github.com/metrue/fx/container_runtimes"
 	"github.com/metrue/fx/types"
 	"github.com/metrue/fx/utils"
@@ -425,7 +424,7 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 	}
 
 	hostConfig := &container.HostConfig{
-		AutoRemove:   !fxConfig.DisableContainerAutoremove,
+		AutoRemove:   false,
 		PortBindings: portMap,
 	}
 
@@ -488,6 +487,11 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 		if err != nil {
 			return err
 		}
+
+		if err := api.RemoveContainer(createRes.ID); err != nil {
+			return errors.Wrap(err, "remove container failed")
+		}
+
 		return fmt.Errorf("container start failure: %s", logs)
 	}
 
@@ -519,6 +523,30 @@ func (api *API) logs(id string) ([]byte, error) {
 		return b, nil
 	}
 	return nil, fmt.Errorf("get logs of container %s failed: %d", id, resp.StatusCode)
+}
+
+// RemoveContainer remove a container
+func (api *API) RemoveContainer(id string) error {
+	query := url.Values{}
+	query.Set("v", "true")
+	path := fmt.Sprintf("/containers/%s?%s", id, query.Encode())
+	url := fmt.Sprintf("%s%s", api.endpoint, path)
+	request, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+	client := &http.Client{Timeout: 20 * time.Second}
+	resp, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	output, err := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 204 {
+		return fmt.Errorf("could not remove container %s: %s", id, string(output))
+	}
+	return nil
 }
 
 // StopContainer stop a container
