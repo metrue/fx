@@ -56,7 +56,10 @@ func (d *Driver) Destroy(ctx context.Context, name string) (err error) {
 	defer func() {
 		spinner.Stop("destroying "+name, err)
 	}()
-	return d.dockerClient.StopContainer(ctx, name)
+	if err := d.dockerClient.StopContainer(ctx, name); err != nil {
+		return err
+	}
+	return d.dockerClient.RemoveContainer(ctx, name)
 }
 
 // GetStatus get a service status

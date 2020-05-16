@@ -55,6 +55,7 @@ func TestDriverDestroy(t *testing.T) {
 	ctx := context.Background()
 	name := "name"
 	dockerClient.EXPECT().StopContainer(ctx, name).Return(nil)
+	dockerClient.EXPECT().RemoveContainer(ctx, name).Return(nil)
 	if err := n.Destroy(ctx, name); err != nil {
 		t.Fatal(err)
 	}

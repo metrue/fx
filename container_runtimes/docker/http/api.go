@@ -488,7 +488,7 @@ func (api *API) StartContainer(ctx context.Context, name string, image string, b
 			return errors.Wrap(err, "could not get logs of container "+createRes.ID)
 		}
 
-		if err := api.RemoveContainer(createRes.ID); err != nil {
+		if err := api.RemoveContainer(ctx, createRes.ID); err != nil {
 			msg := fmt.Sprintf("remove container %s failed, and container started with logs: %s", createRes.ID, string(logs))
 			return errors.Wrap(err, msg)
 		}
@@ -527,7 +527,7 @@ func (api *API) logs(id string) ([]byte, error) {
 }
 
 // RemoveContainer remove a container
-func (api *API) RemoveContainer(id string) error {
+func (api *API) RemoveContainer(ctx context.Context, id string) error {
 	query := url.Values{}
 	query.Set("v", "true")
 	path := fmt.Sprintf("/containers/%s?%s", id, query.Encode())

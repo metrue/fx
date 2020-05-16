@@ -14,6 +14,7 @@ type ContainerRuntime interface {
 	TagImage(ctx context.Context, name string, tag string) error
 	StartContainer(ctx context.Context, name string, image string, bindings []types.PortBinding) error
 	StopContainer(ctx context.Context, name string) error
+	RemoveContainer(ctx context.Context, name string) error
 	InspectContainer(ctx context.Context, name string, container interface{}) error
 	ListContainer(ctx context.Context, filter string) ([]types.Service, error)
 	Version(ctx context.Context) (string, error)
