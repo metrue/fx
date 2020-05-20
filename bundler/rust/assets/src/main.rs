@@ -17,6 +17,11 @@ fn index(req: Json<fns::fns::Request>) -> Json<fns::fns::Response> {
     Json(fns::fns::func(req.0))
 }
 
+#[get("/")]
+fn index(req: Json<fns::fns::Request>) -> Json<fns::fns::Response> {
+    Json(fns::fns::func(req.0))
+}
+
 fn main() {
     rocket::ignite().mount("/", routes![index]).launch();
 }
