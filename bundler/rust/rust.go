@@ -5,28 +5,28 @@ import (
 	"github.com/metrue/fx/bundler"
 )
 
-// Julia defines javascript bundler
-type Julia struct {
+// Rust defines javascript bundler
+type Rust struct {
 	assets *packr.Box
 }
 
 // New a koa bundler
-func New() *Julia {
-	return &Julia{
+func New() *Rust {
+	return &Rust{
 		assets: packr.New("rust", "./assets"),
 	}
 }
 
 // Scaffold a koa app
-func (k *Julia) Scaffold(output string) error {
+func (k *Rust) Scaffold(output string) error {
 	return bundler.Restore(k.assets, output)
 }
 
 // Bundle a function into a koa project
-func (k *Julia) Bundle(output string, fn string, deps ...string) error {
+func (k *Rust) Bundle(output string, fn string, deps ...string) error {
 	return bundler.Bundle(k.assets, output, "rust", fn, deps...)
 }
 
 var (
-	_ bundler.Bundler = &Julia{}
+	_ bundler.Bundler = &Rust{}
 )

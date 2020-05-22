@@ -10,7 +10,7 @@ import (
 	"github.com/metrue/fx/utils"
 )
 
-func TestJuliaBundler(t *testing.T) {
+func TestRustBundler(t *testing.T) {
 	t.Run("Scaffold", func(t *testing.T) {
 		outputDir, err := ioutil.TempDir("", "fx_julia")
 		if err != nil {
