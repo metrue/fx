@@ -12,14 +12,14 @@ import (
 
 func TestRustBundler(t *testing.T) {
 	t.Run("Scaffold", func(t *testing.T) {
-		outputDir, err := ioutil.TempDir("", "fx_julia")
+		outputDir, err := ioutil.TempDir("", "fx_rust")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer os.RemoveAll(outputDir)
 
-		julia := New()
-		if err := julia.Scaffold(outputDir); err != nil {
+		rust := New()
+		if err := rust.Scaffold(outputDir); err != nil {
 			t.Fatal(err)
 		}
 
@@ -34,7 +34,7 @@ func TestRustBundler(t *testing.T) {
 	})
 
 	t.Run("BundleSingleFunc", func(t *testing.T) {
-		fd, err := ioutil.TempFile("", "fx_func_*.julia")
+		fd, err := ioutil.TempFile("", "fx_func_*.rust")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -54,14 +54,14 @@ end
 			t.Fatal(err)
 		}
 
-		outputDir, err := ioutil.TempDir("", "fx_julia")
+		outputDir, err := ioutil.TempDir("", "fx_rust")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer os.RemoveAll(outputDir)
 
-		julia := New()
-		if err := julia.Bundle(outputDir, fd.Name()); err != nil {
+		rust := New()
+		if err := rust.Bundle(outputDir, fd.Name()); err != nil {
 			t.Fatal(err)
 		}
 
@@ -90,7 +90,7 @@ end
 	})
 
 	t.Run("BundleFuncAndDeps", func(t *testing.T) {
-		fd, err := ioutil.TempFile("", "fx_func_*.js")
+		fd, err := ioutil.TempFile("", "fx_func_*.rs")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -108,7 +108,7 @@ end
 		addFunc := `
 module.exports = (a, b) => a+b
   `
-		addFd, err := ioutil.TempFile("", "fx_add_func_*.js")
+		addFd, err := ioutil.TempFile("", "fx_add_func_*.rs")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -118,14 +118,14 @@ module.exports = (a, b) => a+b
 			t.Fatal(err)
 		}
 
-		outputDir, err := ioutil.TempDir("", "fx_julia")
+		outputDir, err := ioutil.TempDir("", "fx_rust")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer os.RemoveAll(outputDir)
 
-		julia := New()
-		if err := julia.Bundle(outputDir, fd.Name(), addFd.Name()); err != nil {
+		rust := New()
+		if err := rust.Bundle(outputDir, fd.Name(), addFd.Name()); err != nil {
 			t.Fatal(err)
 		}
 
