@@ -11,10 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^2.2.3",
+    "express-to-koa": "^2.0.0",
     "get-port": "^3.2.0",
     "is-generator-function": "^1.0.6",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "swagger-stats": "^0.95.17"
   }
 }
