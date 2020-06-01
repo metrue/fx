@@ -3,7 +3,7 @@
 Write a function like,
 
 ```python
-def fx(requenst):
+def fx(request):
     return "hello world"
 ```
 
