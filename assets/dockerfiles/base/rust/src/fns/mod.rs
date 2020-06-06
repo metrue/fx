@@ -4,7 +4,7 @@ pub mod fns {
         pub result: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Deserialize, FromForm)]
     pub struct Request {
         pub a: i32,
         pub b: i32,
