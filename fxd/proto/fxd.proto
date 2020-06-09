@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package fxd;
+
+service Fxd {
+  rpc ListService (ListServiceRequest) returns (ListServiceResponse) {}
+}
+
+message Filter {
+  string name = 1;
+}
+
+message ListServiceRequest {
+  Filter filter = 1;
+}
+
+message Service {
+  string name = 1;
+  string endpoint = 2;
+}
+
+message ListServiceResponse {
+  repeated Service services = 1;
+}
