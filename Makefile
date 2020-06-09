@@ -3,6 +3,9 @@ DIST_DIR ?=./dist
 DOCKER_REMOTE_HOST_ADDR ?= "127.0.0.1"
 DOCKER_REMOTE_HOST_USER ?= $(whoami)
 
+update_api:
+	 protoc -I api/ api/api.proto --go_out=plugins=grpc:api
+
 lint:
 	docker pull golangci/golangci-lint
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint golangci-lint run -v
