@@ -15,8 +15,11 @@ message ListServiceRequest {
 }
 
 message Service {
-  string name = 1;
-  string endpoint = 2;
+  string id = 1;
+  string name = 2;
+  string endpoint = 3;
+  string state = 4;
+  string image = 5;
 }
 
 message ListServiceResponse {

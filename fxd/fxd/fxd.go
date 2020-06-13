@@ -20,15 +20,21 @@ type server struct {
 
 func (s *server) ListService(ctx context.Context, in *api.ListServiceRequest) (*api.ListServiceResponse, error) {
 	filter := in.GetFilter()
-	fmt.Println("++++++++")
-	fmt.Println(filter)
-	fmt.Println("++++++++")
 	services, err := s.driver.List(ctx, filter.GetName())
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(services)
-	return &api.ListServiceResponse{}, nil
+	lst := []*api.Service{}
+	for _, s := range services {
+		lst = append(lst, &api.Service{
+			Id:       s.ID,
+			Name:     s.Name,
+			Endpoint: fmt.Sprintf("%s:%d", s.Host, s.Port),
+			State:    s.State,
+			Image:    s.Image,
+		})
+	}
+	return &api.ListServiceResponse{Services: lst}, nil
 }
 
 const (
