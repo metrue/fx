@@ -24,10 +24,8 @@ func set(ctx context.Contexter, cli *cli.Context, fields []argsField) error {
 				if len(addr) != 2 {
 					return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
 				}
-				user := addr[0]
-				ip := addr[1]
-				ctx.Set("host", ip)
-				ctx.Set("user", user)
+				ctx.Set("host", addr[1])
+				ctx.Set("user", addr[0])
 			} else {
 				ctx.Set(f.Name, cli.String(f.Name))
 			}
@@ -38,7 +36,16 @@ func set(ctx context.Contexter, cli *cli.Context, fields []argsField) error {
 		}
 
 		if f.Env != "" && os.Getenv(f.Env) != "" {
-			ctx.Set(f.Name, os.Getenv(f.Env))
+			if f.Name == "host" {
+				info := strings.Split(os.Getenv(f.Env), "@")
+				if len(info) != 2 {
+					return fmt.Errorf("invalid host information, should be format of <user>@<ip>")
+				}
+				ctx.Set("host", info[1])
+				ctx.Set("user", info[0])
+			} else {
+				ctx.Set(f.Name, os.Getenv(f.Env))
+			}
 		}
 	}
 	return nil

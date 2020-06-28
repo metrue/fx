@@ -8,7 +8,8 @@ Poor man's function as a service.
 [![CodeCov](https://codecov.io/gh/metrue/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/metrue/fx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
-![](https://img.shields.io/github/license/metrue/fx.svg)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=https://github.com/metrue/fx)
+![liscense](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
 
 ## Table of Contents
