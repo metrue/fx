@@ -63,7 +63,7 @@ func Build(ctx context.Contexter) (err error) {
 		if err := docker.BuildImage(ctx.GetContext(), workdir, name); err != nil {
 			return err
 		}
-		nameWithTag := name + ":latest"
+		nameWithTag := fmt.Sprintf("%s:%s", name, time.Now().Format("20060102150405"))
 		if err := docker.TagImage(ctx.GetContext(), name, nameWithTag); err != nil {
 			return err
 		}
