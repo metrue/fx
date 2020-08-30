@@ -47,6 +47,10 @@ func TestLangFromFileName(t *testing.T) {
 			name: "a.pl",
 			lang: "perl",
 		},
+		{
+			name: "a.cr",
+			lang: "crystal",
+		},
 	}
 
 	for _, c := range cases {
