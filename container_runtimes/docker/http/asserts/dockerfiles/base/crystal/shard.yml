@@ -1,0 +1,6 @@
+name: fx-crystal-base
+version: 0.1.0
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+    commit: a819d4792bbc63d993d6dd2b15f9af5efb0c2d8c
