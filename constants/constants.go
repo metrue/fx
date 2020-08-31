@@ -16,6 +16,7 @@ var BaseImages = []string{
 	"metrue/fx-node-base",
 	"metrue/fx-d-base",
 	"metrue/fx-go-base",
+	"metrue/fx-crystal-base",
 }
 
 // ConfigPath path to config

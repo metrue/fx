@@ -12,4 +12,5 @@ var ExtLangMapping = map[string]string{
 	".d":    "d",
 	".rs":   "rust",
 	".pl":   "perl",
+	".cr":   "crystal",
 }

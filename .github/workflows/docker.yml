@@ -68,3 +68,9 @@ jobs:
         run: |
           docker build -t metrue/fx-julia-base:latest -f ./assets/dockerfiles/base/julia/Dockerfile ./assets/dockerfiles/base/julia
           docker push metrue/fx-julia-base:latest
+
+      - name: build and publish fx crystal image
+        if: always()
+        run: |
+          docker build -t metrue/fx-crystal-base:latest -f ./assets/dockerfiles/base/crystal/Dockerfile ./assets/dockerfiles/base/crystal
+          docker push metrue/fx-crystal-base:latest

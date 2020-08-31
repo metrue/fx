@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/metrue/fx/bundler"
+	"github.com/metrue/fx/bundler/crystal"
 	"github.com/metrue/fx/bundler/d"
 	golang "github.com/metrue/fx/bundler/go"
 	"github.com/metrue/fx/bundler/java"
@@ -37,6 +38,8 @@ func Bundle(workdir string, language string, fn string, deps ...string) error {
 		bundler = ruby.New()
 	case "rust":
 		bundler = rust.New()
+	case "crystal":
+		bundler = crystal.New()
 	default:
 		return fmt.Errorf("%s not suppported yet", language)
 	}
