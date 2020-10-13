@@ -74,3 +74,9 @@ jobs:
         run: |
           docker build -t metrue/fx-crystal-base:latest -f ./assets/dockerfiles/base/crystal/Dockerfile ./assets/dockerfiles/base/crystal
           docker push metrue/fx-crystal-base:latest
+
+      - name: build and publish fx php image
+        if: always()
+        run: |
+          docker build -t metrue/fx-php-base:latest -f ./assets/dockerfiles/base/php/Dockerfile ./assets/dockerfiles/base/php
+          docker push metrue/fx-php-base:latest
