@@ -51,7 +51,7 @@ require (
 	golang.org/x/sync v0.0.0-20201008141435-b3e1573b7520 // indirect
 	golang.org/x/sys v0.0.0-20201013064817-56aa3af1a10a // indirect
 	golang.org/x/tools v0.0.0-20201013053347-2db1cd791039 // indirect
-	google.golang.org/grpc v1.32.0
+	google.golang.org/grpc v1.33.1
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.0.0-20190925180651-d58b53da08f5
