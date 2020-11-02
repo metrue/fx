@@ -13,15 +13,20 @@ require (
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/gin-gonic/gin v1.6.3
+	github.com/gobuffalo/envy v1.9.0 // indirect
 	github.com/gobuffalo/packd v1.0.0
+	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/golang/mock v1.4.4
+	github.com/golang/protobuf v1.3.3
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.0.0
-	github.com/google/uuid v1.1.1
+	github.com/google/uuid v1.1.2
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/karrick/godirwalk v1.16.1 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
 	github.com/metrue/go-ssh-client v0.0.0-20200317072149-19d54050aefd
 	github.com/mholt/archiver v3.1.1+incompatible
@@ -35,11 +40,18 @@ require (
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/pierrec/lz4 v0.0.0-20190222153722-062282ea0dcf // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/rogpeppe/go-internal v1.6.2 // indirect
+	github.com/sirupsen/logrus v1.7.0 // indirect
+	github.com/spf13/cobra v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.22.4
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915 // indirect
+	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee // indirect
+	golang.org/x/sync v0.0.0-20201008141435-b3e1573b7520 // indirect
+	golang.org/x/sys v0.0.0-20201013064817-56aa3af1a10a // indirect
+	golang.org/x/tools v0.0.0-20201013053347-2db1cd791039 // indirect
+	google.golang.org/grpc v1.32.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/api v0.0.0-20190925180651-d58b53da08f5

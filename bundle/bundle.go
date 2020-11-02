@@ -11,6 +11,7 @@ import (
 	"github.com/metrue/fx/bundler/julia"
 	"github.com/metrue/fx/bundler/node"
 	"github.com/metrue/fx/bundler/perl"
+	"github.com/metrue/fx/bundler/php"
 	"github.com/metrue/fx/bundler/python"
 	"github.com/metrue/fx/bundler/ruby"
 	"github.com/metrue/fx/bundler/rust"
@@ -40,6 +41,8 @@ func Bundle(workdir string, language string, fn string, deps ...string) error {
 		bundler = rust.New()
 	case "crystal":
 		bundler = crystal.New()
+	case "php":
+		bundler = php.New()
 	default:
 		return fmt.Errorf("%s not suppported yet", language)
 	}
