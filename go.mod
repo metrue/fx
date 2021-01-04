@@ -21,7 +21,7 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.0.0
-	github.com/google/uuid v1.1.3
+	github.com/google/uuid v1.1.4
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
