@@ -8,7 +8,9 @@ lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint golangci-lint run -v
 
 generate:
-	packr
+	go get -u github.com/gobuffalo/packr/v2/...
+	go get -u github.com/gobuffalo/packr/v2/packr2
+	packr2
 
 b:
 	go build -ldflags="-s -w" -o ${OUTPUT_DIR}/fx fx.go
@@ -33,7 +35,7 @@ cli-test-ci:
 	./scripts/test_cli.sh 'js'
 
 cli-test:
-	./scripts/test_cli.sh 'js rb py go java d pl'
+	./scripts/test_cli.sh 'js rb py go java d pl php'
 
 http-test:
 	./scripts/http_test.sh

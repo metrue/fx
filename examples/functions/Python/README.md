@@ -10,7 +10,7 @@ def fx(request):
 then deploy it with `fx up` command,
 
 ```shell
-$ fx up -p 8080:3000 func.go
+$ fx up -p 8080:3000 func.py
 ```
 
 test it using `curl`
