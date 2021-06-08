@@ -17,9 +17,9 @@ jobs:
         run: |
           kind create cluster
 
-      - name: lint
-        run: |
-          make lint
+      # - name: lint
+      #   run: |
+      #     make lint
 
       - name: unit test
         env:

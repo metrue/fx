@@ -22,10 +22,10 @@ jobs:
         run: |
           kind create cluster
 
-      - name: lint
-        run: |
-          docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
-          golangci-lint run -v
+      # - name: lint
+      #   run: |
+      #     docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint \
+      #     golangci-lint run -v
 
       - name: unit test
         env:
