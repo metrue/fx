@@ -21,16 +21,14 @@ archives:
     files:
       - README.md
 brews:
-  -
-    github:
-      owner: metrue
-      name: homebrew-fx
+  - homepage: "https://github.com/metrue/fx"
+    description: "fx, a simple but powerful Function as a Service build tools"
+    folder: Formula
     commit_author:
       name: metrue
       email: h.minghe@gmail.com
-    folder: Formula
-    caveats: ""
-    homepage: "https://github.com/metrue/fx"
-    description: "fx, a simple but powerful Function as a Service build tools"
+    tap:
+      owner: metrue
+      name: homebrew-fx
     dependencies:
       - docker
