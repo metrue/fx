@@ -11,7 +11,7 @@ end
 then deploy it with `fx up` command,
 
 ```shell
-$ fx up -p 8080:3000 func.go
+$ fx up -p 8080:3000 func.rb
 ```
 
 test it using `curl`
