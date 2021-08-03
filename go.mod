@@ -13,7 +13,7 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.7.3
 	github.com/gobuffalo/logger v1.0.4 // indirect
 	github.com/gobuffalo/packd v1.0.0
 	github.com/gobuffalo/packr/v2 v2.8.1
