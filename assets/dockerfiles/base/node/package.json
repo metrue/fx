@@ -16,7 +16,7 @@
     "is-generator-function": "^1.0.6",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "swagger-stats": "^0.95.17"
   }
 }
