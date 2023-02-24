@@ -3,7 +3,6 @@ module github.com/metrue/fx
 go 1.12
 
 require (
-	cloud.google.com/go v0.46.3 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/apex/log v1.8.0
@@ -22,7 +21,6 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.0.0
 	github.com/google/uuid v1.2.0
-	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/karrick/godirwalk v1.16.1 // indirect
@@ -41,7 +39,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.22.5
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
@@ -51,11 +48,9 @@ require (
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/grpc v1.34.0 // indirect
-	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
-	k8s.io/api v0.0.0-20190925180651-d58b53da08f5
-	k8s.io/apimachinery v0.0.0-20190925235427-62598f38f24e
-	k8s.io/client-go v0.0.0-20190926235751-95884bf844a9
-	k8s.io/utils v0.0.0-20190923111123-69764acb6e8e // indirect
+	k8s.io/api v0.20.0-alpha.2
+	k8s.io/apimachinery v0.20.0-alpha.2
+	k8s.io/client-go v0.20.0-alpha.2
 )
