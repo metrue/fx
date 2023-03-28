@@ -33,7 +33,7 @@ $ fx up -p 8080 func.rs
 test it using `curl`
 
 ```shell
-$ curl -X 'POST' --header 'Content-Type: application/json' --data '{"a":1,"b":1}' '0.0.0.0:3000'
+$ curl -X 'POST' --header 'Content-Type: application/json' --data '{"a":1,"b":1}' '0.0.0.0:8080'
 
 HTTP/1.1 200 OK
 Content-Length: 12
