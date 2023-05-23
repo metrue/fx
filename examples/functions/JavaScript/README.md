@@ -11,7 +11,7 @@ module.exports = (ctx) => {
 then deploy it with `fx up` command,
 
 ```shell
-$ fx up -p 8080:3000 func.js
+$ fx up -p 8080 func.js
 ```
 
 test it using `curl`
