@@ -9,7 +9,7 @@ Poor man's function as a service.
 [![Go Report Card](https://goreportcard.com/badge/github.com/metrue/fx?style=flat-square)](https://goreportcard.com/report/github.com/metrue/fx)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/metrue/fx)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=https://github.com/metrue/fx)
-![liscense](https://img.shields.io/github/license/metrue/fx.svg)
+![license](https://img.shields.io/github/license/metrue/fx.svg)
 [![Release](https://img.shields.io/github/release/metrue/fx.svg?style=flat-square)](https://github.com/metrue/fx/releases/latest)
 
 ## Table of Contents
