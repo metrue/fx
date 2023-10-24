@@ -102,4 +102,4 @@ jobs:
             exit 0
           fi
           git tag -a ${version} -m "auto release"
-          curl -sL https://git.io/goreleaser | bash -s  -- --skip-validate
+          curl -sfL https://goreleaser.com/static/run | bash --
